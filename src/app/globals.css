@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #262626;
+  --graphite: #737373;
+  --hairline: #dbdbdb;
+  --action: #0095f6;
+  --action-strong: #0084dd;
+  --heart: #ed4956;
+  --g-indigo: #4f5bd5;
+  --g-purple: #962fbf;
+  --g-pink: #d62976;
+  --g-orange: #fa7e1e;
+  --g-yellow: #feda75;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-graphite: var(--graphite);
+  --color-hairline: var(--hairline);
+  --color-action: var(--action);
+  --color-action-strong: var(--action-strong);
+  --color-heart: var(--heart);
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-hanken), sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+
+.ig-ring {
+  background: conic-gradient(
+    from 210deg,
+    var(--g-yellow),
+    var(--g-orange),
+    var(--g-pink),
+    var(--g-purple),
+    var(--g-indigo),
+    var(--g-purple),
+    var(--g-pink),
+    var(--g-orange),
+    var(--g-yellow)
+  );
+}
+
+.ig-panel {
+  background: linear-gradient(
+    120deg,
+    var(--g-indigo),
+    var(--g-purple) 32%,
+    var(--g-pink) 62%,
+    var(--g-orange) 100%
+  );
+}
+
+.ig-avatar {
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--g-yellow),
+    var(--g-orange) 42%,
+    var(--g-pink) 72%,
+    var(--g-purple)
+  );
+}
+
+.text-ig {
+  background-image: linear-gradient(
+    90deg,
+    var(--g-purple),
+    var(--g-pink),
+    var(--g-orange)
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+.ig-line {
+  background: linear-gradient(90deg, var(--g-indigo), var(--g-pink), var(--g-orange));
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes dash-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.dash > span {
+  transform-origin: left;
+  animation: dash-fill 0.9s ease both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in,
+  .dash > span {
+    animation: none;
+  }
+  .dash > span {
+    transform: scaleX(1);
+  }
 }

@@ -1,29 +1,35 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
+  variable: "--font-bricolage",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
+  variable: "--font-hanken",
 });
 
 export const metadata: Metadata = {
-  title: "ResumeAI",
-  description: "Create, edit, preview, and export professional resumes.",
+  title: "ResumeAI — Free resume builder with AI writing suggestions",
+  description:
+    "Build a professional resume in one evening: structured editor, live preview, three templates, AI suggestions you accept or reject, and a watermark-free PDF. Free.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${bricolage.variable} ${hanken.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body
+        suppressHydrationWarning
+        className="flex min-h-full flex-col bg-background text-foreground"
+      >
+        {children}
+      </body>
     </html>
   );
 }
