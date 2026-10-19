@@ -1,9 +1,20 @@
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+
 # AGENTS.md
 
-## Status: planning only — no code yet
+## Status: Phase 1 complete — scaffold in place; Phases 2–8 pending
 
-- This repo contains **only `PLAN.md`** — no `package.json`, no source, no config, no CI. Nothing can be run, linted, or tested until the app is scaffolded.
-- Do not invent commands. Commands below (and in `PLAN.md` §17) are **planned**, not yet executable.
+- The Next.js app is scaffolded in place at the repo root (`resume_ai/`); there is no nested `resume-ai/` folder. The former open naming decision is resolved: treat `ResumeAI` as the product name and this directory as the app root.
+- Working baseline: Next.js scaffold page with branded metadata, `.gitignore`, `.env.example`, README. No database, auth, editor, AI, PDF, or tests exist yet — do not implement them out of order.
+- Follow the implementation principle in each phase of `PLAN.md` §14: build, run, test the happy path and failure path, commit.
 
 ## Source of truth: `PLAN.md`
 
@@ -11,11 +22,20 @@
 - If `AGENTS.md` and `PLAN.md` conflict, `PLAN.md` wins — and update this file. When implementation changes stack/command details, keep both consistent.
 - Implementation principle from the plan: build in small, testable milestones — never one large generated change. After each phase, run the app, test the happy path and the failure path, and commit working results.
 
-## Planned stack (verify against real `package.json` once it exists)
+## Actual stack (verified against `package.json` after scaffolding)
 
-- Next.js App Router + TypeScript, Tailwind CSS, shadcn/ui + Lucide, React Hook Form + Zod.
-- Prisma on Neon PostgreSQL; Auth.js sessions; Gemini API (free tier) behind a swappable AI service interface.
-- PDF via `@react-pdf/renderer`; tests: Vitest + Playwright. Modular monolith — no microservices. Target tree: `PLAN.md` §7.
+- Next.js **16.4.2** App Router, **React 19.3**, **TypeScript 5 (strict)**, **Tailwind CSS 4** (CSS-first config in `src/app/globals.css`, Tailwind via Turbopack loader), **ESLint 9** flat config in `eslint.config.mjs`.
+- Turbopack is the default bundler for `next dev` **and** `next build`. `next.config.ts` enables `cacheComponents: true` — when adding pages (Phase 4+), respect the Cache Components model or consult `node_modules/next/dist/docs/01-app/02-guides/migrating-to-cache-components.md` before disabling it.
+- Import alias `@/*` → `src/*`. Generated route type helpers (`LayoutProps`, `PageProps`, `RouteContext`) are available; request APIs are async (see below).
+- Planned for later phases (not installed yet): Prisma + Neon PostgreSQL (Phase 2), Auth.js (Phase 3), Zod + React Hook Form + shadcn/ui + Lucide (Phases 3–4), Gemini API behind `src/server/services/ai.service.ts` (Phase 5), `@react-pdf/renderer` (Phase 6), Vitest + Playwright (Phase 7). Modular monolith; target tree in `PLAN.md` §7.
+
+## Next.js 16 conventions that differ from older docs
+
+- **Middleware is now Proxy** (Next 16 rename): the route-protection file will be `src/proxy.ts` exporting a function named `proxy` (nodejs runtime). Implement the plan's `src/middleware.ts` idea under this name in Phase 3; do not create `middleware.ts`.
+- `next lint` is **removed** in v16: run ESLint via the CLI (`npm run lint`); `next build` no longer lints.
+- Request APIs are async-only: `params`, `searchParams`, `cookies()`, `headers()` must be `await`ed (relevant to Phase 3 sessions and Phase 4 `PageProps`).
+- `next dev` writes to `.next/dev/`; `next build` writes to `.next/`. Concurrent dev + build is supported.
+- Version-matched docs are bundled at `node_modules/next/dist/docs/` — consult them (especially the v16 upgrade guide) before touching framework APIs.
 
 ## Hard invariants (from `PLAN.md`; violating these breaks the spec)
 
@@ -26,19 +46,28 @@
 - Secrets stay server-only; never prefix them with `NEXT_PUBLIC_`. `.env.example` holds placeholders only; never commit `.env`.
 - Schema changes only via Prisma migrations: `migrate dev` locally, `migrate deploy` in production.
 
-## Planned commands (not yet executable)
+## Dependency audit note (Phase 1)
+
+- `npm audit` reports **5 high-severity advisories**, all in the dev-only lint toolchain (`braces` → `micromatch` → `fast-glob` → `@next/eslint-plugin-next` → `eslint-config-next`). No runtime dependency is affected.
+- `braces@3.0.3` is already the newest published version, so the only `npm audit fix --force` offer (downgrading to `eslint-config-next@14.2.35`) is a **breaking change — do not run it**. Re-check after `eslint-config-next` updates and surface audit results in CI when the repo gains CI (Phase 7).
+
+## Commands (verified in Phase 1)
 
 ```bash
-npx create-next-app@latest resume-ai   # Phase 1: TypeScript + ESLint + Tailwind + App Router + src/
-npm run dev
-npx prisma generate
-npx prisma migrate dev --name init     # local development
-npx prisma migrate deploy              # production
+npm run dev          # next dev (Turbopack) → http://localhost:3000
+npm run build        # next build (Turbopack, production)
+npm run lint         # ESLint 9 CLI with eslint.config.mjs — run separately; build does not lint
+npm start            # serve the production build
+npx tsc --noEmit     # strict TypeScript check
 ```
 
-- Planned env vars: `DATABASE_URL`, `AUTH_SECRET`, `GEMINI_API_KEY` (`PLAN.md` §16).
-- At scaffold time, fill in real lint/typecheck/test commands here and delete the "planned" caveat.
+Database commands (add in Phase 2, after installing Prisma; not yet available):
 
-## Open decision — confirm with the user before scaffolding
+```bash
+npx prisma generate
+npx prisma migrate dev --name init   # local development
+npx prisma migrate deploy            # production
+```
 
-- `PLAN.md` names the project root `resume-ai/` (hyphen) but the working directory is `resume_ai` (underscore). Confirm whether to scaffold in place or in a nested `resume-ai/` folder before running `create-next-app`.
+- Test scripts (Vitest/Playwright) do not exist yet; they arrive in Phase 7 per the plan.
+- Env placeholders are documented in `.env.example` per `PLAN.md` §16: `DATABASE_URL`, `AUTH_SECRET`, `GEMINI_API_KEY` — all server-only. Copy to `.env` locally when the phase that needs each value lands; never commit `.env`.
