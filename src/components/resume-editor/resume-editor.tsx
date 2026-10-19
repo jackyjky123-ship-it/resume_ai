@@ -152,7 +152,7 @@ export function ResumeEditor({ resume }: { resume: ResumeDetail }) {
   });
 
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
-  const { status, saveNow, hasUnsavedChanges } = useResumeAutosave(resume.id);
+  const { status, saveNow, hasUnsavedChanges } = useResumeAutosave(resume.id, form);
 
   const content =
     useWatch({ control: form.control, name: "content" }) ?? resume.content;

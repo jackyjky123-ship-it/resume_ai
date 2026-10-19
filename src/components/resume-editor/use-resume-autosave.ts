@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
 import { saveResumeAction } from "@/server/actions/resume.actions";
@@ -17,13 +17,19 @@ const DEBOUNCE_MS = 1_200;
 /**
  * Debounced autosave with a single in-flight request per editor.
  *
+ * The form instance is passed in explicitly: `ResumeEditor` owns the form and
+ * renders `<FormProvider>` below it, so calling `useFormContext()` here would
+ * return null at runtime (and crash during hydration).
+ *
  * A change marks the form dirty and schedules a save; saves only run when the
  * full document passes the Zod schema, so invalid drafts stay on the client
  * with visible errors instead of being persisted broken. If edits arrive while
  * a save is running, the latest snapshot is saved immediately afterwards.
  */
-export function useResumeAutosave(resumeId: string) {
-  const form = useFormContext<ResumeEditorFormValues>();
+export function useResumeAutosave(
+  resumeId: string,
+  form: UseFormReturn<ResumeEditorFormValues>
+) {
   const [status, setStatus] = useState<SaveStatus>("saved");
 
   const dirtyRef = useRef(false);
