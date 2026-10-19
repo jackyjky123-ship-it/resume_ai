@@ -17,6 +17,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - The Next.js app is scaffolded in place at the repo root (`resume_ai/`); there is no nested `resume-ai/` folder. The former open naming decision is resolved: treat `ResumeAI` as the product name and this directory is the app root.
 - Working baseline: marketing landing page + login page + protected dashboard stub, working Neon Auth sign-up/sign-in/sign-out flows, Prisma CRUD repository, deployed `hello` Neon Function. Editor, PDF, AI, and formal test suites still pending — do not implement them out of order.
+- The dashboard UI (profile header, search/filter/sort, resume cards with duplicate/rename/delete + confirmation, empty states) is a **presentation-only preview** built ahead of Phase 4: all resume data is hardcoded in `src/lib/mock/dashboard.ts` and lives in client state, so CRUD and the editor are still to be wired. Delete the mock module when the real repository feeds `DashboardWorkspace`.
 - Follow the implementation principle in each phase of `PLAN.md` §14: build, run, test the happy path and failure path, commit.
 
 ## Source of truth: `PLAN.md`
@@ -73,11 +74,12 @@ npm run db:migrate   # prisma migrate dev — CLI reads prisma.config.ts; direct
 npm run db:deploy    # prisma migrate deploy (production migrations)
 npm run db:test      # Prisma + pooled DATABASE_URL smoke test (create/read/ownership/cascade)
 npm run auth:test    # Neon Auth e2e through the app (needs `npm start` running on :3000)
+npm run dashboard:test  # dashboard UI smoke test (needs `npm start`); keeps preview@example.com / preview-1234 for browser sign-in
 
 neon status          # branch live state (Neon CLI authenticated via `neon login`)
 neon config plan     # dry-run diff of neon.ts against the branch
 neon deploy          # apply neon.ts (provisions services/functions, pulls env into .env.local)
 ```
 
-- Test scripts (Vitest/Playwright) do not exist yet; they arrive in Phase 7 per the plan. `scripts/db-test.ts` and `scripts/auth-test.ts` are phase-verification smoke tests, not the Phase 7 suites.
+- Test scripts (Vitest/Playwright) do not exist yet; they arrive in Phase 7 per the plan. `scripts/db-test.ts`, `scripts/auth-test.ts`, and `scripts/dashboard-test.ts` are phase-verification smoke tests, not the Phase 7 suites. The dashboard smoke test signs in `preview@example.com` / `preview-1234` — a leftover dev-branch account kept so anyone can preview the mock dashboard in the browser.
 - Env placeholders are documented in `.env.example`: Neon-managed vars (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_BRANCH`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_JWKS_URL`, `NEON_FUNCTION_HELLO_BASE_URL`) are written by `neon deploy`/`neon env pull` into `.env.local`; app-generated var `NEON_AUTH_COOKIE_SECRET` must be created manually; `GEMINI_API_KEY` (Phase 5) stays a placeholder. All server-only; never commit `.env*`.

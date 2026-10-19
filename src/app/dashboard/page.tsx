@@ -1,40 +1,51 @@
 import { Suspense } from "react";
-import { SignOutButton } from "@/components/dashboard/sign-out-button";
+import { redirect } from "next/navigation";
+import { Wordmark } from "@/components/wordmark";
+import { DashboardWorkspace } from "@/components/dashboard/dashboard-workspace";
 import { auth } from "@/lib/auth/server";
 
-async function SessionBadge() {
+async function WorkspaceWithSession() {
   const { data: session } = await auth.getSession();
 
   if (!session?.user) {
-    return <p className="text-sm text-graphite">Signed out.</p>;
+    redirect("/login");
   }
 
+  return <DashboardWorkspace user={{ name: session.user.name ?? null, email: session.user.email }} />;
+}
+
+function DashboardSkeleton() {
   return (
-    <p className="text-sm text-graphite">
-      Signed in as <span className="font-semibold text-foreground">{session.user.email}</span>
-    </p>
+    <div className="flex min-h-dvh flex-col">
+      <header className="border-b border-hairline bg-white/85">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-6">
+          <Wordmark />
+        </div>
+      </header>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-20 pt-8 sm:pt-10">
+        <div className="flex animate-pulse items-center gap-6">
+          <span className="size-20 shrink-0 rounded-full bg-hairline/60 sm:size-24" />
+          <div className="flex-1 space-y-3">
+            <span className="block h-7 w-52 rounded-full bg-hairline/60" />
+            <span className="block h-4 w-40 rounded-full bg-hairline/40" />
+            <span className="block h-4 w-64 rounded-full bg-hairline/40" />
+          </div>
+        </div>
+        <div className="mt-8 grid gap-5 border-t border-hairline pt-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((key) => (
+            <span key={key} className="block h-[236px] rounded-2xl border border-hairline bg-white/60" />
+          ))}
+        </div>
+      </main>
+    </div>
   );
 }
 
 export default function DashboardPage() {
+  // Reading the session hits cookies() — stream behind a boundary (Cache Components)
   return (
-    <main className="mx-auto min-h-dvh max-w-xl px-6 py-16">
-      <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-
-      {/* Reading the session hits cookies() — stream behind a boundary (Cache Components) */}
-      <div className="mt-6 rounded-2xl border border-hairline bg-white p-6">
-        <Suspense fallback={<p className="text-sm text-graphite">Loading session…</p>}>
-          <SessionBadge />
-        </Suspense>
-        <div className="mt-4">
-          <SignOutButton />
-        </div>
-      </div>
-
-      <p className="mt-6 text-sm text-graphite">
-        Resume CRUD arrives with the editor phase — this page proves Neon Auth sessions work
-        end to end.
-      </p>
-    </main>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <WorkspaceWithSession />
+    </Suspense>
   );
 }
