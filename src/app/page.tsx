@@ -242,11 +242,11 @@ export default function Home() {
             ))}
           </div>
           <div className="ml-auto flex items-center gap-5">
-            <a href="#" className="hidden text-sm font-semibold hover:text-graphite sm:block">
+            <a href="/login" className="hidden text-sm font-semibold hover:text-graphite sm:block">
               Log in
             </a>
             <a
-              href="#start"
+              href="/login"
               className="rounded-full bg-action px-4 py-2 text-sm font-semibold text-white hover:bg-action-strong"
             >
               Start free

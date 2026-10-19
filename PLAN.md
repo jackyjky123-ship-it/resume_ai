@@ -483,13 +483,13 @@ Do not deploy a public production demo until core flows pass, production build s
 - [ ] Add `.gitignore` and `.env.example`.
 
 ### Phase 2 — Database (about 1 day)
-- [ ] Create Neon project and database.
-- [ ] Add the connection string to local `.env`.
-- [ ] Install Prisma and the packages required by the current Prisma/Neon integration.
-- [ ] Follow official setup instructions for the selected Prisma major version.
-- [ ] Define initial User and Resume models, adding Auth.js adapter models if required.
-- [ ] Run the initial migration and generate the Prisma client.
-- [ ] Test a basic database read/write without exposing credentials.
+- [x] Create Neon project and database.
+- [x] Add the connection string to local `.env`.
+- [x] Install Prisma and the packages required by the current Prisma/Neon integration.
+- [x] Follow official setup instructions for the selected Prisma major version.
+- [x] Define initial User and Resume models, adding Auth.js adapter models if required.
+- [x] Run the initial migration and generate the Prisma client.
+- [x] Test a basic database read/write without exposing credentials.
 
 Example packages often used in a Neon/Prisma setup include:
 
@@ -501,7 +501,7 @@ npm install -D prisma
 Exact packages and configuration depend on Prisma's current version. Verify the official documentation before copying setup code.
 
 ### Phase 3 — Authentication (about 1–2 days)
-- [ ] Configure Auth.js and a supported authentication provider/adapter.
+- [x] Configure the authentication service and adapter (updated: **Neon Auth = Managed Better Auth**; users/sessions live in the `neon_auth` schema instead of Auth.js tables — `authUserId` on the app `User` record links the two; no adapter models needed).
 - [ ] Build login, registration where applicable, and logout flows.
 - [ ] Protect dashboard and editor pages.
 - [ ] Add server-side session and ownership helpers.

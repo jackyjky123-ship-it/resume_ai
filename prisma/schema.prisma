@@ -1,0 +1,37 @@
+// Prisma 7 — ESM-first generator with a custom output path.
+// The app imports the client via "@/generated/prisma/client".
+// Connection URL lives in prisma.config.ts (Prisma 7), not in the datasource block.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id String @id @default(cuid())
+  // Better Auth user id (Neon Auth). Linked on first sign-in; unique.
+  authUserId String @unique
+  email String @unique
+  name String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resumes Resume[]
+}
+
+model Resume {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  templateId String @default("classic")
+  content Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, updatedAt])
+}
