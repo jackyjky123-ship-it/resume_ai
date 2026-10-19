@@ -1,4 +1,4 @@
-import type { TemplateId } from "@/lib/mock/dashboard";
+import type { TemplateId } from "@/lib/resume-meta";
 
 type Tone = "ink" | "line" | "white" | "white-faint";
 

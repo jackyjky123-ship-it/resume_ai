@@ -9,6 +9,7 @@ const listSelect = {
   id: true,
   title: true,
   templateId: true,
+  content: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.ResumeSelect;

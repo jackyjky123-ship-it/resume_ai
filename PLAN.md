@@ -475,12 +475,12 @@ Do not deploy a public production demo until core flows pass, production build s
 ## 14. Step-by-Step Implementation Roadmap
 
 ### Phase 1 — Project setup (about 1 day)
-- [ ] Install a supported Node.js LTS release, Git, and editor.
-- [ ] Run `npx create-next-app@latest resume-ai`.
-- [ ] Choose TypeScript, ESLint, Tailwind CSS, App Router, and `src/` directory.
-- [ ] Run the development server and verify `http://localhost:3000`.
-- [ ] Create GitHub repository and first commit.
-- [ ] Add `.gitignore` and `.env.example`.
+- [x] Install a supported Node.js LTS release, Git, and editor.
+- [x] Run `npx create-next-app@latest resume-ai` (scaffolded in place at the repo root).
+- [x] Choose TypeScript, ESLint, Tailwind CSS, App Router, and `src/` directory.
+- [x] Run the development server and verify `http://localhost:3000`.
+- [x] Create GitHub repository and first commit.
+- [x] Add `.gitignore` and `.env.example`.
 
 ### Phase 2 — Database (about 1 day)
 - [x] Create Neon project and database.
@@ -502,20 +502,21 @@ Exact packages and configuration depend on Prisma's current version. Verify the 
 
 ### Phase 3 — Authentication (about 1–2 days)
 - [x] Configure the authentication service and adapter (updated: **Neon Auth = Managed Better Auth**; users/sessions live in the `neon_auth` schema instead of Auth.js tables — `authUserId` on the app `User` record links the two; no adapter models needed).
-- [ ] Build login, registration where applicable, and logout flows.
-- [ ] Protect dashboard and editor pages.
-- [ ] Add server-side session and ownership helpers.
-- [ ] Test unauthenticated and cross-user access.
+- [x] Build login, registration where applicable, and logout flows.
+- [x] Protect dashboard and editor pages.
+- [x] Add server-side session and ownership helpers.
+- [x] Test unauthenticated and cross-user access (`scripts/auth-test.ts`, `scripts/db-test.ts`).
 
 ### Phase 4 — Resume editor (about 3–5 days)
-- [ ] Define `ResumeDocument` TypeScript type and Zod schema.
-- [ ] Build personal-information form.
-- [ ] Build summary, experience, education, skills, projects, certifications, and languages sections.
-- [ ] Add stable IDs to repeatable entries.
-- [ ] Build first live-preview template.
-- [ ] Implement create, update, duplicate, rename, and delete services.
-- [ ] Add loading, save-success, and save-failure states.
-- [ ] Add debounced autosave after basic persistence is stable.
+- [x] Define `ResumeDocument` TypeScript type and Zod schema (`src/lib/validations/resume.ts`; stable IDs on every repeatable entry).
+- [x] Build personal-information form.
+- [x] Build summary, experience, education, skills, projects, certifications, and languages sections.
+- [x] Add stable IDs to repeatable entries.
+- [x] Build first live-preview template (Classic; Modern/Compact layouts remain Phase 6).
+- [x] Implement create, update, duplicate, rename, and delete services (`src/server/services/resume.service.ts`; dashboard wired to Postgres and the mock removed).
+- [x] Add loading, save-success, and save-failure states (editor autosave status, dashboard/editor skeletons and error boundaries).
+- [x] Add debounced autosave after basic persistence is stable (`src/components/resume-editor/use-resume-autosave.ts`).
+- [x] Test the happy and failure paths (`scripts/editor-test.ts`, plus the auth/dashboard/DB smoke tests).
 
 ### Phase 5 — AI integration (about 2–3 days)
 - [ ] Create a Gemini API key using the official developer console.

@@ -9,19 +9,28 @@ import {
   Trash2,
   type LucideIcon,
 } from "lucide-react";
-import { TEMPLATE_NAME, formatRelativeTime, type DashboardResume } from "@/lib/mock/dashboard";
+import { TEMPLATE_NAME, formatRelativeTime, type DashboardResume } from "@/lib/resume-meta";
 import { SectionDashes } from "./section-dashes";
 import { TemplateSheet } from "./template-sheet";
+import { Spinner } from "@/components/ui/spinner";
 
 type ResumeCardProps = {
   resume: DashboardResume;
+  busy?: boolean;
   onOpen: (resume: DashboardResume) => void;
   onRename: (resume: DashboardResume) => void;
   onDuplicate: (resume: DashboardResume) => void;
   onDelete: (resume: DashboardResume) => void;
 };
 
-export function ResumeCard({ resume, onOpen, onRename, onDuplicate, onDelete }: ResumeCardProps) {
+export function ResumeCard({
+  resume,
+  busy = false,
+  onOpen,
+  onRename,
+  onDuplicate,
+  onDelete,
+}: ResumeCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -102,10 +111,15 @@ export function ResumeCard({ resume, onOpen, onRename, onDuplicate, onDelete }: 
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               aria-label={`Actions for “${resume.title}”`}
+              disabled={busy}
               onClick={() => setMenuOpen((open) => !open)}
-              className="grid size-8 place-items-center rounded-full text-graphite hover:bg-background hover:text-foreground"
+              className="grid size-8 place-items-center rounded-full text-graphite hover:bg-background hover:text-foreground disabled:opacity-50"
             >
-              <MoreHorizontal size={16} aria-hidden />
+              {busy ? (
+                <Spinner />
+              ) : (
+                <MoreHorizontal size={16} aria-hidden />
+              )}
             </button>
             {menuOpen && (
               <div

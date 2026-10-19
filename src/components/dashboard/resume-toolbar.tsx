@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, Search } from "lucide-react";
-import { TEMPLATES, type TemplateId } from "@/lib/mock/dashboard";
+import { TEMPLATES, type TemplateId } from "@/lib/resume-meta";
 
 export type TemplateFilter = TemplateId | "all";
 export type SortKey = "edited" | "created" | "name";

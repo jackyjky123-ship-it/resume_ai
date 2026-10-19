@@ -1,7 +1,7 @@
-// Dashboard UI-preview smoke test — needs the app running on :3000 (npm start).
+// Dashboard smoke test — needs the app running on :3000 (npm start).
 // Run with:  npm run dashboard:test
 // Signs in a reusable preview account (creating it once if needed), then
-// asserts the protected dashboard renders the workspace UI behind a real
+// asserts the protected dashboard renders the real workspace UI behind a
 // session. The preview account is intentionally NOT deleted, so you can sign
 // in with it in the browser: preview@example.com / preview-1234
 /* eslint-disable no-console */
@@ -41,9 +41,16 @@ async function main() {
   assert(dashboard.ok, `dashboard renders for ${EMAIL} (${dashboard.status})`);
   assert(html.includes(EMAIL), "top bar + profile header show the session email");
   assert(html.includes("Amara Chen"), "profile header shows the session name");
-  assert(html.includes("Frontend internship"), "sample resume cards render");
   assert(html.includes("New resume"), "create action renders");
-  assert(html.includes("Design preview"), "preview footnote renders");
+  assert(
+    html.includes('aria-label="Your resumes"') || html.includes("Your first resume starts here."),
+    "resume list section renders (empty or populated)"
+  );
+  assert(html.includes("Private to your account"), "real-data footnote renders");
+  assert(
+    !html.includes("Design preview"),
+    "old mock-data footnote is gone"
+  );
 
   console.log(`\nPASS: the dashboard UI renders behind a real session.`);
   console.log(`Sign in in the browser with: ${EMAIL} / ${PASSWORD}`);

@@ -1,4 +1,4 @@
-import { RESUME_SECTIONS, type SectionKey } from "@/lib/mock/dashboard";
+import { RESUME_SECTIONS, type SectionKey } from "@/lib/resume-meta";
 
 /**
  * The five editor sections as story-style dashes: filled when a section has

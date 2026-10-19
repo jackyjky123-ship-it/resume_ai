@@ -1,17 +1,19 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
 import { Wordmark } from "@/components/wordmark";
 import { DashboardWorkspace } from "@/components/dashboard/dashboard-workspace";
-import { auth } from "@/lib/auth/server";
+import { requireUser } from "@/lib/auth/current-user";
+import { listResumeCards } from "@/server/services/resume.service";
 
 async function WorkspaceWithSession() {
-  const { data: session } = await auth.getSession();
+  const user = await requireUser();
+  const resumes = await listResumeCards(user.id);
 
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  return <DashboardWorkspace user={{ name: session.user.name ?? null, email: session.user.email }} />;
+  return (
+    <DashboardWorkspace
+      user={{ name: user.name, email: user.email }}
+      resumes={resumes}
+    />
+  );
 }
 
 function DashboardSkeleton() {

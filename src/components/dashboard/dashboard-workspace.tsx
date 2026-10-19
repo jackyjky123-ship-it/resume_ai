@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Wordmark } from "@/components/wordmark";
+import type { DashboardResume, TemplateId } from "@/lib/resume-meta";
 import {
-  INITIAL_RESUMES,
-  type DashboardResume,
-  type TemplateId,
-} from "@/lib/mock/dashboard";
+  createResumeAction,
+  deleteResumeAction,
+  duplicateResumeAction,
+  renameResumeAction,
+} from "@/server/actions/resume.actions";
 import { EmptyState } from "./empty-state";
 import { ProfileHeader } from "./profile-header";
 import { NewResumeDialog, DeleteResumeDialog, RenameResumeDialog } from "./resume-dialogs";
@@ -35,21 +39,23 @@ function initialsOf(displayName: string) {
   return letters.join("").toUpperCase();
 }
 
-export function DashboardWorkspace({ user }: { user: DashboardUser }) {
-  const [resumes, setResumes] = useState<DashboardResume[]>(INITIAL_RESUMES);
+export function DashboardWorkspace({
+  user,
+  resumes: initialResumes,
+}: {
+  user: DashboardUser;
+  resumes: DashboardResume[];
+}) {
+  const router = useRouter();
+  const [resumes, setResumes] = useState<DashboardResume[]>(initialResumes);
   const [query, setQuery] = useState("");
   const [templateFilter, setTemplateFilter] = useState<TemplateFilter>("all");
   const [sortKey, setSortKey] = useState<SortKey>("edited");
   const [createOpen, setCreateOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState<DashboardResume | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DashboardResume | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = window.setTimeout(() => setToast(null), 3400);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
+  const [pending, setPending] = useState<string | null>(null);
+  const [dialogError, setDialogError] = useState<string | null>(null);
 
   const displayName = friendlyName(user);
   const initials = initialsOf(displayName);
@@ -65,8 +71,9 @@ export function DashboardWorkspace({ user }: { user: DashboardUser }) {
       })
       .sort((a, b) => {
         if (sortKey === "name") return a.title.localeCompare(b.title);
-        if (sortKey === "created") return b.createdAt - a.createdAt;
-        return b.updatedAt - a.updatedAt;
+        if (sortKey === "created")
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
       });
   }, [resumes, query, templateFilter, sortKey]);
 
@@ -76,56 +83,81 @@ export function DashboardWorkspace({ user }: { user: DashboardUser }) {
     return base;
   }, [resumes]);
 
-  function showToast(message: string) {
-    setToast(message);
+  function openCreateDialog() {
+    setDialogError(null);
+    setCreateOpen(true);
   }
 
-  function handleCreate(title: string, templateId: TemplateId) {
-    const timestamp = Date.now();
-    setResumes((current) => [
-      {
-        id: `res_${timestamp}`,
-        title,
-        templateId,
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        filledSections: [],
-      },
-      ...current,
-    ]);
+  async function handleCreate(title: string, templateId: TemplateId) {
+    setPending("create");
+    setDialogError(null);
+    const result = await createResumeAction({ title, templateId });
+    setPending(null);
+
+    if (!result.ok) {
+      setDialogError(result.error);
+      return;
+    }
+
     setCreateOpen(false);
     setQuery("");
     setTemplateFilter("all");
     setSortKey("edited");
-    showToast(`Created “${title}”.`);
+    toast.success(`Created “${result.data.title}”.`);
+    router.push(`/resumes/${result.data.id}/edit`);
   }
 
-  function handleRename(title: string) {
+  async function handleRename(title: string) {
     if (!renameTarget) return;
+    setPending("rename");
+    setDialogError(null);
+    const result = await renameResumeAction({ resumeId: renameTarget.id, title });
+    setPending(null);
+
+    if (!result.ok) {
+      setDialogError(result.error);
+      return;
+    }
+
+    const renamed = result.data;
     setResumes((current) =>
-      current.map((resume) =>
-        resume.id === renameTarget.id ? { ...resume, title, updatedAt: Date.now() } : resume
-      )
+      current.map((resume) => (resume.id === renamed.id ? renamed : resume))
     );
     setRenameTarget(null);
-    showToast(`Renamed to “${title}”.`);
+    toast.success(`Renamed to “${renamed.title}”.`);
   }
 
-  function handleDuplicate(source: DashboardResume) {
-    const timestamp = Date.now();
-    setResumes((current) => [
-      { ...source, id: `res_${timestamp}`, title: `${source.title} copy`, createdAt: timestamp, updatedAt: timestamp },
-      ...current,
-    ]);
+  async function handleDuplicate(source: DashboardResume) {
+    setPending(`duplicate:${source.id}`);
+    const result = await duplicateResumeAction(source.id);
+    setPending(null);
+
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+
+    setResumes((current) => [result.data, ...current]);
     setQuery("");
     setTemplateFilter("all");
-    showToast(`Duplicated “${source.title}”.`);
+    setSortKey("edited");
+    toast.success(`Duplicated “${source.title}”.`);
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!deleteTarget) return;
-    setResumes((current) => current.filter((resume) => resume.id !== deleteTarget.id));
-    showToast(`Deleted “${deleteTarget.title}”.`);
+    setPending("delete");
+    setDialogError(null);
+    const result = await deleteResumeAction(deleteTarget.id);
+    setPending(null);
+
+    if (!result.ok) {
+      setDialogError(result.error);
+      return;
+    }
+
+    setResumes((current) => current.filter((resume) => resume.id !== result.data.id));
+    toast.success(`Deleted “${deleteTarget.title}”.`);
     setDeleteTarget(null);
   }
 
@@ -158,7 +190,7 @@ export function DashboardWorkspace({ user }: { user: DashboardUser }) {
           email={user.email}
           initials={initials}
           resumeCount={resumes.length}
-          onCreate={() => setCreateOpen(true)}
+          onCreate={openCreateDialog}
         />
 
         <ResumeToolbar
@@ -179,12 +211,17 @@ export function DashboardWorkspace({ user }: { user: DashboardUser }) {
                 <ResumeCard
                   key={resume.id}
                   resume={resume}
-                  onOpen={() =>
-                    showToast("Editor coming soon — this preview is dashboard-only.")
-                  }
-                  onRename={setRenameTarget}
+                  busy={pending === `duplicate:${resume.id}` || pending === "delete"}
+                  onOpen={() => router.push(`/resumes/${resume.id}/edit`)}
+                  onRename={(target) => {
+                    setDialogError(null);
+                    setRenameTarget(target);
+                  }}
                   onDuplicate={handleDuplicate}
-                  onDelete={setDeleteTarget}
+                  onDelete={(target) => {
+                    setDialogError(null);
+                    setDeleteTarget(target);
+                  }}
                 />
               ))}
             </div>
@@ -196,43 +233,40 @@ export function DashboardWorkspace({ user }: { user: DashboardUser }) {
                 setQuery("");
                 setTemplateFilter("all");
               }}
-              onCreate={() => setCreateOpen(true)}
+              onCreate={openCreateDialog}
             />
           )}
         </section>
 
         <p className="mt-10 flex items-center justify-center gap-2 text-center text-xs text-graphite">
           <span aria-hidden className="ig-line size-1.5 shrink-0 rounded-full" />
-          Design preview — sign-in is real, resumes are sample data. Refreshing resets the list.
+          Private to your account — every edit autosaves as you go.
         </p>
       </main>
 
       <NewResumeDialog
         key={createOpen ? "create-open" : "create-closed"}
         open={createOpen}
+        pending={pending === "create"}
+        error={dialogError}
         onClose={() => setCreateOpen(false)}
         onCreate={handleCreate}
       />
       <RenameResumeDialog
         key={renameTarget?.id ?? "rename-none"}
         resume={renameTarget}
+        pending={pending === "rename"}
+        error={dialogError}
         onClose={() => setRenameTarget(null)}
         onRename={handleRename}
       />
       <DeleteResumeDialog
         resume={deleteTarget}
+        pending={pending === "delete"}
+        error={dialogError}
         onClose={() => setDeleteTarget(null)}
         onDelete={handleDelete}
       />
-
-      {toast && (
-        <div role="status" aria-live="polite" className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-          <p className="flex items-center gap-2.5 rounded-full border border-hairline bg-white px-4 py-2.5 text-sm font-medium shadow-[0_18px_40px_-20px_rgba(38,38,38,0.5)]">
-            <span aria-hidden className="ig-line size-1.5 shrink-0 rounded-full" />
-            {toast}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

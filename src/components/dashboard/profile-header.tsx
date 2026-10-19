@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { MOCK_STATS } from "@/lib/mock/dashboard";
 
 type ProfileHeaderProps = {
   displayName: string;
@@ -44,15 +43,7 @@ export function ProfileHeader({
           <span aria-hidden className="mx-2 text-hairline">
             ·
           </span>
-          <span className="font-semibold text-foreground tabular-nums">{MOCK_STATS.exports}</span>{" "}
-          PDF exports
-          <span aria-hidden className="mx-2 text-hairline">
-            ·
-          </span>
-          <span className="font-semibold text-foreground tabular-nums">
-            {MOCK_STATS.suggestionsAccepted}
-          </span>{" "}
-          suggestions accepted
+          Private to your account
         </p>
       </div>
 
