@@ -154,8 +154,6 @@ const EditorialThumb = () => (
   <div className="flex h-full w-[138px] gap-2 rounded-md bg-white p-2.5 ring-1 ring-black/5">
     {/* Left column */}
     <div className="flex w-[40px] shrink-0 flex-col gap-1">
-      <Bar w="85%" dark />
-      <div className="h-[2px] w-[65%] rounded-full bg-[#3b6998]" />
       <div className="my-[2px] aspect-[3/4] w-full rounded-[2px] bg-neutral-300" />
       <Bar w="60%" dark />
       <Bar w="90%" />
@@ -165,6 +163,8 @@ const EditorialThumb = () => (
     </div>
     {/* Right column */}
     <div className="flex flex-1 flex-col gap-1">
+      <Bar w="85%" dark />
+      <div className="h-[2px] w-[65%] rounded-full bg-[#3b6998]" />
       <Bar w="32%" dark />
       <Bar w="100%" />
       <Bar w="88%" />

@@ -31,23 +31,25 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
 
-  // Name Header in Sidebar
+  // Name Header in Right Column
   nameContainer: {
     marginBottom: 8,
+  },
+  nameRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "baseline",
   },
   nameFirst: {
     fontFamily: "Helvetica-Bold",
     fontSize: 20,
     color: "#0f172a",
-    lineHeight: 1.05,
-    letterSpacing: -0.2,
+    marginRight: 5,
   },
   nameLast: {
     fontFamily: "Helvetica-Bold",
     fontSize: 20,
     color: ACCENT_COLOR,
-    lineHeight: 1.05,
-    letterSpacing: -0.2,
   },
   roleApplied: {
     fontFamily: "Helvetica-Bold",
@@ -55,7 +57,7 @@ const styles = StyleSheet.create({
     color: "#64748b",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginTop: 3,
+    marginTop: 2,
   },
 
   // Profile Photo / Avatar Frame
@@ -328,16 +330,6 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
       <View style={styles.body}>
         {/* Left Sidebar (35% width) */}
         <View style={styles.sidebar}>
-          {/* Two-tone Name */}
-          <View style={styles.nameContainer}>
-            <Text style={styles.nameFirst}>{first}</Text>
-            {last ? <Text style={styles.nameLast}>{last}</Text> : null}
-            {hasText(document.personal.roleApplied) && (
-              <Text style={styles.roleApplied}>
-                {document.personal.roleApplied.trim()}
-              </Text>
-            )}
-          </View>
 
           {/* Photo Frame */}
           <View style={styles.photoContainer}>
@@ -481,6 +473,19 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
 
         {/* Right Main Column (65% width) */}
         <View style={styles.main}>
+          {/* Two-tone Name & Role */}
+          <View style={styles.nameContainer}>
+            <View style={styles.nameRow}>
+              <Text style={styles.nameFirst}>{first}</Text>
+              {last ? <Text style={styles.nameLast}>{last}</Text> : null}
+            </View>
+            {hasText(document.personal.roleApplied) && (
+              <Text style={styles.roleApplied}>
+                {document.personal.roleApplied.trim()}
+              </Text>
+            )}
+          </View>
+
           {/* Summary Section */}
           {hasText(document.summary) && (
             <View style={{ marginBottom: 8 }}>

@@ -22,17 +22,6 @@ function MainHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-function splitName(fullName: string): { first: string; last: string; isPlaceholder: boolean } {
-  const trimmed = fullName.trim();
-  if (!trimmed) return { first: "Your", last: "Name", isPlaceholder: true };
-  const parts = trimmed.split(/\s+/);
-  if (parts.length === 1) {
-    return { first: parts[0] ?? "", last: "", isPlaceholder: false };
-  }
-  const last = parts.pop() ?? "";
-  const first = parts.join(" ");
-  return { first, last, isPlaceholder: false };
-}
 
 /** Vector avatar silhouette matching the reference portrait illustration */
 function AvatarSilhouette() {
@@ -67,7 +56,6 @@ function AvatarSilhouette() {
 }
 
 export function EditorialPreview({ document }: { document: ResumeDocument }) {
-  const { first, last } = splitName(document.personal.fullName);
   const hasPhoto = hasText(document.personal.photoUrl);
 
   const experience = document.experience.filter(
@@ -104,22 +92,6 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
     <div className="flex gap-8 text-slate-800">
       {/* Left Sidebar (35% width) */}
       <aside className="flex w-[35%] shrink-0 flex-col gap-5">
-        {/* Name Header: Two-tone split */}
-        <div>
-          <h1 className="font-display text-[28px] font-black leading-[1.08] tracking-tight text-slate-950 sm:text-[32px]">
-            <span className="block">{first}</span>
-            {last && <span className="block text-[#3b6998]">{last}</span>}
-          </h1>
-          {hasText(document.personal.roleApplied) ? (
-            <p className="mt-1.5 text-[11.5px] font-bold uppercase tracking-wider text-slate-600">
-              {document.personal.roleApplied.trim()}
-            </p>
-          ) : (
-            <p className="mt-1.5 text-[11.5px] font-semibold uppercase tracking-wider text-slate-400">
-              Web Developer
-            </p>
-          )}
-        </div>
 
         {/* Profile Photo / Avatar Frame */}
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xs border border-slate-300 bg-slate-100 shadow-2xs">
@@ -326,6 +298,22 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
       {/* Right Main Column (65% width) */}
       <main className="flex flex-1 flex-col gap-5 min-w-0">
+        {/* Name & Target Role Header */}
+        <div>
+          <h1 className="font-display text-[28px] font-black leading-tight tracking-tight text-slate-950 sm:text-[34px]">
+            {document.personal.fullName.trim() || "Your Name"}
+          </h1>
+          {hasText(document.personal.roleApplied) ? (
+            <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-slate-600">
+              {document.personal.roleApplied.trim()}
+            </p>
+          ) : (
+            <p className="mt-1 text-[12px] font-semibold uppercase tracking-wider text-slate-400">
+              Web Developer
+            </p>
+          )}
+        </div>
+
         {/* Summary Section */}
         <section>
           <MainHeading>Summary</MainHeading>

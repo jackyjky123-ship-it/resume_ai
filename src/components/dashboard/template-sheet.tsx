@@ -122,8 +122,6 @@ function EditorialSheet() {
     <span className="flex w-full gap-2.5 p-3">
       {/* Left Sidebar */}
       <span className="flex w-[34%] shrink-0 flex-col gap-[5px]">
-        <Bar w="80%" tone="ink" thick />
-        <span className="block h-[3px] w-[60%] rounded-full bg-[#3b6998]" />
         <span className="my-0.5 block aspect-[3/4] w-full rounded bg-foreground/20" />
         <Bar w="55%" tone="ink" />
         <Bar w="90%" />
@@ -134,6 +132,8 @@ function EditorialSheet() {
 
       {/* Right Column */}
       <span className="flex flex-1 flex-col gap-[5px]">
+        <Bar w="80%" tone="ink" thick />
+        <span className="block h-[3px] w-[60%] rounded-full bg-[#3b6998]" />
         <Bar w="32%" tone="ink" />
         <Bar w="100%" />
         <Bar w="92%" />
