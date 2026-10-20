@@ -16,7 +16,6 @@ import {
 import {
   createResumeId,
   emptyResumeDocument,
-  parseResumeDocument,
   resumeDocumentSchema,
   type ResumeDocument,
 } from "@/lib/validations/resume";
@@ -406,22 +405,26 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
   const summary = typeof record.summary === "string" ? record.summary.trim().slice(0, 2000) : "";
 
   const rawExp = Array.isArray(record.experience) ? record.experience : [];
-  const experience = rawExp.map((e: any) => {
+  const experience = rawExp.map((item: unknown) => {
+    const e = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
     const rawBullets: unknown[] = Array.isArray(e.bullets) ? e.bullets : [];
     const bullets = rawBullets
-      .map((b: any) => {
+      .map((b: unknown) => {
         if (typeof b === "string" && b.trim()) {
           return { id: createResumeId(), text: b.trim().slice(0, 500) };
         }
-        if (b && typeof b === "object" && typeof b.text === "string" && b.text.trim()) {
-          return {
-            id: typeof b.id === "string" && b.id ? b.id : createResumeId(),
-            text: b.text.trim().slice(0, 500),
-          };
+        if (b && typeof b === "object") {
+          const obj = b as Record<string, unknown>;
+          if (typeof obj.text === "string" && obj.text.trim()) {
+            return {
+              id: typeof obj.id === "string" && obj.id ? obj.id : createResumeId(),
+              text: obj.text.trim().slice(0, 500),
+            };
+          }
         }
         return null;
       })
-      .filter((b: any): b is { id: string; text: string } => Boolean(b && b.text))
+      .filter((b): b is { id: string; text: string } => Boolean(b && b.text))
       .slice(0, 12);
 
     const isCurrent =
@@ -443,15 +446,18 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
 
   const rawSkills = Array.isArray(record.skills) ? record.skills : [];
   const skills = rawSkills
-    .map((s: any) => {
+    .map((s: unknown) => {
       if (typeof s === "string" && s.trim()) {
         return { id: createResumeId(), name: s.trim().slice(0, 60) };
       }
-      if (s && typeof s === "object" && typeof s.name === "string" && s.name.trim()) {
-        return {
-          id: typeof s.id === "string" && s.id ? s.id : createResumeId(),
-          name: s.name.trim().slice(0, 60),
-        };
+      if (s && typeof s === "object") {
+        const obj = s as Record<string, unknown>;
+        if (typeof obj.name === "string" && obj.name.trim()) {
+          return {
+            id: typeof obj.id === "string" && obj.id ? obj.id : createResumeId(),
+            name: obj.name.trim().slice(0, 60),
+          };
+        }
       }
       return null;
     })
@@ -459,34 +465,41 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
     .slice(0, 50);
 
   const rawEdu = Array.isArray(record.education) ? record.education : [];
-  const education = rawEdu.map((edu: any) => ({
-    id: typeof edu.id === "string" && edu.id ? edu.id : createResumeId(),
-    school: typeof edu.school === "string" ? edu.school.trim().slice(0, 160) : "",
-    degree: typeof edu.degree === "string" ? edu.degree.trim().slice(0, 120) : "",
-    field: typeof edu.field === "string" ? edu.field.trim().slice(0, 120) : "",
-    location: typeof edu.location === "string" ? edu.location.trim().slice(0, 120) : "",
-    startDate: typeof edu.startDate === "string" ? edu.startDate.trim().slice(0, 30) : "",
-    endDate: typeof edu.endDate === "string" ? edu.endDate.trim().slice(0, 30) : "",
-    details: typeof edu.details === "string" ? edu.details.trim().slice(0, 1000) : "",
-  })).slice(0, 10);
+  const education = rawEdu.map((item: unknown) => {
+    const edu = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
+    return {
+      id: typeof edu.id === "string" && edu.id ? edu.id : createResumeId(),
+      school: typeof edu.school === "string" ? edu.school.trim().slice(0, 160) : "",
+      degree: typeof edu.degree === "string" ? edu.degree.trim().slice(0, 120) : "",
+      field: typeof edu.field === "string" ? edu.field.trim().slice(0, 120) : "",
+      location: typeof edu.location === "string" ? edu.location.trim().slice(0, 120) : "",
+      startDate: typeof edu.startDate === "string" ? edu.startDate.trim().slice(0, 30) : "",
+      endDate: typeof edu.endDate === "string" ? edu.endDate.trim().slice(0, 30) : "",
+      details: typeof edu.details === "string" ? edu.details.trim().slice(0, 1000) : "",
+    };
+  }).slice(0, 10);
 
   const rawProjects = Array.isArray(record.projects) ? record.projects : [];
-  const projects = rawProjects.map((p: any) => {
+  const projects = rawProjects.map((item: unknown) => {
+    const p = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
     const rawBullets: unknown[] = Array.isArray(p.bullets) ? p.bullets : [];
     const bullets = rawBullets
-      .map((b: any) => {
+      .map((b: unknown) => {
         if (typeof b === "string" && b.trim()) {
           return { id: createResumeId(), text: b.trim().slice(0, 500) };
         }
-        if (b && typeof b === "object" && typeof b.text === "string" && b.text.trim()) {
-          return {
-            id: typeof b.id === "string" && b.id ? b.id : createResumeId(),
-            text: b.text.trim().slice(0, 500),
-          };
+        if (b && typeof b === "object") {
+          const obj = b as Record<string, unknown>;
+          if (typeof obj.text === "string" && obj.text.trim()) {
+            return {
+              id: typeof obj.id === "string" && obj.id ? obj.id : createResumeId(),
+              text: obj.text.trim().slice(0, 500),
+            };
+          }
         }
         return null;
       })
-      .filter((b: any): b is { id: string; text: string } => Boolean(b && b.text))
+      .filter((b): b is { id: string; text: string } => Boolean(b && b.text))
       .slice(0, 10);
 
     return {
@@ -499,20 +512,26 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
   }).slice(0, 20);
 
   const rawCerts = Array.isArray(record.certifications) ? record.certifications : [];
-  const certifications = rawCerts.map((c: any) => ({
-    id: typeof c.id === "string" && c.id ? c.id : createResumeId(),
-    name: typeof c.name === "string" ? c.name.trim().slice(0, 160) : "",
-    issuer: typeof c.issuer === "string" ? c.issuer.trim().slice(0, 160) : "",
-    issueDate: typeof c.issueDate === "string" ? c.issueDate.trim().slice(0, 30) : "",
-    credentialUrl: typeof c.credentialUrl === "string" ? c.credentialUrl.trim().slice(0, 200) : "",
-  })).slice(0, 20);
+  const certifications = rawCerts.map((item: unknown) => {
+    const c = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
+    return {
+      id: typeof c.id === "string" && c.id ? c.id : createResumeId(),
+      name: typeof c.name === "string" ? c.name.trim().slice(0, 160) : "",
+      issuer: typeof c.issuer === "string" ? c.issuer.trim().slice(0, 160) : "",
+      issueDate: typeof c.issueDate === "string" ? c.issueDate.trim().slice(0, 30) : "",
+      credentialUrl: typeof c.credentialUrl === "string" ? c.credentialUrl.trim().slice(0, 200) : "",
+    };
+  }).slice(0, 20);
 
   const rawLangs = Array.isArray(record.languages) ? record.languages : [];
-  const languages = rawLangs.map((l: any) => ({
-    id: typeof l.id === "string" && l.id ? l.id : createResumeId(),
-    name: typeof l.name === "string" ? l.name.trim().slice(0, 60) : "",
-    proficiency: typeof l.proficiency === "string" ? l.proficiency.trim().slice(0, 40) : "",
-  })).slice(0, 15);
+  const languages = rawLangs.map((item: unknown) => {
+    const l = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
+    return {
+      id: typeof l.id === "string" && l.id ? l.id : createResumeId(),
+      name: typeof l.name === "string" ? l.name.trim().slice(0, 60) : "",
+      proficiency: typeof l.proficiency === "string" ? l.proficiency.trim().slice(0, 40) : "",
+    };
+  }).slice(0, 15);
 
   const parsed = resumeDocumentSchema.safeParse({
     version: 1,
