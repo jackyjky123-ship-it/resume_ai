@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { TEMPLATE_NAME, formatRelativeTime, type DashboardResume } from "@/lib/resume-meta";
 import { SectionDashes } from "./section-dashes";
-import { TemplateSheet } from "./template-sheet";
+import { ResumeCardPreview } from "./resume-card-preview";
 import { Spinner } from "@/components/ui/spinner";
 
 type ResumeCardProps = {
@@ -118,14 +118,21 @@ export function ResumeCard({
 
   return (
     <article className="group relative flex flex-col rounded-2xl border border-hairline bg-white transition hover:border-foreground/25 hover:shadow-[0_26px_50px_-32px_rgba(38,38,38,0.4)]">
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => onOpen(resume)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOpen(resume);
+          }
+        }}
         aria-label={`Open “${resume.title}” in the editor`}
-        className="relative block overflow-hidden rounded-t-2xl border-b border-hairline bg-background p-4 pb-0 text-left"
+        className="relative block cursor-pointer overflow-hidden rounded-t-2xl border-b border-hairline bg-background p-4 pb-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <span className="block h-[150px] overflow-hidden rounded-t-xl bg-white ring-1 ring-black/5 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:-translate-y-1">
-          <TemplateSheet templateId={resume.templateId} />
+          <ResumeCardPreview resume={resume} />
         </span>
         <span
           aria-hidden
@@ -136,7 +143,7 @@ export function ResumeCard({
             <ArrowUpRight size={12} />
           </span>
         </span>
-      </button>
+      </div>
 
       <div className="flex flex-1 flex-col px-4 pb-4 pt-3.5">
         <SectionDashes filled={resume.filledSections} />

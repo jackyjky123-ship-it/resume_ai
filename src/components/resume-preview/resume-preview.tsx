@@ -9,9 +9,13 @@ import { ProfessionalPreview } from "./professional-preview";
 export function ResumePreview({
   document,
   templateId = "classic",
+  isThumbnail = false,
+  className,
 }: {
   document: ResumeDocument;
   templateId?: TemplateId;
+  isThumbnail?: boolean;
+  className?: string;
 }) {
   const contact = contactLine(document);
   const experience = document.experience.filter(
@@ -52,7 +56,12 @@ export function ResumePreview({
   return (
     <article
       aria-label="Live resume preview"
-      className="mx-auto flex min-h-[1123px] w-full max-w-[794px] flex-col bg-white px-10 py-12 text-[13px] leading-[1.55] shadow-[0_30px_70px_-40px_rgba(38,38,38,0.45)] ring-1 ring-black/5 sm:px-14"
+      className={
+        className ??
+        (isThumbnail
+          ? "mx-auto flex min-h-[1123px] w-full max-w-[794px] flex-col bg-white px-8 py-8 text-[13px] leading-[1.55]"
+          : "mx-auto flex min-h-[1123px] w-full max-w-[794px] flex-col bg-white px-10 py-12 text-[13px] leading-[1.55] shadow-[0_30px_70px_-40px_rgba(38,38,38,0.45)] ring-1 ring-black/5 sm:px-14")
+      }
     >
       {isBlank ? (
         <div className="m-auto max-w-xs text-center text-sm text-neutral-400">

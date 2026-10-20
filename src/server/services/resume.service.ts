@@ -53,6 +53,7 @@ function toDashboardResume(row: ResumeRow): DashboardResume {
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
     filledSections: filledSectionsOf(content),
+    content,
   };
 }
 

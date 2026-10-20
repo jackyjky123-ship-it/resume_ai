@@ -34,6 +34,8 @@ export const RESUME_SECTIONS = [
 
 export type SectionKey = (typeof RESUME_SECTIONS)[number];
 
+import type { ResumeDocument } from "@/lib/validations/resume";
+
 /** Serialized resume metadata used by dashboard cards. */
 export type DashboardResume = {
   id: string;
@@ -44,6 +46,8 @@ export type DashboardResume = {
   updatedAt: string;
   /** Which sections already hold real content — drives the story dashes. */
   filledSections: SectionKey[];
+  /** Validated document content for live card preview. */
+  content?: ResumeDocument;
 };
 
 export function formatRelativeTime(
