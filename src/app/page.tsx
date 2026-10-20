@@ -150,6 +150,44 @@ const CompactThumb = () => (
   </div>
 );
 
+const EditorialThumb = () => (
+  <div className="flex h-full w-[138px] gap-2 rounded-md bg-white p-2.5 ring-1 ring-black/5">
+    {/* Left column */}
+    <div className="flex w-[40px] shrink-0 flex-col gap-1">
+      <Bar w="85%" dark />
+      <div className="h-[2px] w-[65%] rounded-full bg-[#3b6998]" />
+      <div className="my-[2px] aspect-[4/3] w-full rounded-[2px] bg-neutral-300" />
+      <Bar w="60%" dark />
+      <Bar w="90%" />
+      <Bar w="75%" />
+      <Bar w="60%" dark />
+      <Bar w="80%" />
+    </div>
+    {/* Right column */}
+    <div className="flex flex-1 flex-col gap-1">
+      <Bar w="32%" dark />
+      <Bar w="100%" />
+      <Bar w="88%" />
+      {/* Dashed skill box */}
+      <div className="my-[1px] flex flex-col gap-[2px] rounded border border-dashed border-neutral-300 bg-neutral-50 p-1">
+        <div className="flex gap-1">
+          <Bar w="48%" />
+          <Bar w="48%" />
+        </div>
+        <div className="flex gap-1">
+          <Bar w="48%" />
+          <Bar w="48%" />
+        </div>
+      </div>
+      <Bar w="32%" dark />
+      <Bar w="95%" />
+      <Bar w="85%" />
+      <Bar w="32%" dark />
+      <Bar w="90%" />
+    </div>
+  </div>
+);
+
 const templates: {
   name: string;
   blurb: string;
@@ -173,6 +211,12 @@ const templates: {
     blurb: "Fits a growing career, stays readable.",
     note: "A4 · Best for long resumes",
     thumb: <CompactThumb />,
+  },
+  {
+    name: "Editorial",
+    blurb: "Clean two-column layout with photo and skill box.",
+    note: "A4 · Modern two-column",
+    thumb: <EditorialThumb />,
   },
 ];
 
@@ -347,7 +391,7 @@ export default function Home() {
             <div>
               <Kicker>Templates</Kicker>
               <h2 className="mt-4 font-display text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
-                Three templates, serious on paper.
+                Curated templates, serious on paper.
               </h2>
             </div>
             <p className="hidden max-w-xs pb-1 text-sm leading-relaxed text-graphite md:block">
@@ -355,7 +399,7 @@ export default function Home() {
               on a phone, print on real paper.
             </p>
           </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {templates.map((template) => (
               <div
                 key={template.name}

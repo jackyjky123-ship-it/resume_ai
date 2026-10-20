@@ -117,10 +117,54 @@ function ProfessionalSheet() {
   );
 }
 
+function EditorialSheet() {
+  return (
+    <span className="flex w-full gap-2.5 p-3">
+      {/* Left Sidebar */}
+      <span className="flex w-[34%] shrink-0 flex-col gap-[5px]">
+        <Bar w="80%" tone="ink" thick />
+        <span className="block h-[3px] w-[60%] rounded-full bg-[#3b6998]" />
+        <span className="my-0.5 block aspect-[4/3] w-full rounded bg-foreground/20" />
+        <Bar w="55%" tone="ink" />
+        <Bar w="90%" />
+        <Bar w="80%" />
+        <Bar w="50%" tone="ink" />
+        <Bar w="75%" />
+      </span>
+
+      {/* Right Column */}
+      <span className="flex flex-1 flex-col gap-[5px]">
+        <Bar w="32%" tone="ink" />
+        <Bar w="100%" />
+        <Bar w="92%" />
+
+        {/* Dashed Skill Highlights Box */}
+        <span className="my-0.5 flex flex-col gap-[3px] rounded border border-dashed border-foreground/35 p-1 bg-foreground/[0.02]">
+          <span className="flex gap-2">
+            <Bar w="48%" />
+            <Bar w="48%" />
+          </span>
+          <span className="flex gap-2">
+            <Bar w="48%" />
+            <Bar w="48%" />
+          </span>
+        </span>
+
+        <Bar w="32%" tone="ink" />
+        <Bar w="95%" />
+        <Bar w="85%" />
+        <Bar w="32%" tone="ink" />
+        <Bar w="90%" />
+      </span>
+    </span>
+  );
+}
+
 /** Crop of the top of a resume page — fills whatever container clips it. */
 export function TemplateSheet({ templateId }: { templateId: TemplateId }) {
   if (templateId === "modern") return <ModernSheet />;
   if (templateId === "compact") return <CompactSheet />;
   if (templateId === "professional") return <ProfessionalSheet />;
+  if (templateId === "editorial") return <EditorialSheet />;
   return <ClassicSheet />;
 }

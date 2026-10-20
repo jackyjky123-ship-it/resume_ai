@@ -5,6 +5,7 @@ import { ClassicPreview } from "./classic-preview";
 import { ModernPreview } from "./modern-preview";
 import { CompactPreview } from "./compact-preview";
 import { ProfessionalPreview } from "./professional-preview";
+import { EditorialPreview } from "./editorial-preview";
 
 export function ResumePreview({
   document,
@@ -77,9 +78,13 @@ export function ResumePreview({
           {templateId === "modern" && <ModernPreview document={document} />}
           {templateId === "compact" && <CompactPreview document={document} />}
           {templateId === "professional" && <ProfessionalPreview document={document} />}
-          {templateId !== "modern" && templateId !== "compact" && templateId !== "professional" && (
-            <ClassicPreview document={document} />
-          )}
+          {templateId === "editorial" && <EditorialPreview document={document} />}
+          {templateId !== "modern" &&
+            templateId !== "compact" &&
+            templateId !== "professional" &&
+            templateId !== "editorial" && (
+              <ClassicPreview document={document} />
+            )}
         </>
       )}
     </article>

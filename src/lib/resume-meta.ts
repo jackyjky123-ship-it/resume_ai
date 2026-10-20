@@ -3,7 +3,7 @@
  * Keep this module dependency-free so client bundles don't pull in Zod.
  */
 
-export const TEMPLATE_IDS = ["classic", "modern", "compact", "professional"] as const;
+export const TEMPLATE_IDS = ["classic", "modern", "compact", "professional", "editorial"] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export const TEMPLATES: { id: TemplateId; name: string; blurb: string }[] = [
@@ -15,6 +15,11 @@ export const TEMPLATES: { id: TemplateId; name: string; blurb: string }[] = [
     name: "Professional",
     blurb: "Executive layout with photo, subtle tones, and balanced structure.",
   },
+  {
+    id: "editorial",
+    name: "Editorial",
+    blurb: "Clean two-column layout with split header, portrait photo, and skill highlights box.",
+  },
 ];
 
 export const TEMPLATE_NAME: Record<TemplateId, string> = {
@@ -22,6 +27,7 @@ export const TEMPLATE_NAME: Record<TemplateId, string> = {
   modern: "Modern",
   compact: "Compact",
   professional: "Professional",
+  editorial: "Editorial",
 };
 
 export const RESUME_SECTIONS = [
