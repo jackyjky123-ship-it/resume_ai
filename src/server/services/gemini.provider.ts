@@ -407,7 +407,7 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
 
   const rawExp = Array.isArray(record.experience) ? record.experience : [];
   const experience = rawExp.map((e: any) => {
-    const rawBullets = Array.isArray(e.bullets) ? e.bullets : [];
+    const rawBullets: unknown[] = Array.isArray(e.bullets) ? e.bullets : [];
     const bullets = rawBullets
       .map((b: any) => {
         if (typeof b === "string" && b.trim()) {
@@ -421,7 +421,7 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
         }
         return null;
       })
-      .filter((b): b is { id: string; text: string } => Boolean(b && b.text))
+      .filter((b: any): b is { id: string; text: string } => Boolean(b && b.text))
       .slice(0, 12);
 
     const isCurrent =
@@ -472,7 +472,7 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
 
   const rawProjects = Array.isArray(record.projects) ? record.projects : [];
   const projects = rawProjects.map((p: any) => {
-    const rawBullets = Array.isArray(p.bullets) ? p.bullets : [];
+    const rawBullets: unknown[] = Array.isArray(p.bullets) ? p.bullets : [];
     const bullets = rawBullets
       .map((b: any) => {
         if (typeof b === "string" && b.trim()) {
@@ -486,7 +486,7 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
         }
         return null;
       })
-      .filter((b): b is { id: string; text: string } => Boolean(b && b.text))
+      .filter((b: any): b is { id: string; text: string } => Boolean(b && b.text))
       .slice(0, 10);
 
     return {

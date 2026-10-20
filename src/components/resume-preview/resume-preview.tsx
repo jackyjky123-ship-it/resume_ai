@@ -82,8 +82,7 @@ export function ResumePreview({
           {templateId === "professional" && <ProfessionalPreview document={document} />}
           {templateId !== "modern" &&
             templateId !== "compact" &&
-            templateId !== "professional" &&
-            templateId !== "editorial" && (
+            templateId !== "professional" && (
               <ClassicPreview document={document} />
             )}
         </>
