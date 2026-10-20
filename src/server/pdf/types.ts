@@ -10,6 +10,23 @@ export function dateRange(start: string, end: string, current = false): string {
   return [start.trim(), endLabel].filter(Boolean).join(" – ");
 }
 
+export function formatTelegram(raw: string): { label: string; url: string } {
+  const trimmed = raw.trim();
+  const handle = trimmed
+    .replace(/^https?:\/\/(www\.)?(t\.me|telegram\.me)\//i, "")
+    .replace(/^@/, "")
+    .replace(/\/+$/, "");
+
+  if (!handle) {
+    return { label: trimmed, url: trimmed };
+  }
+
+  return {
+    label: `t.me/${handle}`,
+    url: `https://t.me/${handle}`,
+  };
+}
+
 export function contactItems(document: ResumeDocument): { label: string; url?: string }[] {
   const { personal } = document;
   const items: { label: string; url?: string }[] = [];
@@ -28,6 +45,9 @@ export function contactItems(document: ResumeDocument): { label: string; url?: s
   if (hasText(personal.github)) {
     const raw = personal.github.trim();
     items.push({ label: raw.replace(/^https?:\/\/(www\.)?github\.com\//i, "github.com/"), url: raw.startsWith("http") ? raw : `https://${raw}` });
+  }
+  if (hasText(personal.telegram)) {
+    items.push(formatTelegram(personal.telegram));
   }
 
   return items;

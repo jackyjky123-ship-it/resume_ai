@@ -158,11 +158,14 @@ function parseHeader(lines: string[], fullText: string) {
   const linkedin =
     urls.find((url) => /linkedin\.com/i.test(url)) ?? "";
   const github = urls.find((url) => /github\.com/i.test(url)) ?? "";
+  const telegram =
+    urls.find((url) => /(?:t\.me|telegram\.(?:me|org))/i.test(url)) ?? "";
   const website =
     urls.find(
       (url) =>
         !/linkedin\.com/i.test(url) &&
         !/github\.com/i.test(url) &&
+        !/(?:t\.me|telegram\.(?:me|org))/i.test(url) &&
         !EMAIL_RE.test(url)
     ) ?? "";
 
@@ -194,6 +197,7 @@ function parseHeader(lines: string[], fullText: string) {
     website: clip(website, 200),
     linkedin: clip(linkedin, 200),
     github: clip(github, 200),
+    telegram: clip(telegram, 200),
     photoUrl: "",
   };
 }

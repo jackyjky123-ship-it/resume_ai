@@ -306,7 +306,8 @@ Return a JSON object matching this structure:
     "location": string,
     "website": string,
     "linkedin": string,
-    "github": string
+    "github": string,
+    "telegram": string
   },
   "summary": string,
   "experience": [
@@ -399,6 +400,7 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
     website: typeof p.website === "string" ? p.website.trim().slice(0, 200) : "",
     linkedin: typeof p.linkedin === "string" ? p.linkedin.trim().slice(0, 200) : "",
     github: typeof p.github === "string" ? p.github.trim().slice(0, 200) : "",
+    telegram: typeof p.telegram === "string" ? p.telegram.trim().slice(0, 200) : "",
     photoUrl: typeof p.photoUrl === "string" ? p.photoUrl.trim() : "",
   };
 

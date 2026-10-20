@@ -75,7 +75,18 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
               <div className="flex flex-col gap-1 text-[11px] text-neutral-600">
                 {contacts.map((c, idx) => (
                   <span key={idx} className="break-all">
-                    {c.label}
+                    {c.url ? (
+                      <a
+                        href={c.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:text-neutral-950 hover:underline"
+                      >
+                        {c.label}
+                      </a>
+                    ) : (
+                      c.label
+                    )}
                   </span>
                 ))}
               </div>

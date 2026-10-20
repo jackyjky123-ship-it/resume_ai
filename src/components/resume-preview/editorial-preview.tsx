@@ -1,6 +1,6 @@
 import React from "react";
 import type { ResumeDocument } from "@/lib/validations/resume";
-import { dateRange, hasText } from "./preview-utils";
+import { dateRange, formatTelegram, hasText } from "./preview-utils";
 
 function SidebarHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -86,7 +86,8 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
     hasText(document.personal.email) ||
     hasText(document.personal.linkedin) ||
     hasText(document.personal.website) ||
-    hasText(document.personal.github);
+    hasText(document.personal.github) ||
+    hasText(document.personal.telegram);
 
   return (
     <div className="flex gap-8 text-slate-800">
@@ -203,6 +204,20 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                   </a>
                 </div>
               )}
+
+              {hasText(document.personal.telegram) && (
+                <div>
+                  <span className="block font-bold text-slate-950">Telegram:</span>
+                  <a
+                    href={formatTelegram(document.personal.telegram).url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="break-all text-slate-700 hover:text-[#3b6998] leading-snug"
+                  >
+                    {formatTelegram(document.personal.telegram).label}
+                  </a>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2.5 text-[11.5px] text-slate-600">
@@ -223,6 +238,10 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
               <div>
                 <span className="block font-bold text-slate-950">LinkedIn:</span>
                 <span className="text-slate-500 leading-snug">linkedin.com/christopher.morgan</span>
+              </div>
+              <div>
+                <span className="block font-bold text-slate-950">Telegram:</span>
+                <span className="text-slate-500 leading-snug">t.me/christopher.morgan</span>
               </div>
             </div>
           )}

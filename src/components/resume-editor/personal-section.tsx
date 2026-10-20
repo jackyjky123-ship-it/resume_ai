@@ -215,6 +215,12 @@ export function PersonalSection({ action }: { action?: React.ReactNode }) {
             inputMode="url"
             maxLength={200}
           />
+          <TextField
+            name="content.personal.telegram"
+            label="Telegram"
+            placeholder="@yourusername or t.me/yourusername"
+            maxLength={120}
+          />
         </div>
       </FieldGroup>
     </SectionShell>

@@ -19,6 +19,7 @@ export function filledSectionsOf(content: ResumeDocument): SectionKey[] {
     hasText(personal.website) ||
     hasText(personal.linkedin) ||
     hasText(personal.github) ||
+    hasText(personal.telegram) ||
     hasText(personal.photoUrl)
   ) {
     filled.add("Contact");

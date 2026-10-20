@@ -2,6 +2,7 @@ import React from "react";
 import { Page, Text, View, StyleSheet, Link, Image } from "@react-pdf/renderer";
 import {
   dateRange,
+  formatTelegram,
   hasText,
   type TemplatePdfProps,
 } from "../types";
@@ -349,7 +350,8 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
             hasText(document.personal.email) ||
             hasText(document.personal.linkedin) ||
             hasText(document.personal.website) ||
-            hasText(document.personal.github)) && (
+            hasText(document.personal.github) ||
+            hasText(document.personal.telegram)) && (
             <View style={{ marginBottom: 8 }}>
               <Text style={styles.sidebarHeading}>Contact</Text>
 
@@ -432,6 +434,18 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
                     {document.personal.github
                       .trim()
                       .replace(/^https?:\/\/(www\.)?github\.com\//i, "github.com/")}
+                  </Link>
+                </View>
+              )}
+
+              {hasText(document.personal.telegram) && (
+                <View style={styles.contactBlock}>
+                  <Text style={styles.contactLabel}>Telegram:</Text>
+                  <Link
+                    src={formatTelegram(document.personal.telegram).url}
+                    style={styles.contactValue}
+                  >
+                    {formatTelegram(document.personal.telegram).label}
                   </Link>
                 </View>
               )}

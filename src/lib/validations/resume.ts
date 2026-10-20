@@ -28,6 +28,7 @@ export const personalInfoSchema = z.object({
   website: mediumText,
   linkedin: mediumText,
   github: mediumText,
+  telegram: mediumText.default(""),
   photoUrl: z.string().max(2_000_000).default(""),
 });
 
@@ -164,6 +165,7 @@ export function emptyResumeDocument(): ResumeDocument {
       website: "",
       linkedin: "",
       github: "",
+      telegram: "",
       photoUrl: "",
     },
     summary: "",

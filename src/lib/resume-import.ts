@@ -61,6 +61,7 @@ function mergePersonal(
     website: current.website.trim() ? current.website : imported.website,
     linkedin: current.linkedin.trim() ? current.linkedin : imported.linkedin,
     github: current.github.trim() ? current.github : imported.github,
+    telegram: current.telegram.trim() ? current.telegram : imported.telegram,
     photoUrl: current.photoUrl.trim() ? current.photoUrl : imported.photoUrl,
   };
 }
