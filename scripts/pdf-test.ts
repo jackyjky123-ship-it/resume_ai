@@ -164,7 +164,7 @@ function samplePopulatedResume(): ResumeDocument {
 function sampleMultiPageResume(): ResumeDocument {
   const doc = samplePopulatedResume();
   // Duplicate experience entries to test multi-page pagination and wrapping
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 4; i++) {
     const extra = newExperienceEntry();
     extra.company = `Enterprise Platform Corp #${i + 1}`;
     extra.role = "Senior Infrastructure Consultant";

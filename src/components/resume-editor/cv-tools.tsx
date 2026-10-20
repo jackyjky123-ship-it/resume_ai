@@ -18,6 +18,7 @@ import { GenerateCvDialog } from "./generate-cv-dialog";
 
 export function CvTools({ aiMode }: { aiMode: AiMode }) {
   const form = useFormContext<ResumeEditorFormValues>();
+  const templateId = form.watch("templateId") ?? "classic";
   const [importOpen, setImportOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
 
@@ -75,6 +76,7 @@ export function CvTools({ aiMode }: { aiMode: AiMode }) {
           open
           onOpenChange={setImportOpen}
           aiMode={aiMode}
+          templateId={templateId}
           onApply={applyImport}
         />
       )}

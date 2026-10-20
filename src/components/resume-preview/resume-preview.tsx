@@ -64,7 +64,9 @@ export function ResumePreview({
           : "mx-auto flex min-h-[1123px] w-full max-w-[794px] flex-col bg-white px-10 py-12 text-[13px] leading-[1.55] shadow-[0_30px_70px_-40px_rgba(38,38,38,0.45)] ring-1 ring-black/5 sm:px-14")
       }
     >
-      {isBlank ? (
+      {templateId === "editorial" ? (
+        <EditorialPreview document={document} />
+      ) : isBlank ? (
         <div className="m-auto max-w-xs text-center text-sm text-neutral-400">
           <p className="font-semibold text-neutral-500">
             Your preview starts here.
@@ -78,7 +80,6 @@ export function ResumePreview({
           {templateId === "modern" && <ModernPreview document={document} />}
           {templateId === "compact" && <CompactPreview document={document} />}
           {templateId === "professional" && <ProfessionalPreview document={document} />}
-          {templateId === "editorial" && <EditorialPreview document={document} />}
           {templateId !== "modern" &&
             templateId !== "compact" &&
             templateId !== "professional" &&

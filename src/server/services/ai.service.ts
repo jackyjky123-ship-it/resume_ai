@@ -156,6 +156,20 @@ export async function importCvText(
     try {
       const { parseResumeWithGemini } = await import("./gemini.provider");
       document = await parseResumeWithGemini(processText);
+      const hasContent =
+        document.experience.length > 0 ||
+        document.education.length > 0 ||
+        document.skills.length > 0 ||
+        document.summary.length > 0 ||
+        document.personal.fullName.length > 0;
+      if (!hasContent) {
+        console.warn(
+          "[ai-import] Gemini returned empty structure, falling back to local heuristics"
+        );
+        const local = parseResumeTextLocally(processText);
+        document = resumeDocumentSchema.parse(local.document);
+        warnings = [...local.warnings];
+      }
     } catch (error) {
       console.warn(
         "[ai-import] Gemini parsing failed, falling back to local heuristics:",

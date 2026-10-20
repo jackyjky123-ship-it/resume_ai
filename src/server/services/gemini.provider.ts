@@ -15,7 +15,9 @@ import {
 } from "@/lib/validations/ai";
 import {
   createResumeId,
+  emptyResumeDocument,
   parseResumeDocument,
+  resumeDocumentSchema,
   type ResumeDocument,
 } from "@/lib/validations/resume";
 
@@ -368,43 +370,161 @@ Return a JSON object matching this structure:
   )) as GenerateContentResponse;
 
   const rawJson = cleanJsonResponse(response.text);
-  const parsed = JSON.parse(rawJson);
-  const doc = parseResumeDocument(parsed);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch {
+    return emptyResumeDocument();
+  }
 
-  // Ensure all repeatable items have valid, unique IDs
-  return {
-    ...doc,
-    experience: doc.experience.map((e) => ({
-      ...e,
-      id: e.id || createResumeId(),
-      bullets: e.bullets.map((b) => ({
-        ...b,
-        id: b.id || createResumeId(),
-      })),
-    })),
-    education: doc.education.map((e) => ({
-      ...e,
-      id: e.id || createResumeId(),
-    })),
-    skills: doc.skills.map((s) => ({
-      ...s,
-      id: s.id || createResumeId(),
-    })),
-    projects: doc.projects.map((p) => ({
-      ...p,
-      id: p.id || createResumeId(),
-      bullets: p.bullets.map((b) => ({
-        ...b,
-        id: b.id || createResumeId(),
-      })),
-    })),
-    certifications: doc.certifications.map((c) => ({
-      ...c,
-      id: c.id || createResumeId(),
-    })),
-    languages: doc.languages.map((l) => ({
-      ...l,
-      id: l.id || createResumeId(),
-    })),
+  return normalizeParsedResume(parsed);
+}
+
+function normalizeParsedResume(raw: unknown): ResumeDocument {
+  if (!raw || typeof raw !== "object") return emptyResumeDocument();
+
+  const record = raw as Record<string, unknown>;
+  const p = (record.personal && typeof record.personal === "object"
+    ? record.personal
+    : {}) as Record<string, unknown>;
+
+  const rawEmail = typeof p.email === "string" ? p.email.trim() : "";
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail) ? rawEmail : "";
+
+  const personal = {
+    fullName: typeof p.fullName === "string" ? p.fullName.trim().slice(0, 100) : "",
+    roleApplied: typeof p.roleApplied === "string" ? p.roleApplied.trim().slice(0, 120) : "",
+    email: validEmail,
+    phone: typeof p.phone === "string" ? p.phone.trim().slice(0, 40) : "",
+    location: typeof p.location === "string" ? p.location.trim().slice(0, 120) : "",
+    website: typeof p.website === "string" ? p.website.trim().slice(0, 200) : "",
+    linkedin: typeof p.linkedin === "string" ? p.linkedin.trim().slice(0, 200) : "",
+    github: typeof p.github === "string" ? p.github.trim().slice(0, 200) : "",
+    photoUrl: typeof p.photoUrl === "string" ? p.photoUrl.trim() : "",
   };
+
+  const summary = typeof record.summary === "string" ? record.summary.trim().slice(0, 2000) : "";
+
+  const rawExp = Array.isArray(record.experience) ? record.experience : [];
+  const experience = rawExp.map((e: any) => {
+    const rawBullets = Array.isArray(e.bullets) ? e.bullets : [];
+    const bullets = rawBullets
+      .map((b: any) => {
+        if (typeof b === "string" && b.trim()) {
+          return { id: createResumeId(), text: b.trim().slice(0, 500) };
+        }
+        if (b && typeof b === "object" && typeof b.text === "string" && b.text.trim()) {
+          return {
+            id: typeof b.id === "string" && b.id ? b.id : createResumeId(),
+            text: b.text.trim().slice(0, 500),
+          };
+        }
+        return null;
+      })
+      .filter((b): b is { id: string; text: string } => Boolean(b && b.text))
+      .slice(0, 12);
+
+    const isCurrent =
+      e.current === true ||
+      e.current === "true" ||
+      (typeof e.endDate === "string" && /present|current|now/i.test(e.endDate));
+
+    return {
+      id: typeof e.id === "string" && e.id ? e.id : createResumeId(),
+      company: typeof e.company === "string" ? e.company.trim().slice(0, 120) : "",
+      role: typeof e.role === "string" ? e.role.trim().slice(0, 120) : "",
+      location: typeof e.location === "string" ? e.location.trim().slice(0, 120) : "",
+      startDate: typeof e.startDate === "string" ? e.startDate.trim().slice(0, 30) : "",
+      endDate: typeof e.endDate === "string" ? e.endDate.trim().slice(0, 30) : "",
+      current: isCurrent,
+      bullets,
+    };
+  }).slice(0, 20);
+
+  const rawSkills = Array.isArray(record.skills) ? record.skills : [];
+  const skills = rawSkills
+    .map((s: any) => {
+      if (typeof s === "string" && s.trim()) {
+        return { id: createResumeId(), name: s.trim().slice(0, 60) };
+      }
+      if (s && typeof s === "object" && typeof s.name === "string" && s.name.trim()) {
+        return {
+          id: typeof s.id === "string" && s.id ? s.id : createResumeId(),
+          name: s.name.trim().slice(0, 60),
+        };
+      }
+      return null;
+    })
+    .filter((s): s is { id: string; name: string } => Boolean(s && s.name))
+    .slice(0, 50);
+
+  const rawEdu = Array.isArray(record.education) ? record.education : [];
+  const education = rawEdu.map((edu: any) => ({
+    id: typeof edu.id === "string" && edu.id ? edu.id : createResumeId(),
+    school: typeof edu.school === "string" ? edu.school.trim().slice(0, 160) : "",
+    degree: typeof edu.degree === "string" ? edu.degree.trim().slice(0, 120) : "",
+    field: typeof edu.field === "string" ? edu.field.trim().slice(0, 120) : "",
+    location: typeof edu.location === "string" ? edu.location.trim().slice(0, 120) : "",
+    startDate: typeof edu.startDate === "string" ? edu.startDate.trim().slice(0, 30) : "",
+    endDate: typeof edu.endDate === "string" ? edu.endDate.trim().slice(0, 30) : "",
+    details: typeof edu.details === "string" ? edu.details.trim().slice(0, 1000) : "",
+  })).slice(0, 10);
+
+  const rawProjects = Array.isArray(record.projects) ? record.projects : [];
+  const projects = rawProjects.map((p: any) => {
+    const rawBullets = Array.isArray(p.bullets) ? p.bullets : [];
+    const bullets = rawBullets
+      .map((b: any) => {
+        if (typeof b === "string" && b.trim()) {
+          return { id: createResumeId(), text: b.trim().slice(0, 500) };
+        }
+        if (b && typeof b === "object" && typeof b.text === "string" && b.text.trim()) {
+          return {
+            id: typeof b.id === "string" && b.id ? b.id : createResumeId(),
+            text: b.text.trim().slice(0, 500),
+          };
+        }
+        return null;
+      })
+      .filter((b): b is { id: string; text: string } => Boolean(b && b.text))
+      .slice(0, 10);
+
+    return {
+      id: typeof p.id === "string" && p.id ? p.id : createResumeId(),
+      name: typeof p.name === "string" ? p.name.trim().slice(0, 120) : "",
+      url: typeof p.url === "string" ? p.url.trim().slice(0, 200) : "",
+      description: typeof p.description === "string" ? p.description.trim().slice(0, 1000) : "",
+      bullets,
+    };
+  }).slice(0, 20);
+
+  const rawCerts = Array.isArray(record.certifications) ? record.certifications : [];
+  const certifications = rawCerts.map((c: any) => ({
+    id: typeof c.id === "string" && c.id ? c.id : createResumeId(),
+    name: typeof c.name === "string" ? c.name.trim().slice(0, 160) : "",
+    issuer: typeof c.issuer === "string" ? c.issuer.trim().slice(0, 160) : "",
+    issueDate: typeof c.issueDate === "string" ? c.issueDate.trim().slice(0, 30) : "",
+    credentialUrl: typeof c.credentialUrl === "string" ? c.credentialUrl.trim().slice(0, 200) : "",
+  })).slice(0, 20);
+
+  const rawLangs = Array.isArray(record.languages) ? record.languages : [];
+  const languages = rawLangs.map((l: any) => ({
+    id: typeof l.id === "string" && l.id ? l.id : createResumeId(),
+    name: typeof l.name === "string" ? l.name.trim().slice(0, 60) : "",
+    proficiency: typeof l.proficiency === "string" ? l.proficiency.trim().slice(0, 40) : "",
+  })).slice(0, 15);
+
+  const parsed = resumeDocumentSchema.safeParse({
+    version: 1,
+    personal,
+    summary,
+    experience,
+    education,
+    skills,
+    projects,
+    certifications,
+    languages,
+  });
+
+  return parsed.success ? parsed.data : emptyResumeDocument();
 }

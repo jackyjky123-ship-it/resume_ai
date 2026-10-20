@@ -33,11 +33,13 @@ import {
 } from "@/lib/resume-import";
 import type { AiMode, CvImportResult } from "@/lib/validations/ai";
 import { resumeDocumentSchema } from "@/lib/validations/resume";
+import type { TemplateId } from "@/lib/resume-meta";
 
 type ImportCvDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   aiMode: AiMode;
+  templateId?: TemplateId;
   onApply: (document: CvImportResult["document"], mode: ImportApplyMode) => void;
 };
 
@@ -62,6 +64,7 @@ export function ImportCvDialog({
   open,
   onOpenChange,
   aiMode,
+  templateId,
   onApply,
 }: ImportCvDialogProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -298,7 +301,7 @@ export function ImportCvDialog({
             )}
 
             <div className="max-h-[48vh] overflow-auto rounded-xl border border-border bg-neutral-100 p-3 sm:p-5">
-              <ResumePreview document={result.document} />
+              <ResumePreview document={result.document} templateId={templateId} />
             </div>
 
             <RadioGroup
