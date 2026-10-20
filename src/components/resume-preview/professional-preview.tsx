@@ -64,7 +64,7 @@ export function ProfessionalPreview({ document }: { document: ResumeDocument }) 
             <img
               src={document.personal.photoUrl}
               alt={document.personal.fullName || "Profile"}
-              className="size-full object-cover"
+              className="size-full object-cover object-top"
             />
           ) : (
             <div className="flex size-full items-center justify-center font-display text-xl font-bold tracking-wider text-slate-400">

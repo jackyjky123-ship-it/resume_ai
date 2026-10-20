@@ -61,18 +61,18 @@ const styles = StyleSheet.create({
   // Profile Photo / Avatar Frame
   photoContainer: {
     width: "100%",
-    height: 76,
+    height: 200,
     borderRadius: 3,
     overflow: "hidden",
     marginBottom: 10,
-    backgroundColor: "#d1d5db",
+    backgroundColor: "#f1f5f9",
     borderWidth: 0.5,
     borderColor: "#cbd5e1",
   },
   photo: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
   },
   initialsBox: {
     width: "100%",

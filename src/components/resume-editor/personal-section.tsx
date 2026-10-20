@@ -75,7 +75,7 @@ function ProfilePhotoUploader() {
             <img
               src={photoUrl}
               alt="Profile photo preview"
-              className="size-full object-cover"
+              className="size-full object-cover object-top"
             />
           ) : (
             <User className="size-8 text-muted-foreground/60" aria-hidden />

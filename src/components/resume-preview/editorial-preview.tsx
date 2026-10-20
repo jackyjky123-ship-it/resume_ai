@@ -38,28 +38,28 @@ function splitName(fullName: string): { first: string; last: string; isPlacehold
 function AvatarSilhouette() {
   return (
     <svg
-      viewBox="0 0 160 140"
+      viewBox="0 0 160 213"
       className="size-full"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <rect width="160" height="140" fill="#d1d5db" />
+      <rect width="160" height="213" fill="#d1d5db" />
       {/* Head and neck base */}
       <path
-        d="M80 32C69 32 61 41 61 53C61 65 69 74 80 74C91 74 99 65 99 53C99 41 91 32 80 32Z"
+        d="M80 48C69 48 61 57 61 69C61 81 69 90 80 90C91 90 99 81 99 69C99 57 91 48 80 48Z"
         fill="#f8fafc"
       />
       {/* Neck */}
-      <path d="M74 72H86V88H74V72Z" fill="#f8fafc" />
+      <path d="M74 88H86V108H74V88Z" fill="#f8fafc" />
       {/* Hair graphic with subtle side part and texture */}
       <path
-        d="M80 25C65 25 56 36 56 50C56 54 57 58 59 62C61 58 63 52 66 49C70 45 77 44 83 46C89 48 94 44 97 41C99 44 100 48 100 52C102 48 103 44 103 40C103 31 93 25 80 25Z"
+        d="M80 41C65 41 56 52 56 66C56 70 57 74 59 78C61 74 63 68 66 65C70 61 77 60 83 62C89 64 94 60 97 57C99 60 100 64 100 68C102 64 103 60 103 56C103 47 93 41 80 41Z"
         fill="#475569"
       />
       {/* Shoulders / bust */}
       <path
-        d="M38 140C38 108 55 94 80 94C105 94 122 108 122 140H38Z"
+        d="M28 213C28 142 48 114 80 114C112 114 132 142 132 213H28Z"
         fill="#64748b"
       />
     </svg>
@@ -122,13 +122,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
         </div>
 
         {/* Profile Photo / Avatar Frame */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xs border border-slate-300 bg-slate-200 shadow-2xs">
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xs border border-slate-300 bg-slate-100 shadow-2xs">
           {hasPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={document.personal.photoUrl}
               alt={document.personal.fullName || "Profile"}
-              className="size-full object-cover"
+              className="size-full object-contain"
             />
           ) : (
             <AvatarSilhouette />

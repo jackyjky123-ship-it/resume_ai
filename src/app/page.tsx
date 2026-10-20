@@ -156,7 +156,7 @@ const EditorialThumb = () => (
     <div className="flex w-[40px] shrink-0 flex-col gap-1">
       <Bar w="85%" dark />
       <div className="h-[2px] w-[65%] rounded-full bg-[#3b6998]" />
-      <div className="my-[2px] aspect-[4/3] w-full rounded-[2px] bg-neutral-300" />
+      <div className="my-[2px] aspect-[3/4] w-full rounded-[2px] bg-neutral-300" />
       <Bar w="60%" dark />
       <Bar w="90%" />
       <Bar w="75%" />

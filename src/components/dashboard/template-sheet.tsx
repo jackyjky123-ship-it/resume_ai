@@ -124,7 +124,7 @@ function EditorialSheet() {
       <span className="flex w-[34%] shrink-0 flex-col gap-[5px]">
         <Bar w="80%" tone="ink" thick />
         <span className="block h-[3px] w-[60%] rounded-full bg-[#3b6998]" />
-        <span className="my-0.5 block aspect-[4/3] w-full rounded bg-foreground/20" />
+        <span className="my-0.5 block aspect-[3/4] w-full rounded bg-foreground/20" />
         <Bar w="55%" tone="ink" />
         <Bar w="90%" />
         <Bar w="80%" />

@@ -68,7 +68,7 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
             <img
               src={document.personal.photoUrl}
               alt={document.personal.fullName || "Profile"}
-              className="size-full object-cover"
+              className="size-full object-cover object-top"
             />
           </div>
         )}
