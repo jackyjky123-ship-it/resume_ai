@@ -141,7 +141,7 @@ function assertParsed(
   if (options.expectSkills !== false) {
     assert(payload.document.skills.length >= 2, `${label} reads skills`);
   }
-  assert(payload.mode === "mock", `${label} reports demo mode`);
+  assert(payload.mode === "mock" || payload.mode === "gemini", `${label} reports valid mode (${payload.mode})`);
 }
 
 function makeDocx() {

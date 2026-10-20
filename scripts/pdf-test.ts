@@ -81,6 +81,7 @@ function samplePopulatedResume(): ResumeDocument {
     website: "https://rivera-systems.dev",
     linkedin: "https://linkedin.com/in/alex-rivera-cloud",
     github: "https://github.com/alexrivera",
+    telegram: "",
     photoUrl: "",
   };
   doc.summary =
@@ -262,9 +263,10 @@ async function testExportRoute(serverAvailable: boolean) {
   assert(ownerSignup.ok, `Owner signs up (${ownerSignup.status})`);
 
   // Touch dashboard to lazily create the App User record
-  const dashRes = await fetch(`${BASE}/dashboard`, { headers: { Cookie: ownerJar.header } });
+  const dashRes = await fetch(`${BASE}/dashboard`, { headers: { cookie: ownerJar.header } });
   ownerJar.add(dashRes);
-  assert(dashRes.ok, "Owner hits dashboard to initialize app user");
+  const dashHtml = await dashRes.text();
+  assert(dashRes.ok && dashHtml.includes(ownerEmail), "Owner hits dashboard to initialize app user");
 
   // Find owner's app user
   const ownerUser = await prisma.user.findFirst({ where: { email: ownerEmail } });
@@ -308,9 +310,10 @@ async function testExportRoute(serverAvailable: boolean) {
   otherJar.add(otherSignup);
   assert(otherSignup.ok, `Other user signs up (${otherSignup.status})`);
 
-  const otherDash = await fetch(`${BASE}/dashboard`, { headers: { Cookie: otherJar.header } });
+  const otherDash = await fetch(`${BASE}/dashboard`, { headers: { cookie: otherJar.header } });
   otherJar.add(otherDash);
-  assert(otherDash.ok, "Other user hits dashboard to initialize app user");
+  const otherHtml = await otherDash.text();
+  assert(otherDash.ok && otherHtml.includes(otherEmail), "Other user hits dashboard to initialize app user");
 
   // Other user attempts to export Owner's resume -> MUST return 404 (no leak!)
   const crossUserRes = await fetch(`${BASE}/api/resumes/${resume.id}/pdf`, {
@@ -329,7 +332,7 @@ async function main() {
 
     let serverAvailable = false;
     try {
-      const probe = await fetch(`${BASE}/api/auth/ok`, { signal: AbortSignal.timeout(2000) });
+      const probe = await fetch(`${BASE}/`, { signal: AbortSignal.timeout(10000) });
       serverAvailable = probe.ok || probe.status === 404 || probe.status === 401;
     } catch {
       serverAvailable = false;

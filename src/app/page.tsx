@@ -150,6 +150,30 @@ const CompactThumb = () => (
   </div>
 );
 
+const ProfessionalThumb = () => (
+  <div className="flex h-full w-[138px] flex-col overflow-hidden rounded-md bg-white ring-1 ring-black/5">
+    {/* Dark executive header */}
+    <div className="flex flex-col gap-1 bg-[#1e293b] p-2 text-white">
+      <div className="h-[5px] w-[65%] rounded-full bg-white" />
+      <div className="h-[3px] w-[45%] rounded-full bg-white/70" />
+    </div>
+    <div className="flex flex-col gap-[5px] p-2">
+      <div className="flex gap-1">
+        <Bar w="28%" />
+        <Bar w="28%" />
+        <Bar w="28%" />
+      </div>
+      <div className="my-[2px] h-px bg-hairline" />
+      <Bar w="28%" dark />
+      <Bar w="94%" />
+      <Bar w="80%" />
+      <Bar w="28%" dark />
+      <Bar w="88%" />
+      <Bar w="72%" />
+    </div>
+  </div>
+);
+
 const EditorialThumb = () => (
   <div className="flex h-full w-[138px] gap-2 rounded-md bg-white p-2.5 ring-1 ring-black/5">
     {/* Left column */}
@@ -213,6 +237,12 @@ const templates: {
     thumb: <CompactThumb />,
   },
   {
+    name: "Professional",
+    blurb: "Executive layout with high-contrast header.",
+    note: "A4 · Executive layout",
+    thumb: <ProfessionalThumb />,
+  },
+  {
     name: "Editorial",
     blurb: "Clean two-column layout with photo and skill box.",
     note: "A4 · Modern two-column",
@@ -250,12 +280,15 @@ const comments = [
 const NAV_LINKS = [
   { href: "#how", label: "How it works" },
   { href: "#inside", label: "What you get" },
-  { href: "#templates", label: "Templates" },
+  { href: "/templates", label: "Templates" },
 ];
 
 const FOOTER_EXPLORE = [
-  ...NAV_LINKS,
-  { href: "#feedback", label: "Feedback" },
+  { href: "/#how", label: "How it works" },
+  { href: "/#inside", label: "Features" },
+  { href: "/templates", label: "Templates Gallery" },
+  { href: "/dashboard", label: "Your Resumes" },
+  { href: "/#feedback", label: "Community Feedback" },
 ];
 
 export default function Home() {
@@ -399,7 +432,7 @@ export default function Home() {
               on a phone, print on real paper.
             </p>
           </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {templates.map((template) => (
               <div
                 key={template.name}
@@ -425,6 +458,15 @@ export default function Home() {
                 </p>
               </div>
             ))}
+          </div>
+          <div className="mt-10 flex justify-center">
+            <a
+              href="/templates"
+              className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition hover:border-foreground/30 hover:shadow-sm"
+            >
+              Explore all 5 templates in detail
+              <ArrowRight size={14} />
+            </a>
           </div>
         </div>
       </section>
@@ -510,7 +552,7 @@ export default function Home() {
             <Wordmark />
             <p className="mt-4 text-sm leading-relaxed text-graphite">
               Free resume building for students and early-career professionals.
-              Three templates, clean PDF export, and AI suggestions that always
+              Five templates, clean PDF export, and AI suggestions that always
               wait for your approval.
             </p>
             <p className="mt-4 text-xs text-graphite">
@@ -533,18 +575,18 @@ export default function Home() {
             <h3 className="text-sm font-semibold">Legal</h3>
             <ul className="mt-3 flex flex-col gap-2.5 text-sm text-graphite">
               <li>
-                <a href="#" className="hover:text-foreground">
-                  Privacy
+                <a href="/privacy" className="hover:text-foreground">
+                  Privacy Notice
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
-                  Terms
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground">
+                <a href="/privacy#ai-practices" className="hover:text-foreground">
                   How AI is used
+                </a>
+              </li>
+              <li>
+                <a href="/privacy#data-retention" className="hover:text-foreground">
+                  Data Retention & Security
                 </a>
               </li>
             </ul>

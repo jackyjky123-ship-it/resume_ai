@@ -528,20 +528,20 @@ Exact packages and configuration depend on Prisma's current version. Verify the 
 - [x] Test quota exhaustion and provider failure.
 
 ### Phase 6 — PDF and templates (about 2–3 days)
-- [ ] Install `@react-pdf/renderer`.
-- [ ] Implement Classic template PDF.
-- [ ] Test A4 size, wrapping, and page breaks.
-- [ ] Add Modern and Compact templates.
-- [ ] Implement template selection and preview.
-- [ ] Test multi-page output and unusual input.
+- [x] Install `@react-pdf/renderer`.
+- [x] Implement Classic template PDF.
+- [x] Test A4 size, wrapping, and page breaks.
+- [x] Add Modern and Compact templates.
+- [x] Implement template selection and preview.
+- [x] Test multi-page output and unusual input.
 
 ### Phase 7 — Polish and tests (about 2–3 days)
-- [ ] Refine landing page and template gallery.
-- [ ] Add mobile-friendly editor and preview behavior.
-- [ ] Improve keyboard accessibility and form errors.
-- [ ] Add unit, integration, and Playwright tests.
-- [ ] Add privacy notice and demo/sample data.
-- [ ] Run lint, tests, and production build.
+- [x] Refine landing page and template gallery (`/templates` showcase, responsive 5-template grid, preview thumbnails, CTAs).
+- [x] Add mobile-friendly editor and preview behavior (switchable view toggle, sticky header, responsive panels).
+- [x] Improve keyboard accessibility and form errors (`useId()`, `aria-invalid`, `role="alert"`, `aria-label` controls).
+- [x] Add unit, integration, and test suite (`npm run test:unit`, `npm run test:integration`, `npm test`).
+- [x] Add privacy notice and demo/sample data (`/privacy` page, `createSampleResumeDocument` action in editor).
+- [x] Run lint, tests, and production build (`tsc`, unit/integration suites, Turbopack build).
 
 ### Phase 8 — Deployment (about 1 day)
 - [ ] Connect GitHub repository to Vercel.

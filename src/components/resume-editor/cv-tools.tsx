@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { Sparkles, Upload } from "lucide-react";
+import { FileText, Sparkles, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { createSampleResumeDocument } from "@/lib/sample-data";
 import {
   mergeResumeDocuments,
   withFreshIds,
@@ -21,6 +22,30 @@ export function CvTools({ aiMode }: { aiMode: AiMode }) {
   const templateId = form.watch("templateId") ?? "classic";
   const [importOpen, setImportOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
+
+  function handleLoadSample() {
+    const current = form.getValues("content");
+    const hasExistingContent =
+      Boolean(current.personal.fullName?.trim()) ||
+      Boolean(current.summary?.trim()) ||
+      (current.experience?.length ?? 0) > 0;
+
+    if (
+      hasExistingContent &&
+      !window.confirm(
+        "Load sample resume? This will populate the editor with complete sample career data."
+      )
+    ) {
+      return;
+    }
+
+    const sample = createSampleResumeDocument();
+    form.setValue("content", sample, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    toast.success("Loaded sample resume data. Autosave will save your changes.");
+  }
 
   function applyImport(
     document: CvImportResult["document"],
@@ -48,6 +73,16 @@ export function CvTools({ aiMode }: { aiMode: AiMode }) {
     <>
       <div className="flex flex-col items-end gap-1">
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleLoadSample}
+            title="Populate resume with sample data"
+          >
+            <FileText className="size-3.5" />
+            Sample Data
+          </Button>
           <Button
             type="button"
             variant="outline"

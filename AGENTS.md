@@ -10,16 +10,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # AGENTS.md
 
-## Status: Phase 5 complete — real dashboard + resume editor + AI integration (Gemini); next is Phase 6 (PDF/templates)
+## Status: Phase 7 complete — Polish, template gallery, privacy notice, unit & integration test suites verified; next is Phase 8 (deployment to Vercel)
 
-- Phases 1–5 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 6 (PDF/templates), Phase 7 (tests), Phase 8 (deployment to Vercel).
+- Phases 1–7 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 8 (deployment to Vercel).
 - Deployment target is Vercel (Hobby tier); `package.json` build script runs `prisma generate && next build` to ensure Prisma client is generated during Vercel builds.
 - Neon services were set up with the Neon CLI (`neon.ts` = `postgres` (default) + `auth: true` + `functions.hello`), linked to project `sweet-glade-54193070`, branch `production`.
 - Identity is **Neon Auth (Managed Better Auth)** — not Auth.js. Users/sessions live in the `neon_auth` schema; the app's `User` row is created lazily on the first authenticated request by `getSessionUser()` and linked via `authUserId`.
 - The Next.js app is scaffolded in place at the repo root (`resume_ai/`); `ResumeAI` is the product name.
-- Working baseline: marketing landing page, login page, protected dashboard backed by Postgres (create, rename, duplicate, delete, search/filter/sort, empty/error/loading states), resume editor at `/resumes/[resumeId]/edit` with every MVP section, stable-ID repeatable entries, live Classic preview, debounced autosave, save status, unsaved-change protection, and AI integration with Gemini API (CV suggestions, bullet improvement, summary proofreading, AI-enhanced CV import, grounding enforcement, and per-user daily quota tracking). The `hello` Neon Function is deployed. PDF and formal test suites are still pending.
-- Phase 4 replaced the old dashboard mock: `src/lib/mock/dashboard.ts` is deleted and `DashboardWorkspace` is fed by `listResumeCards()`. The dashboard CRUD dialogs now use shadcn/ui Dialog/AlertDialog.
-- Phase 5 integrated the official `@google/genai` SDK (`gemini-3.5-flash-lite`), added the `AIUsage` model in PostgreSQL with daily quota enforcement (10 actions/day), implemented grounded suggestions, inline bullet improvement, proofreading dialogs, and automated test suite (`npm run ai:test`).
+- Working baseline: marketing landing page, login page, protected dashboard backed by Postgres (create, rename, duplicate, delete, search/filter/sort, empty/error/loading states), resume editor at `/resumes/[resumeId]/edit` with every MVP section, stable-ID repeatable entries, live multi-template preview (Classic, Modern, Compact, Professional, Editorial), debounced autosave, save status, unsaved-change protection, AI integration with Gemini API (CV suggestions, bullet improvement, summary proofreading, AI-enhanced CV import, grounding enforcement, and per-user daily quota tracking), server-rendered PDF generation with `@react-pdf/renderer` via authenticated route `/api/resumes/[resumeId]/pdf`, template gallery at `/templates`, privacy notice at `/privacy`, sample data generator, responsive mobile view toggle, accessible field controls, and comprehensive unit/integration test suites (`npm test`, `npm run test:integration`).
 - Follow the implementation principle in each phase of `PLAN.md` §14: build, run, test the happy path and failure path, commit.
 
 ## Source of truth: `PLAN.md`

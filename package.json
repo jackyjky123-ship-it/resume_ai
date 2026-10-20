@@ -20,6 +20,10 @@
     "cv:ui:test": "tsx scripts/cv-ui-test.ts",
     "ai:test": "tsx scripts/ai-test.ts",
     "pdf:test": "tsx scripts/pdf-test.ts",
+    "test:unit": "tsx scripts/unit-test.ts",
+    "test:integration": "tsx scripts/integration-test.ts",
+    "test": "tsx scripts/unit-test.ts",
+    "test:all": "tsx scripts/unit-test.ts && tsx scripts/integration-test.ts && tsx scripts/pdf-test.ts",
     "postinstall": "node scripts/patch-hyphenate.js"
   },
   "dependencies": {
