@@ -18,7 +18,7 @@ async function WorkspaceWithSession() {
 
 function DashboardSkeleton() {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div suppressHydrationWarning className="flex min-h-dvh flex-col">
       <header className="border-b border-hairline bg-white/85">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-6">
           <Wordmark />

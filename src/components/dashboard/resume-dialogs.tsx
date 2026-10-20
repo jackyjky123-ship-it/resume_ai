@@ -61,7 +61,7 @@ export function NewResumeDialog({
         if (!nextOpen && !pending) onClose();
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="font-display text-xl font-bold">Start a new resume</DialogTitle>
           <DialogDescription>
@@ -92,7 +92,7 @@ export function NewResumeDialog({
 
           <FieldSet>
             <FieldLegend variant="label">Template</FieldLegend>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
               {TEMPLATES.map((template) => {
                 const selected = templateId === template.id;
                 return (

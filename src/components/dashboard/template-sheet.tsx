@@ -97,9 +97,30 @@ function CompactSheet() {
   );
 }
 
+function ProfessionalSheet() {
+  return (
+    <span className="flex w-full flex-col gap-[8px] p-3.5">
+      <span className="flex items-center gap-3 border-b border-hairline pb-2.5">
+        <span className="size-8 shrink-0 rounded-xl bg-foreground/25" />
+        <span className="flex flex-1 flex-col gap-[5px]">
+          <Bar w="60%" tone="ink" thick />
+          <Bar w="40%" tone="line" />
+        </span>
+      </span>
+      <span className="flex w-full flex-col gap-[6px] pt-0.5">
+        <Bar w="28%" tone="ink" />
+        <Bar w="95%" />
+        <Bar w="88%" />
+        <Bar w="92%" />
+      </span>
+    </span>
+  );
+}
+
 /** Crop of the top of a resume page — fills whatever container clips it. */
 export function TemplateSheet({ templateId }: { templateId: TemplateId }) {
   if (templateId === "modern") return <ModernSheet />;
   if (templateId === "compact") return <CompactSheet />;
+  if (templateId === "professional") return <ProfessionalSheet />;
   return <ClassicSheet />;
 }

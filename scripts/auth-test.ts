@@ -95,8 +95,12 @@ async function main() {
   );
 
   // 6. Cleanup: remove the test users from the neon_auth schema
+  const authCleanConnectionString = (process.env.DATABASE_URL || "").replace(
+    /([?&]sslmode=)require\b/,
+    "$1verify-full"
+  );
   const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+    adapter: new PrismaPg({ connectionString: authCleanConnectionString }),
   });
   try {
     const deleted = await prisma.$executeRawUnsafe(

@@ -54,12 +54,14 @@ function mergePersonal(
 ): ResumeDocument["personal"] {
   return {
     fullName: current.fullName.trim() ? current.fullName : imported.fullName,
+    roleApplied: current.roleApplied.trim() ? current.roleApplied : imported.roleApplied,
     email: current.email.trim() ? current.email : imported.email,
     phone: current.phone.trim() ? current.phone : imported.phone,
     location: current.location.trim() ? current.location : imported.location,
     website: current.website.trim() ? current.website : imported.website,
     linkedin: current.linkedin.trim() ? current.linkedin : imported.linkedin,
     github: current.github.trim() ? current.github : imported.github,
+    photoUrl: current.photoUrl.trim() ? current.photoUrl : imported.photoUrl,
   };
 }
 

@@ -122,6 +122,7 @@ export async function saveResumeAction(
     if (!userId) return { ok: false, error: "Your session expired. Sign in again." };
 
     const saved = await saveResumeForUser(userId, rawInput);
+    revalidatePath("/dashboard");
     return { ok: true, data: saved };
   } catch (error) {
     if (

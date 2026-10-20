@@ -12,11 +12,12 @@ loadEnv({ path: ".env" });
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
+const rawConnectionString = process.env.DATABASE_URL;
+if (!rawConnectionString) {
   console.error("FAIL: DATABASE_URL is not set (run `neon deploy` first).");
   process.exit(1);
 }
+const connectionString = rawConnectionString.replace(/([?&]sslmode=)require\b/, "$1verify-full");
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FormProvider,
   useForm,
@@ -14,6 +15,7 @@ import {
   ArrowLeft,
   Check,
   CloudUpload,
+  Download,
   Eye,
   LayoutPanelLeft,
   PenLine,
@@ -159,7 +161,10 @@ export function ResumeEditor({
     reValidateMode: "onChange",
   });
 
+  const router = useRouter();
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [isSavingAndExiting, setIsSavingAndExiting] = useState(false);
   const { status, saveNow, hasUnsavedChanges } = useResumeAutosave(resume.id, form);
 
   const content =
@@ -168,9 +173,61 @@ export function ResumeEditor({
     useWatch({ control: form.control, name: "templateId" }) ?? resume.templateId;
 
   const handleManualSave = useCallback(async () => {
-    const saved = await saveNow();
-    if (saved) toast.success("Resume saved.");
-  }, [saveNow]);
+    try {
+      setIsSavingAndExiting(true);
+      const saved = await saveNow();
+      if (saved) {
+        toast.success("Resume saved. Returning to dashboard…");
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch {
+      toast.error("Couldn’t save resume. Please try again.");
+    } finally {
+      setIsSavingAndExiting(false);
+    }
+  }, [saveNow, router]);
+
+  const handleDownloadPdf = useCallback(async () => {
+    try {
+      setIsDownloadingPdf(true);
+      // Ensure any pending changes are saved before downloading
+      await saveNow();
+
+      const response = await fetch(`/api/resumes/${resume.id}/pdf`);
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(body?.error || "Failed to generate resume PDF.");
+      }
+
+      const blob = await response.blob();
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = "Resume.pdf";
+      if (disposition) {
+        const match = disposition.match(/filename="?([^"]+)"?/);
+        if (match?.[1]) filename = match[1];
+      }
+
+      const objectUrl = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = objectUrl;
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.URL.revokeObjectURL(objectUrl);
+
+      toast.success("PDF downloaded.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Couldn't download resume PDF."
+      );
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  }, [resume.id, saveNow]);
 
   const handleBackClick = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -216,19 +273,46 @@ export function ResumeEditor({
                 {...form.register("title")}
               />
               <span className="hidden lg:inline-flex">
-                <SaveIndicator status={status} onRetry={() => void handleManualSave()} />
+                <SaveIndicator status={status} onRetry={() => void saveNow()} />
               </span>
             </div>
 
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => void handleManualSave()}
-              aria-label="Save resume"
-            >
-              <CloudUpload data-icon="inline-start" />
-              <span className="hidden sm:inline">Save</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={isDownloadingPdf || isSavingAndExiting}
+                onClick={() => void handleDownloadPdf()}
+                aria-label="Download resume PDF"
+              >
+                {isDownloadingPdf ? (
+                  <Spinner />
+                ) : (
+                  <Download data-icon="inline-start" />
+                )}
+                <span className="hidden sm:inline">
+                  {isDownloadingPdf ? "Downloading…" : "Download PDF"}
+                </span>
+              </Button>
+
+              <Button
+                type="button"
+                size="sm"
+                disabled={isSavingAndExiting}
+                onClick={() => void handleManualSave()}
+                aria-label="Save and return to dashboard"
+              >
+                {isSavingAndExiting ? (
+                  <Spinner />
+                ) : (
+                  <CloudUpload data-icon="inline-start" />
+                )}
+                <span className="hidden sm:inline">
+                  {isSavingAndExiting ? "Saving…" : "Save"}
+                </span>
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -251,7 +335,7 @@ export function ResumeEditor({
                 Preview
               </ToggleGroupItem>
             </ToggleGroup>
-            <SaveIndicator status={status} onRetry={() => void handleManualSave()} />
+            <SaveIndicator status={status} onRetry={() => void saveNow()} />
           </div>
 
           <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,46%)]">
@@ -304,15 +388,10 @@ export function ResumeEditor({
                       ))}
                     </SelectContent>
                   </Select>
-                  {templateId !== "classic" && (
-                    <span className="text-xs text-muted-foreground">
-                      Classic layout until Phase 6
-                    </span>
-                  )}
                 </div>
               </div>
               <div className="rounded-2xl border border-border bg-neutral-100 p-3 sm:p-5">
-                <ResumePreview document={content} />
+                <ResumePreview document={content} templateId={templateId} />
               </div>
             </aside>
           </div>

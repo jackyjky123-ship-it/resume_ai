@@ -12,12 +12,14 @@ export function filledSectionsOf(content: ResumeDocument): SectionKey[] {
 
   if (
     hasText(personal.fullName) ||
+    hasText(personal.roleApplied) ||
     hasText(personal.email) ||
     hasText(personal.phone) ||
     hasText(personal.location) ||
     hasText(personal.website) ||
     hasText(personal.linkedin) ||
-    hasText(personal.github)
+    hasText(personal.github) ||
+    hasText(personal.photoUrl)
   ) {
     filled.add("Contact");
   }

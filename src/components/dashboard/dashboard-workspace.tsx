@@ -78,7 +78,12 @@ export function DashboardWorkspace({
   }, [resumes, query, templateFilter, sortKey]);
 
   const counts = useMemo(() => {
-    const base: Record<TemplateId, number> = { classic: 0, modern: 0, compact: 0 };
+    const base: Record<TemplateId, number> = {
+      classic: 0,
+      modern: 0,
+      compact: 0,
+      professional: 0,
+    };
     for (const resume of resumes) base[resume.templateId] += 1;
     return base;
   }, [resumes]);
@@ -162,7 +167,7 @@ export function DashboardWorkspace({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div suppressHydrationWarning className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 border-b border-hairline bg-white/85 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-6">
           <Link href="/" className="shrink-0" aria-label="ResumeAI home">

@@ -3,19 +3,25 @@
  * Keep this module dependency-free so client bundles don't pull in Zod.
  */
 
-export const TEMPLATE_IDS = ["classic", "modern", "compact"] as const;
+export const TEMPLATE_IDS = ["classic", "modern", "compact", "professional"] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export const TEMPLATES: { id: TemplateId; name: string; blurb: string }[] = [
   { id: "classic", name: "Classic", blurb: "The layout hiring managers expect." },
   { id: "modern", name: "Modern", blurb: "Calm typography with one quiet accent." },
   { id: "compact", name: "Compact", blurb: "Fits a growing career, stays readable." },
+  {
+    id: "professional",
+    name: "Professional",
+    blurb: "Executive layout with photo, subtle tones, and balanced structure.",
+  },
 ];
 
 export const TEMPLATE_NAME: Record<TemplateId, string> = {
   classic: "Classic",
   modern: "Modern",
   compact: "Compact",
+  professional: "Professional",
 };
 
 export const RESUME_SECTIONS = [

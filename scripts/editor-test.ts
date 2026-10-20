@@ -24,13 +24,14 @@ import {
 import { filledSectionsOf } from "../src/lib/resume-content";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
-const connectionString = process.env.DATABASE_URL;
+const rawConnectionString = process.env.DATABASE_URL;
 
-if (!connectionString) {
+if (!rawConnectionString) {
   console.error("FAIL: DATABASE_URL is not set (run `neon deploy` first).");
   process.exit(1);
 }
 
+const connectionString = rawConnectionString.replace(/([?&]sslmode=)require\b/, "$1verify-full");
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
 async function cleanupTestRows() {
@@ -100,6 +101,8 @@ async function main() {
   await cleanupTestRows();
   console.log("Schema guards");
   const doc = sampleDocument("Frontend");
+  doc.personal.roleApplied = "Frontend Engineer";
+  doc.personal.photoUrl = "data:image/jpeg;base64,sample";
   const parsed = resumeDocumentSchema.safeParse(doc);
   assert(parsed.success, "a realistic document passes validation");
   assert(parseResumeDocument({ nonsense: true }).experience.length === 0, "unreadable JSON falls back to a blank draft");

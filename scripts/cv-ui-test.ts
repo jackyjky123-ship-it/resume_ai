@@ -20,13 +20,14 @@ loadEnv({ path: ".env" });
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 const EMAIL = "preview@example.com";
 const PASSWORD = "preview-1234";
-const connectionString = process.env.DATABASE_URL;
+const rawConnectionString = process.env.DATABASE_URL;
 
-if (!connectionString) {
+if (!rawConnectionString) {
   console.error("FAIL: DATABASE_URL is not set (run `neon deploy` first).");
   process.exit(1);
 }
 
+const connectionString = rawConnectionString.replace(/([?&]sslmode=)require\b/, "$1verify-full");
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString }),
 });

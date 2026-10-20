@@ -21,12 +21,14 @@ const optionalEmail = z.union([z.literal(""), z.email("Enter a valid email addre
 
 export const personalInfoSchema = z.object({
   fullName: z.string().max(100),
+  roleApplied: z.string().max(120).default(""),
   email: optionalEmail,
   phone: z.string().max(40),
   location: z.string().max(120),
   website: mediumText,
   linkedin: mediumText,
   github: mediumText,
+  photoUrl: z.string().max(2_000_000).default(""),
 });
 
 export const experienceEntrySchema = z.object({
@@ -155,12 +157,14 @@ export function emptyResumeDocument(): ResumeDocument {
     version: 1,
     personal: {
       fullName: "",
+      roleApplied: "",
       email: "",
       phone: "",
       location: "",
       website: "",
       linkedin: "",
       github: "",
+      photoUrl: "",
     },
     summary: "",
     experience: [],

@@ -187,12 +187,14 @@ function parseHeader(lines: string[], fullText: string) {
 
   return {
     fullName: clip(nameCandidate ?? "", 100),
+    roleApplied: "",
     email: clip(email, 200),
     phone,
     location: clip(locationCandidate ?? "", 120),
     website: clip(website, 200),
     linkedin: clip(linkedin, 200),
     github: clip(github, 200),
+    photoUrl: "",
   };
 }
 

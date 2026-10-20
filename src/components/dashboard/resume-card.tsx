@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   ArrowUpRight,
   Copy,
+  Download,
   MoreHorizontal,
   PenLine,
   Trash2,
@@ -32,8 +34,47 @@ export function ResumeCard({
   onDelete,
 }: ResumeCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  async function handleDownloadPdf() {
+    try {
+      setIsDownloading(true);
+      const response = await fetch(`/api/resumes/${resume.id}/pdf`);
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(body?.error || "Failed to generate resume PDF.");
+      }
+
+      const blob = await response.blob();
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = `${resume.title || "Resume"}.pdf`;
+      if (disposition) {
+        const match = disposition.match(/filename="?([^"]+)"?/);
+        if (match?.[1]) filename = match[1];
+      }
+
+      const objectUrl = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = objectUrl;
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.URL.revokeObjectURL(objectUrl);
+
+      toast.success("PDF downloaded.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Couldn't download resume PDF."
+      );
+    } finally {
+      setIsDownloading(false);
+    }
+  }
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -128,6 +169,11 @@ export function ResumeCard({
                 className="absolute right-0 top-9 z-20 w-44 rounded-xl border border-hairline bg-white p-1 shadow-[0_22px_45px_-24px_rgba(38,38,38,0.5)]"
               >
                 {menuItem("Open editor", ArrowUpRight, () => onOpen(resume))}
+                {menuItem(
+                  isDownloading ? "Downloading…" : "Download PDF",
+                  Download,
+                  () => void handleDownloadPdf()
+                )}
                 {menuItem("Rename", PenLine, () => onRename(resume))}
                 {menuItem("Duplicate", Copy, () => onDuplicate(resume))}
                 <div className="my-1 h-px bg-hairline" />
