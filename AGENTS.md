@@ -14,6 +14,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Phases 1–8 are complete and checked off in `PLAN.md` §14, and all §20 Definition of Done criteria are satisfied.
 - Production deployment: live on Vercel at `https://resume-ai-one-nu.vercel.app` (linked to GitHub repo `jackyjky123-ship-it/resume_ai`).
+- Post-MVP stretch goals: Phase 9 (Public Shareable Links & View Analytics) and Phase 10 (Cover Letter Builder) are planned in `PLAN.md` §14 for future execution.
 - Database & Infrastructure: Neon PostgreSQL (serverless, pooled for runtime via `@prisma/adapter-pg`, direct for migrations), Neon Auth (Managed Better Auth in `neon_auth` schema), authorized production domain in Neon Auth.
 - Build & Verification: `package.json` runs `prisma generate && next build`. Comprehensive unit tests (`npm test`), database/security integration tests (`npm run test:integration`), strict TypeScript check (`npx tsc --noEmit`), ESLint 9 (`npm run lint`), and production Next.js 16 App Router build all pass cleanly with exit code 0.
 - Documentation: Top-level `README.md` includes system architecture diagrams, database schema, local setup, test commands, Vercel/Neon deployment instructions, and free-tier quota analysis.

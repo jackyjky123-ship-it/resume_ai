@@ -28,9 +28,9 @@ Build a modern, responsive resume builder that lets users create professional re
 - Payments or subscriptions.
 - Unlimited AI generation.
 - Resume parsing from uploaded documents.
-- Public resume-sharing links.
+- Public resume-sharing links (scheduled for post-MVP Phase 9 stretch goal).
 - Complex admin analytics.
-- Cover letters, translations, and advanced scoring until the core product is stable.
+- Cover letters, translations, and advanced scoring (cover letters scheduled for post-MVP Phase 10 stretch goal).
 
 ## 2. Target Users and Main User Journey
 
@@ -551,6 +551,34 @@ Exact packages and configuration depend on Prisma's current version. Verify the 
 - [x] Run production deployment on Vercel (live at `https://resume-ai-one-nu.vercel.app`).
 - [x] Test auth, CRUD, AI, PDF, and error paths against the live Vercel URL.
 - [x] Write deployment instructions and document free-tier limitations (documented in `README.md`).
+
+### Phase 9 (Future Stretch Goal) — Public Shareable Links & View Analytics
+- [ ] Add `isPublic`, `publicSlug` (unique), `viewCount`, and `lastViewedAt` fields to `Resume` model in `prisma/schema.prisma`.
+- [ ] Run Prisma migration (`npx prisma migrate dev --name add_public_share_fields`) and update Prisma Client.
+- [ ] Implement Server Action `toggleResumePublicity(resumeId, isPublic, customSlug?)` verifying session ownership and validating slug uniqueness.
+- [ ] Build public read-only Server Component route at `/r/[slug]`:
+  - Query resume by `publicSlug` where `isPublic == true`.
+  - Atomically increment `viewCount` and update `lastViewedAt` on visit.
+  - Dynamically render candidate resume in selected template layout with clean print and "Download PDF" button.
+  - Implement dynamic Next.js `generateMetadata()` for rich Open Graph & Twitter social preview cards.
+- [ ] Add "Share" popover dialog to the resume editor header:
+  - Toggle switch for Public Sharing (On/Off).
+  - Copyable public link with one-click copy toast notification.
+  - Slug customization input with validation (letters, numbers, dashes).
+  - Live analytics indicator (e.g., "👀 Viewed 42 times · Last viewed 2 hours ago").
+- [ ] Add unit and integration tests for public link resolution, view counting, and private resume 404 guards.
+
+### Phase 10 (Future Stretch Goal) — Cover Letter Builder
+- [ ] Add `CoverLetter` model to `prisma/schema.prisma` with `userId`, optional `resumeId`, `title`, `companyName`, `jobTitle`, `jobDescription`, `body`, `templateId`, and timestamps.
+- [ ] Run Prisma migration (`npx prisma migrate dev --name add_cover_letter_model`) and update Prisma Client.
+- [ ] Extend AI service (`src/server/services/ai.service.ts`) with `generateCoverLetter` action:
+  - Takes candidate resume highlights, target company, job title, job description, and tone.
+  - Generates structured, grounded cover letter sections (salutation, opening hook, body paragraphs matching candidate skills to job requirements, closing, sign-off).
+- [ ] Implement CRUD service and Server Actions (`cover-letter.service.ts` & `cover-letter.actions.ts`) scoped strictly to the session user.
+- [ ] Create dashboard section/tabs for managing cover letters (create, duplicate, rename, delete).
+- [ ] Build live side-by-side cover letter editor (`/cover-letters/[id]/edit`) with live preview, autosave, and AI rewriting tools.
+- [ ] Implement matching A4 PDF generator using `@react-pdf/renderer` via `/api/cover-letters/[id]/pdf` matching the selected resume template aesthetics.
+- [ ] Add unit and integration tests for cover letter generation schemas, CRUD persistence, and ownership security.
 
 **Estimated timeline:** roughly 3–4 weeks at 1–2 hours per day, depending on experience and how many issues arise. Treat this as a planning estimate, not a guarantee.
 
