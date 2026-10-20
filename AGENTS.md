@@ -10,15 +10,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # AGENTS.md
 
-## Status: Phase 7 complete — Polish, template gallery, privacy notice, unit & integration test suites verified; next is Phase 8 (deployment to Vercel)
+## Status: Phase 8 complete — MVP fully implemented, deployed to Vercel, and portfolio-ready
 
-- Phases 1–7 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 8 (deployment to Vercel).
-- Deployment target is Vercel (Hobby tier); `package.json` build script runs `prisma generate && next build` to ensure Prisma client is generated during Vercel builds.
-- Neon services were set up with the Neon CLI (`neon.ts` = `postgres` (default) + `auth: true` + `functions.hello`), linked to project `sweet-glade-54193070`, branch `production`.
-- Identity is **Neon Auth (Managed Better Auth)** — not Auth.js. Users/sessions live in the `neon_auth` schema; the app's `User` row is created lazily on the first authenticated request by `getSessionUser()` and linked via `authUserId`.
-- The Next.js app is scaffolded in place at the repo root (`resume_ai/`); `ResumeAI` is the product name.
-- Working baseline: marketing landing page, login page, protected dashboard backed by Postgres (create, rename, duplicate, delete, search/filter/sort, empty/error/loading states), resume editor at `/resumes/[resumeId]/edit` with every MVP section, stable-ID repeatable entries, live multi-template preview (Classic, Modern, Compact, Professional, Editorial), debounced autosave, save status, unsaved-change protection, AI integration with Gemini API (CV suggestions, bullet improvement, summary proofreading, AI-enhanced CV import, grounding enforcement, and per-user daily quota tracking), server-rendered PDF generation with `@react-pdf/renderer` via authenticated route `/api/resumes/[resumeId]/pdf`, template gallery at `/templates`, privacy notice at `/privacy`, sample data generator, responsive mobile view toggle, accessible field controls, and comprehensive unit/integration test suites (`npm test`, `npm run test:integration`).
-- Follow the implementation principle in each phase of `PLAN.md` §14: build, run, test the happy path and failure path, commit.
+- Phases 1–8 are complete and checked off in `PLAN.md` §14, and all §20 Definition of Done criteria are satisfied.
+- Production deployment: live on Vercel at `https://resume-ai-one-nu.vercel.app` (linked to GitHub repo `jackyjky123-ship-it/resume_ai`).
+- Database & Infrastructure: Neon PostgreSQL (serverless, pooled for runtime via `@prisma/adapter-pg`, direct for migrations), Neon Auth (Managed Better Auth in `neon_auth` schema), authorized production domain in Neon Auth.
+- Build & Verification: `package.json` runs `prisma generate && next build`. Comprehensive unit tests (`npm test`), database/security integration tests (`npm run test:integration`), strict TypeScript check (`npx tsc --noEmit`), ESLint 9 (`npm run lint`), and production Next.js 16 App Router build all pass cleanly with exit code 0.
+- Documentation: Top-level `README.md` includes system architecture diagrams, database schema, local setup, test commands, Vercel/Neon deployment instructions, and free-tier quota analysis.
+- Follow the implementation principle: build in small, testable milestones; commit working results.
 
 ## Source of truth: `PLAN.md`
 

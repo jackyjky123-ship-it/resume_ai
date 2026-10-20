@@ -544,13 +544,13 @@ Exact packages and configuration depend on Prisma's current version. Verify the 
 - [x] Run lint, tests, and production build (`tsc`, unit/integration suites, Turbopack build).
 
 ### Phase 8 — Deployment (about 1 day)
-- [ ] Connect GitHub repository to Vercel.
-- [ ] Configure production environment variables in Vercel project settings (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_*`, `GEMINI_API_KEY`).
-- [ ] Ensure Prisma client generation runs during Vercel build (`prisma generate && next build`).
-- [ ] Add production Vercel domain to Neon Auth allowed origins/redirect URLs.
-- [ ] Run production deployment on Vercel.
-- [ ] Test auth, CRUD, AI, PDF, and error paths against the live Vercel URL.
-- [ ] Write deployment instructions and document free-tier limitations.
+- [x] Connect GitHub repository to Vercel (repo: `https://github.com/jackyjky123-ship-it/resume_ai.git`).
+- [x] Configure production environment variables in Vercel project settings (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_*`, `GEMINI_API_KEY`).
+- [x] Ensure Prisma client generation runs during Vercel build (`prisma generate && next build` in `package.json`).
+- [x] Add production Vercel domain to Neon Auth allowed origins/redirect URLs (`neon neon-auth domain add https://resume-ai-one-nu.vercel.app`).
+- [x] Run production deployment on Vercel (live at `https://resume-ai-one-nu.vercel.app`).
+- [x] Test auth, CRUD, AI, PDF, and error paths against the live Vercel URL.
+- [x] Write deployment instructions and document free-tier limitations (documented in `README.md`).
 
 **Estimated timeline:** roughly 3–4 weeks at 1–2 hours per day, depending on experience and how many issues arise. Treat this as a planning estimate, not a guarantee.
 
@@ -633,18 +633,18 @@ Use synthetic sample resumes in screenshots and public demos. Never publish real
 
 The MVP is ready for portfolio presentation when:
 
-- [ ] A visitor can register/sign in using the configured authentication flow.
-- [ ] An authenticated user can create, edit, duplicate, rename, and delete resumes.
-- [ ] Resume content persists after refresh and subsequent login.
-- [ ] Cross-user access attempts are rejected server-side.
-- [ ] The user can preview at least three templates.
-- [ ] AI can produce a validated suggestion within the available quota, and the user chooses whether to accept it.
-- [ ] AI failure or quota exhaustion does not block manual editing or PDF export.
-- [ ] PDF downloads render correctly for short and multi-page resumes.
-- [ ] Responsive layout and core accessibility checks pass.
-- [ ] Automated tests and production build pass.
-- [ ] Secrets are not committed to Git or exposed to client bundles.
-- [ ] The deployment and free-tier limitations are documented.
+- [x] A visitor can register/sign in using the configured authentication flow (Neon Auth / Managed Better Auth).
+- [x] An authenticated user can create, edit, duplicate, rename, and delete resumes (Dashboard & Editor CRUD).
+- [x] Resume content persists after refresh and subsequent login (Postgres JSONB `ResumeDocument` v1).
+- [x] Cross-user access attempts are rejected server-side (Service-level session filters, 404 streaming defense).
+- [x] The user can preview at least three templates (5 templates: Classic, Modern, Compact, Professional, Editorial).
+- [x] AI can produce a validated suggestion within the available quota, and the user chooses whether to accept it.
+- [x] AI failure or quota exhaustion does not block manual editing or PDF export.
+- [x] PDF downloads render correctly for short and multi-page resumes (A4 server-rendered `@react-pdf/renderer`).
+- [x] Responsive layout and core accessibility checks pass (Mobile edit/preview toggle, `aria-invalid`, `role="alert"`).
+- [x] Automated tests and production build pass (`npm test`, `npm run test:integration`, `tsc`, `lint`, `build`).
+- [x] Secrets are not committed to Git or exposed to client bundles (server-only secrets, `.env.example` placeholders).
+- [x] The deployment and free-tier limitations are documented (Full setup & free-tier guide in `README.md`).
 
 ---
 

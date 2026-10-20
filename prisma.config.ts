@@ -3,7 +3,7 @@
 // Prisma Migrate (prepared statements, session state). See neon-postgres skill.
 // The app connects at runtime through the pooled DATABASE_URL via @prisma/adapter-pg.
 import { config as loadEnv } from "dotenv";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 // Neon CLI writes branch env to .env.local (or .env). The Prisma CLI does not
 // load these by itself, so load them here.
@@ -16,6 +16,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("DATABASE_URL_UNPOOLED"),
+    url:
+      process.env.DATABASE_URL_UNPOOLED ||
+      process.env.DATABASE_URL ||
+      "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=require",
   },
 });
