@@ -10,6 +10,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
     "db:test": "tsx scripts/db-test.ts",
     "auth:test": "tsx scripts/auth-test.ts",
     "dashboard:test": "tsx scripts/dashboard-test.ts",
