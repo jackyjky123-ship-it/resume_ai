@@ -248,6 +248,16 @@ Verify the domain is trusted:
 neon neon-auth domain list
 ```
 
+### Step 4: Configure Custom Domain (Optional)
+To connect a custom domain (e.g., `resumeai.dev` or `app.yourdomain.com`):
+1. Add the domain in **Vercel Settings → Domains**.
+2. Point your registrar DNS to Vercel (A Record `76.76.21.21`, CNAME `cname.vercel-dns.com`).
+3. Authorize the domain in Neon Auth:
+   ```bash
+   neon neon-auth domain add https://yourdomain.com
+   ```
+For complete DNS tables, Cloudflare configuration, and troubleshooting, read the full [Custom Domain Setup Guide](docs/custom-domain-setup.md).
+
 ---
 
 ## 8. Free-Tier Quotas & Known Constraints
