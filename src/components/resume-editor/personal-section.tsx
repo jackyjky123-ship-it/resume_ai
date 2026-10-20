@@ -1,6 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { Sparkles } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
+import type { ResumeEditorFormValues } from "@/lib/validations/resume";
+import { FixGrammarDialog } from "./fix-grammar-dialog";
 import { SectionShell, TextAreaField, TextField } from "./form-fields";
 
 export function PersonalSection({ action }: { action?: React.ReactNode }) {
@@ -71,11 +78,29 @@ export function PersonalSection({ action }: { action?: React.ReactNode }) {
 }
 
 export function SummarySection() {
+  const form = useFormContext<ResumeEditorFormValues>();
+  const [grammarOpen, setGrammarOpen] = useState(false);
+  const summary = form.watch("content.summary") ?? "";
+  const hasContent = summary.trim().length >= 5;
+
   return (
     <SectionShell
       id="section-summary"
       title="Professional summary"
       description="Two or three sentences about what you do and the impact you make."
+      action={
+        hasContent ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setGrammarOpen(true)}
+          >
+            <Sparkles className="size-3.5" />
+            Proofread
+          </Button>
+        ) : null
+      }
     >
       <TextAreaField
         name="content.summary"
@@ -84,6 +109,20 @@ export function SummarySection() {
         rows={5}
         maxLength={2_000}
       />
+      {grammarOpen && (
+        <FixGrammarDialog
+          open
+          onOpenChange={setGrammarOpen}
+          text={summary}
+          label="Professional summary"
+          onApply={(corrected) => {
+            form.setValue("content.summary", corrected, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+          }}
+        />
+      )}
     </SectionShell>
   );
 }

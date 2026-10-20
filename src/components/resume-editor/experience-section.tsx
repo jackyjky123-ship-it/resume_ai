@@ -120,6 +120,8 @@ export function ExperienceSection() {
                   name={`content.experience.${index}.bullets` as FormPath}
                   label="Highlights"
                   placeholder={"Cut page load by 38% by code-splitting the dashboard\nMentored two juniors through their first shipped feature"}
+                  role={field.role}
+                  company={field.company}
                 />
               </CardContent>
             </Card>

@@ -1,8 +1,6 @@
 import "server-only";
 
-import {
-  CV_IMPORT_MAX_TEXT,
-} from "@/lib/cv-files";
+import { CV_IMPORT_MAX_TEXT } from "@/lib/cv-files";
 import {
   generateMockSuggestions,
   parseResumeTextLocally,
@@ -11,20 +9,21 @@ import {
   generationResultSchema,
   type AiMode,
   type CvImportResult,
+  type FixGrammarInput,
+  type FixGrammarResult,
   type GenerateCvInput,
   type GenerationResult,
+  type ImproveBulletInput,
+  type ImproveBulletResult,
 } from "@/lib/validations/ai";
 import { resumeDocumentSchema, type ResumeDocument } from "@/lib/validations/resume";
 
 /**
  * Provider boundary for every AI-backed CV operation.
- *
- * Only deterministic local logic is enabled today. Gemini remains disabled
- * until the provider is implemented and a server-only key is configured; this
- * prevents a missing key from breaking editing and keeps demo output honest.
+ * Automatically switches to Gemini when GEMINI_API_KEY is configured.
  */
 export function getAiMode(): AiMode {
-  return "mock";
+  return process.env.GEMINI_API_KEY ? "gemini" : "mock";
 }
 
 function escapeRegExp(value: string) {
@@ -142,26 +141,46 @@ function enforceGroundedResult(
   });
 }
 
-export function importCvText(
+export async function importCvText(
   text: string,
   sourceName: string
-): CvImportResult {
+): Promise<CvImportResult> {
+  const mode = getAiMode();
   const truncated = text.length > CV_IMPORT_MAX_TEXT;
-  const local = parseResumeTextLocally(
-    truncated ? text.slice(0, CV_IMPORT_MAX_TEXT) : text
-  );
-  const document = resumeDocumentSchema.parse(local.document);
-  const warnings = truncated
-    ? [
-        ...local.warnings,
-        `Only the first ${CV_IMPORT_MAX_TEXT.toLocaleString()} characters were read.`,
-      ].slice(0, 4)
-    : local.warnings;
+  const processText = truncated ? text.slice(0, CV_IMPORT_MAX_TEXT) : text;
+
+  let document: ResumeDocument;
+  let warnings: string[] = [];
+
+  if (mode === "gemini") {
+    try {
+      const { parseResumeWithGemini } = await import("./gemini.provider");
+      document = await parseResumeWithGemini(processText);
+    } catch (error) {
+      console.warn(
+        "[ai-import] Gemini parsing failed, falling back to local heuristics:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+      const local = parseResumeTextLocally(processText);
+      document = resumeDocumentSchema.parse(local.document);
+      warnings = [...local.warnings, "AI parsing unavailable; used local parser."];
+    }
+  } else {
+    const local = parseResumeTextLocally(processText);
+    document = resumeDocumentSchema.parse(local.document);
+    warnings = local.warnings;
+  }
+
+  if (truncated) {
+    warnings.push(
+      `Only the first ${CV_IMPORT_MAX_TEXT.toLocaleString()} characters were read.`
+    );
+  }
 
   return {
     document,
-    warnings,
-    mode: getAiMode(),
+    warnings: warnings.slice(0, 4),
+    mode,
     source: {
       fileName: sourceName,
       characters: Math.min(text.length, CV_IMPORT_MAX_TEXT),
@@ -169,14 +188,66 @@ export function importCvText(
   };
 }
 
-export function generateCvSuggestions(input: GenerateCvInput): {
+export async function generateCvSuggestions(input: GenerateCvInput): Promise<{
   result: GenerationResult;
   mode: AiMode;
-} {
-  const result = generateMockSuggestions(input);
-  const validated = generationResultSchema.parse(result);
+}> {
+  const mode = getAiMode();
+
+  let result: GenerationResult;
+  if (mode === "gemini") {
+    const { generateWithGemini } = await import("./gemini.provider");
+    const raw = await generateWithGemini(input);
+    result = generationResultSchema.parse(raw);
+  } else {
+    const raw = generateMockSuggestions(input);
+    result = generationResultSchema.parse(raw);
+  }
+
   return {
-    result: enforceGroundedResult(validated, input),
-    mode: getAiMode(),
+    result: enforceGroundedResult(result, input),
+    mode,
+  };
+}
+
+export async function improveBullet(
+  input: ImproveBulletInput
+): Promise<ImproveBulletResult & { mode: AiMode }> {
+  const mode = getAiMode();
+
+  if (mode === "gemini") {
+    const { improveBulletWithGemini } = await import("./gemini.provider");
+    const result = await improveBulletWithGemini(input);
+    return { ...result, mode };
+  }
+
+  // Deterministic local fallback
+  const cleaned = input.bullet.trim();
+  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  const trailingPeriod = capitalized.endsWith(".") ? capitalized : `${capitalized}.`;
+  return {
+    improvedBullet: trailingPeriod,
+    explanation: "Demo mode: polished capitalization and punctuation.",
+    mode,
+  };
+}
+
+export async function fixGrammar(
+  input: FixGrammarInput
+): Promise<FixGrammarResult & { mode: AiMode }> {
+  const mode = getAiMode();
+
+  if (mode === "gemini") {
+    const { fixGrammarWithGemini } = await import("./gemini.provider");
+    const result = await fixGrammarWithGemini(input);
+    return { ...result, mode };
+  }
+
+  // Deterministic local fallback
+  const cleaned = input.text.trim();
+  return {
+    correctedText: cleaned,
+    explanation: "Demo mode: preserved text structure.",
+    mode,
   };
 }

@@ -65,11 +65,9 @@ export function CvTools({ aiMode }: { aiMode: AiMode }) {
             Generate CV
           </Button>
         </div>
-        {aiMode === "mock" && (
-          <span className="text-[10px] font-medium text-muted-foreground">
-            Demo AI · local only
-          </span>
-        )}
+        <span className="text-[10px] font-medium text-muted-foreground">
+          {aiMode === "gemini" ? "Gemini AI · 10 daily uses" : "Demo AI · local only"}
+        </span>
       </div>
 
       {importOpen && (

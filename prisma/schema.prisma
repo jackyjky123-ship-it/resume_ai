@@ -20,6 +20,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   resumes Resume[]
+  aiUsages AIUsage[]
 }
 
 model Resume {
@@ -34,4 +35,14 @@ model Resume {
 
   @@index([userId])
   @@index([userId, updatedAt])
+}
+
+model AIUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

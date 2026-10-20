@@ -519,14 +519,14 @@ Exact packages and configuration depend on Prisma's current version. Verify the 
 - [x] Test the happy and failure paths (`scripts/editor-test.ts`, plus the auth/dashboard/DB smoke tests).
 
 ### Phase 5 — AI integration (about 2–3 days)
-- [ ] Create a Gemini API key using the official developer console.
-- [ ] Store the key in server-only environment variables.
-- [ ] Implement `ai.service.ts` and provider abstraction.
-- [ ] Add summary, bullet-improvement, and job-tailoring endpoints.
-- [ ] Validate input and model output with Zod.
-- [ ] Add rate limits, size limits, timeout handling, and usage accounting.
-- [ ] Build the review/accept/reject UI.
-- [ ] Test quota exhaustion and provider failure.
+- [x] Create a Gemini API key using the official developer console.
+- [x] Store the key in server-only environment variables.
+- [x] Implement `ai.service.ts` and provider abstraction.
+- [x] Add summary, bullet-improvement, and job-tailoring endpoints.
+- [x] Validate input and model output with Zod.
+- [x] Add rate limits, size limits, timeout handling, and usage accounting.
+- [x] Build the review/accept/reject UI.
+- [x] Test quota exhaustion and provider failure.
 
 ### Phase 6 — PDF and templates (about 2–3 days)
 - [ ] Install `@react-pdf/renderer`.

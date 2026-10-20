@@ -1,8 +1,10 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import { Controller, useFormContext, type FieldPath } from "react-hook-form";
+import { Sparkles } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
@@ -15,6 +17,7 @@ import {
   type ResumeBullet,
   type ResumeEditorFormValues,
 } from "@/lib/validations/resume";
+import { ImproveBulletDialog } from "./improve-bullet-dialog";
 
 type BulletLinesFieldProps = {
   name: FieldPath<ResumeEditorFormValues>;
@@ -22,6 +25,8 @@ type BulletLinesFieldProps = {
   description?: string;
   placeholder?: string;
   rows?: number;
+  role?: string;
+  company?: string;
 };
 
 /**
@@ -35,20 +40,41 @@ export function BulletLinesField({
   description = "One bullet per line. Keep each line short and metric-driven.",
   placeholder,
   rows = 5,
+  role = "",
+  company = "",
 }: BulletLinesFieldProps) {
   const form = useFormContext<ResumeEditorFormValues>();
   const id = useId();
+  const [improveOpen, setImproveOpen] = useState(false);
   const { error } = form.getFieldState(name, form.formState);
+
+  const rawBullets = form.watch(name);
+  const bullets = (Array.isArray(rawBullets) ? rawBullets : []) as ResumeBullet[];
+  const hasContent = bullets.some((b) => b.text && b.text.trim().length >= 3);
 
   return (
     <Field data-invalid={Boolean(error)}>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        {hasContent && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            onClick={() => setImproveOpen(true)}
+            className="h-6 gap-1 px-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <Sparkles className="size-3" />
+            Polish with AI
+          </Button>
+        )}
+      </div>
       <Controller
         control={form.control}
         name={name}
         render={({ field }) => {
-          const bullets = (Array.isArray(field.value) ? field.value : []) as ResumeBullet[];
-          const value = bullets.map((bullet) => bullet.text).join("\n");
+          const fieldBullets = (Array.isArray(field.value) ? field.value : []) as ResumeBullet[];
+          const value = fieldBullets.map((bullet) => bullet.text).join("\n");
 
           return (
             <Textarea
@@ -62,7 +88,7 @@ export function BulletLinesField({
                 const lines = event.target.value.split("\n");
                 field.onChange(
                   lines.map((line, index) => ({
-                    id: bullets[index]?.id ?? newBullet().id,
+                    id: fieldBullets[index]?.id ?? newBullet().id,
                     text: line,
                   }))
                 );
@@ -73,6 +99,25 @@ export function BulletLinesField({
       />
       <FieldDescription>{description}</FieldDescription>
       <FieldError errors={[error]} />
+
+      {improveOpen && (
+        <ImproveBulletDialog
+          open
+          onOpenChange={setImproveOpen}
+          bullets={bullets}
+          role={role}
+          company={company}
+          onApply={(bulletId, improvedText) => {
+            const next = bullets.map((b) =>
+              b.id === bulletId ? { ...b, text: improvedText } : b
+            );
+            form.setValue(name, next, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+          }}
+        />
+      )}
     </Field>
   );
 }

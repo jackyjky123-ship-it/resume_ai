@@ -81,6 +81,8 @@ export function ProjectsSection() {
                   label="Highlights"
                   description="Optional wins or metrics — one per line."
                   rows={3}
+                  role="Project lead / contributor"
+                  company={field.name}
                 />
               </CardContent>
             </Card>

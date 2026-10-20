@@ -91,3 +91,27 @@ export type CvImportResult = {
     characters: number;
   };
 };
+
+export const improveBulletInputSchema = z.object({
+  bullet: z.string().trim().min(3, "Select a bullet to improve").max(500),
+  role: z.string().max(120).default(""),
+  company: z.string().max(120).default(""),
+});
+export type ImproveBulletInput = z.infer<typeof improveBulletInputSchema>;
+
+export const improveBulletResultSchema = z.object({
+  improvedBullet: z.string().trim().min(1).max(500),
+  explanation: z.string().max(300).default(""),
+});
+export type ImproveBulletResult = z.infer<typeof improveBulletResultSchema>;
+
+export const fixGrammarInputSchema = z.object({
+  text: z.string().trim().min(3, "Select text to fix").max(2_000),
+});
+export type FixGrammarInput = z.infer<typeof fixGrammarInputSchema>;
+
+export const fixGrammarResultSchema = z.object({
+  correctedText: z.string().trim().min(1).max(2_000),
+  explanation: z.string().max(300).default(""),
+});
+export type FixGrammarResult = z.infer<typeof fixGrammarResultSchema>;

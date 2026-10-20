@@ -10,14 +10,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # AGENTS.md
 
-## Status: Phase 4 complete — real dashboard + resume editor with autosave; next is Phase 5 (AI)
+## Status: Phase 5 complete — real dashboard + resume editor + AI integration (Gemini); next is Phase 6 (PDF/templates)
 
-- Phases 1–4 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 5 (Gemini suggestions), then Phase 6 (PDF/templates), Phase 7 (tests), Phase 8 (deployment).
+- Phases 1–5 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 6 (PDF/templates), Phase 7 (tests), Phase 8 (deployment).
 - Neon services were set up with the Neon CLI (`neon.ts` = `postgres` (default) + `auth: true` + `functions.hello`), linked to project `sweet-glade-54193070`, branch `production`.
 - Identity is **Neon Auth (Managed Better Auth)** — not Auth.js. Users/sessions live in the `neon_auth` schema; the app's `User` row is created lazily on the first authenticated request by `getSessionUser()` and linked via `authUserId`.
 - The Next.js app is scaffolded in place at the repo root (`resume_ai/`); `ResumeAI` is the product name.
-- Working baseline: marketing landing page, login page, protected dashboard backed by Postgres (create, rename, duplicate, delete, search/filter/sort, empty/error/loading states), and a resume editor at `/resumes/[resumeId]/edit` with every MVP section, stable-ID repeatable entries, live Classic preview, debounced autosave, save status, and unsaved-change protection. The `hello` Neon Function is deployed. PDF, AI, and formal test suites are still pending.
+- Working baseline: marketing landing page, login page, protected dashboard backed by Postgres (create, rename, duplicate, delete, search/filter/sort, empty/error/loading states), resume editor at `/resumes/[resumeId]/edit` with every MVP section, stable-ID repeatable entries, live Classic preview, debounced autosave, save status, unsaved-change protection, and AI integration with Gemini API (CV suggestions, bullet improvement, summary proofreading, AI-enhanced CV import, grounding enforcement, and per-user daily quota tracking). The `hello` Neon Function is deployed. PDF and formal test suites are still pending.
 - Phase 4 replaced the old dashboard mock: `src/lib/mock/dashboard.ts` is deleted and `DashboardWorkspace` is fed by `listResumeCards()`. The dashboard CRUD dialogs now use shadcn/ui Dialog/AlertDialog.
+- Phase 5 integrated the official `@google/genai` SDK (`gemini-3.5-flash-lite`), added the `AIUsage` model in PostgreSQL with daily quota enforcement (10 actions/day), implemented grounded suggestions, inline bullet improvement, proofreading dialogs, and automated test suite (`npm run ai:test`).
 - Follow the implementation principle in each phase of `PLAN.md` §14: build, run, test the happy path and failure path, commit.
 
 ## Source of truth: `PLAN.md`
@@ -93,6 +94,8 @@ npm run db:test      # Prisma + pooled DATABASE_URL smoke test (create/read/owne
 npm run auth:test    # Neon Auth e2e through the app (needs `npm start` running on :3000)
 npm run dashboard:test  # real dashboard smoke test (needs `npm start`); keeps preview@example.com / preview-1234 for browser sign-in
 npm run editor:test  # Phase 4 schema/persistence/ownership + editor-route smoke test (needs `npm start`; cleans up its rows)
+npm run ai:test      # Phase 5 Gemini AI integration + quota accounting smoke test
+npm run cv:test      # CV tools and parser unit smoke test
 
 neon status          # branch live state (Neon CLI authenticated via `neon login`)
 neon config plan     # dry-run diff of neon.ts against the branch

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const text = typeof textEntry === "string" ? textEntry : null;
 
     const extracted = await extractCvText({ file, text });
-    const result = importCvText(extracted.text, extracted.fileName);
+    const result = await importCvText(extracted.text, extracted.fileName);
 
     return NextResponse.json({
       ok: true,
