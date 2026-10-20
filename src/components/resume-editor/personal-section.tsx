@@ -3,12 +3,13 @@
 import { FieldGroup } from "@/components/ui/field";
 import { SectionShell, TextAreaField, TextField } from "./form-fields";
 
-export function PersonalSection() {
+export function PersonalSection({ action }: { action?: React.ReactNode }) {
   return (
     <SectionShell
       id="section-personal"
       title="Personal information"
       description="How employers reach you. Only what you fill in appears in the preview."
+      action={action}
     >
       <FieldGroup>
         <div className="grid gap-5 sm:grid-cols-2">

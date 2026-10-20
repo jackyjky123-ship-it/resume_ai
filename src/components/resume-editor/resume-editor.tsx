@@ -33,6 +33,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-meta";
+import type { AiMode } from "@/lib/validations/ai";
 import {
   resumeEditorSchema,
   type ResumeEditorFormValues,
@@ -40,6 +41,7 @@ import {
 import type { ResumeDetail } from "@/server/services/resume.service";
 import { ResumePreview } from "@/components/resume-preview/resume-preview";
 import { CertificationsSection } from "./certifications-section";
+import { CvTools } from "./cv-tools";
 import { EducationSection } from "./education-section";
 import { ExperienceSection } from "./experience-section";
 import { LanguagesSection } from "./languages-section";
@@ -132,7 +134,13 @@ function SectionNav() {
   );
 }
 
-export function ResumeEditor({ resume }: { resume: ResumeDetail }) {
+export function ResumeEditor({
+  resume,
+  aiMode,
+}: {
+  resume: ResumeDetail;
+  aiMode: AiMode;
+}) {
   const defaults = useMemo<ResumeEditorFormValues>(
     () => ({
       title: resume.title,
@@ -254,7 +262,7 @@ export function ResumeEditor({ resume }: { resume: ResumeDetail }) {
                 onSubmit={(event) => event.preventDefault()}
                 noValidate
               >
-                <PersonalSection />
+                <PersonalSection action={<CvTools aiMode={aiMode} />} />
                 <SummarySection />
                 <ExperienceSection />
                 <EducationSection />

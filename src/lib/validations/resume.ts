@@ -136,12 +136,19 @@ export type CertificationEntry = z.infer<typeof certificationEntrySchema>;
 export type LanguageEntry = z.infer<typeof languageEntrySchema>;
 export type ResumeBullet = { id: string; text: string };
 
-function newId() {
+/**
+ * Stable ID generator shared by entry factories, imports, and AI suggestions.
+ * `crypto.randomUUID` exists in browsers and Node; the fallback keeps tests and
+ * unusual runtimes working.
+ */
+export function createResumeId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
   }
   return `id_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
+
+const newId = createResumeId;
 
 export function emptyResumeDocument(): ResumeDocument {
   return {
