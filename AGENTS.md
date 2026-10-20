@@ -12,7 +12,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Status: Phase 5 complete — real dashboard + resume editor + AI integration (Gemini); next is Phase 6 (PDF/templates)
 
-- Phases 1–5 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 6 (PDF/templates), Phase 7 (tests), Phase 8 (deployment).
+- Phases 1–5 are done and checked off in `PLAN.md` §14. Do not jump ahead: the next feature work is Phase 6 (PDF/templates), Phase 7 (tests), Phase 8 (deployment to Vercel).
+- Deployment target is Vercel (Hobby tier); `package.json` build script runs `prisma generate && next build` to ensure Prisma client is generated during Vercel builds.
 - Neon services were set up with the Neon CLI (`neon.ts` = `postgres` (default) + `auth: true` + `functions.hello`), linked to project `sweet-glade-54193070`, branch `production`.
 - Identity is **Neon Auth (Managed Better Auth)** — not Auth.js. Users/sessions live in the `neon_auth` schema; the app's `User` row is created lazily on the first authenticated request by `getSessionUser()` and linked via `authUserId`.
 - The Next.js app is scaffolded in place at the repo root (`resume_ai/`); `ResumeAI` is the product name.

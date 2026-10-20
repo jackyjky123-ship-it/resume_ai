@@ -3,7 +3,7 @@
 > **Project type:** Portfolio-ready full-stack web application  
 > **Primary goal:** Help users create, improve, manage, and export professional resumes.  
 > **Budget target:** $0 for development and use within free tiers; ongoing hosting, AI, email, and domain costs cannot be guaranteed to remain zero.  
-> **Deployment preference:** Cloudways, provided the chosen plan supports the required Next.js/Node.js runtime.  
+> **Deployment preference:** Vercel (Hobby tier for development and portfolio hosting)  
 > **Database:** Neon PostgreSQL  
 > **Status:** Planning document — use as the implementation checklist.
 
@@ -64,7 +64,7 @@ AI suggestions must never silently replace the user's content. The user must rev
 | PDF | `@react-pdf/renderer` | Generate selectable-text PDF resumes |
 | Testing | Vitest + Playwright | Unit, integration, and end-to-end tests |
 | Version control | Git + GitHub | Source history, issues, and portfolio repository |
-| Hosting | Cloudways if supported by available plan | Production Node.js deployment; verify plan requirements first |
+| Hosting | Vercel | Production Next.js deployment with native App Router and edge network |
 
 Use stable, compatible package versions and follow the official setup instructions for the selected major versions. Keep AI provider calls behind a service interface so a provider can be changed later.
 
@@ -75,8 +75,7 @@ The code and most core libraries are open source. Neon and eligible AI/hosting s
 - Develop locally at no cost.
 - Use Neon’s free tier while within current quotas.
 - Start with Gemini API free-tier access, after reviewing the current quota and data-use terms.
-- If Cloudways is already available, verify the plan supports the Next.js/Node.js app and required runtime. Do not assume Cloudways is permanently free.
-- If no hosting budget is available and the project terms permit it, consider an eligible free Next.js hosting tier plus Neon.
+- Deploy to Vercel's Hobby tier (free for personal portfolio use) integrated with Neon PostgreSQL.
 - Do not promise unlimited AI use. Display helpful quota/error messages and keep manual resume editing and PDF export available when AI is unavailable.
 - Custom domains, transactional email, higher traffic, persistent rate limiting, file storage, and production hosting may eventually cost money.
 
@@ -545,12 +544,12 @@ Exact packages and configuration depend on Prisma's current version. Verify the 
 - [ ] Run lint, tests, and production build.
 
 ### Phase 8 — Deployment (about 1 day)
-- [ ] Verify Cloudways plan and Next.js/Node.js compatibility.
-- [ ] Push clean source to GitHub.
-- [ ] Configure production environment variables on the host.
-- [ ] Configure production database connection and migrations.
-- [ ] Run production build and deploy.
-- [ ] Test auth, CRUD, AI, PDF, and error paths against the live site.
+- [ ] Connect GitHub repository to Vercel.
+- [ ] Configure production environment variables in Vercel project settings (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_*`, `GEMINI_API_KEY`).
+- [ ] Ensure Prisma client generation runs during Vercel build (`prisma generate && next build`).
+- [ ] Add production Vercel domain to Neon Auth allowed origins/redirect URLs.
+- [ ] Run production deployment on Vercel.
+- [ ] Test auth, CRUD, AI, PDF, and error paths against the live Vercel URL.
 - [ ] Write deployment instructions and document free-tier limitations.
 
 **Estimated timeline:** roughly 3–4 weeks at 1–2 hours per day, depending on experience and how many issues arise. Treat this as a planning estimate, not a guarantee.
@@ -604,20 +603,16 @@ npx prisma migrate deploy
 - Verify command availability and any required configuration for the chosen Prisma version.
 - Before deployment, run the scripts defined in `package.json`, including lint, tests, and `npm run build`.
 
-## 18. Deployment Checklist — Cloudways
+## 18. Deployment Checklist — Vercel
 
-1. Confirm the Cloudways plan supports a persistent Node.js application, the chosen Node.js version, and the Next.js runtime features used by the app.
-2. Confirm the required startup command and port configuration from the host's current documentation.
-3. Connect the GitHub repository using the available deployment method.
-4. Configure production environment variables in the hosting control panel.
-5. Confirm Neon connection and pooling settings are appropriate for the app.
-6. Apply migrations using `prisma migrate deploy` as part of a controlled release process.
-7. Build and start the app in production mode.
-8. Configure HTTPS and domain settings if available.
-9. Test login, resume CRUD, AI quota handling, PDF downloads, and error states.
-10. Review logs for errors while ensuring personal data and secrets are not logged.
-
-If Cloudways is unavailable or too expensive, consider an eligible free Next.js hosting tier plus Neon, after checking the provider's current limits, commercial-use rules, and deployment compatibility. Do not assume any provider's free tier is permanent or unlimited.
+1. Commit and push all project code to the GitHub repository.
+2. Sign in to [Vercel](https://vercel.com) and import the repository.
+3. Configure the build command as `prisma generate && next build` (automated in `package.json`).
+4. Add all required production environment variables (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_BRANCH`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_JWKS_URL`, `NEON_FUNCTION_HELLO_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `GEMINI_API_KEY`) to Vercel Project Settings.
+5. Deploy the project and note the assigned production domain (`https://<project-name>.vercel.app`).
+6. Update Neon Auth configuration in Neon Console: add the production Vercel URL to authorized redirect URLs and allowed origins.
+7. Test the live site: sign in/up, resume CRUD, debounced autosave, AI suggestions, and PDF export.
+8. Verify serverless logs in Vercel Dashboard for any runtime errors.
 
 ## 19. Portfolio Deliverables
 
@@ -662,8 +657,8 @@ The MVP is ready for portfolio presentation when:
 - Prisma production migrations: https://www.prisma.io/docs/orm/prisma-migrate/workflows/development-and-production
 - Auth.js: https://authjs.dev/
 - Gemini API documentation: https://ai.google.dev/gemini-api/docs
-- Cloudways Next.js deployment: https://www.cloudways.com/blog/deploy-nextjs/
-- Vercel pricing (possible alternative): https://vercel.com/pricing
+- Vercel documentation: https://vercel.com/docs
+- Vercel pricing: https://vercel.com/pricing
 - React PDF: https://react-pdf.org/
 - Playwright: https://playwright.dev/docs/intro
 
