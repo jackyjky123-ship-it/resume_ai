@@ -32,13 +32,14 @@ import {
   type ImportApplyMode,
 } from "@/lib/resume-import";
 import type { AiMode, CvImportResult } from "@/lib/validations/ai";
+import { useApiKey } from "@/lib/api-key-context";
 import { resumeDocumentSchema } from "@/lib/validations/resume";
 import type { TemplateId } from "@/lib/resume-meta";
 
 type ImportCvDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  aiMode: AiMode;
+  aiMode?: AiMode;
   templateId?: TemplateId;
   onApply: (document: CvImportResult["document"], mode: ImportApplyMode) => void;
 };
@@ -63,10 +64,13 @@ function documentSummary(document: CvImportResult["document"]) {
 export function ImportCvDialog({
   open,
   onOpenChange,
-  aiMode,
+  aiMode: propAiMode,
   templateId,
   onApply,
 }: ImportCvDialogProps) {
+  const { apiKey, aiMode: contextAiMode } = useApiKey();
+  const effectiveAiMode = propAiMode ?? contextAiMode;
+
   const [file, setFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState("");
   const [result, setResult] = useState<CvImportResult | null>(null);
@@ -122,6 +126,7 @@ export function ImportCvDialog({
       const body = new FormData();
       if (file) body.append("file", file);
       else body.append("text", pastedText);
+      if (apiKey) body.append("apiKey", apiKey);
 
       const response = await fetch("/api/cv/import", {
         method: "POST",
@@ -148,7 +153,7 @@ export function ImportCvDialog({
       setResult({
         document: parsed.data,
         warnings: payload.warnings ?? [],
-        mode: payload.mode ?? aiMode,
+        mode: payload.mode ?? effectiveAiMode,
         source: payload.source ?? {
           fileName: file?.name ?? "Pasted CV text",
           characters: 0,
@@ -171,7 +176,7 @@ export function ImportCvDialog({
 
   const canParse =
     !parsing && (Boolean(file) || pastedText.trim().length >= 20);
-  const mode = result?.mode ?? aiMode;
+  const mode = result?.mode ?? effectiveAiMode;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

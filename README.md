@@ -74,7 +74,6 @@ model User {
   updatedAt  DateTime  @updatedAt
 
   resumes    Resume[]
-  aiUsages   AIUsage[]
 }
 
 model Resume {
@@ -89,16 +88,6 @@ model Resume {
 
   @@index([userId])
   @@index([userId, updatedAt])
-}
-
-model AIUsage {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action    String   // improve-bullet, tailor-job, fix-grammar, cv-import
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt])
 }
 ```
 
@@ -120,13 +109,15 @@ model AIUsage {
 - **Editorial**: Distinctive split-column format with dedicated profile thumbnail frame and dashed skill grid.
 - **Designer**: Structured two-column format with portrait photo box, vertical divider line, rail contacts/skills, and declaration statement.
 
-### 🤖 Grounded AI Assistance
+### 🤖 Grounded AI Assistance (BYOK — Bring Your Own Key)
+- **Zero-Cost Open Source Model**: Users bring their own free Google AI Studio Gemini API key. No subscription or hosting costs for the website owner.
+- **Client-Side Security**: API keys are saved exclusively in browser `localStorage`. Keys are sent transiently over HTTPS per request to Gemini and are never stored in any database or logged on servers.
 - **Bullet Point Refinement**: Rewrites experience bullets following the XYZ format (*Accomplished [X] as measured by [Y] by doing [Z]*).
 - **Summary Proofreading & Tone Tuning**: Enhances executive summaries for impact and conciseness.
 - **Job Description Tailoring**: Identifies missing keywords and generates targeted bullet suggestions.
 - **AI-Enhanced Raw CV Import**: Parses raw text or unstructured CV pastes into valid `ResumeDocument` structures.
 - **Strict Anti-Hallucination Guardrails**: Prompts enforce grounding on user facts—AI is forbidden from inventing metrics, employers, or credentials.
-- **Per-User Quotas**: Tracks daily requests in PostgreSQL to maintain zero-cost operation and prevent abuse.
+- **Graceful Mock Fallback**: Users without an API key can still use all features in demo mock mode with deterministic local helpers.
 
 ### 🖨️ Production PDF Engine
 - Server-rendered via authenticated endpoint `/api/resumes/[resumeId]/pdf`.
@@ -236,7 +227,7 @@ In **Project Settings → Environment Variables**, add:
 - `NEON_AUTH_BASE_URL`
 - `NEON_AUTH_JWKS_URL`
 - `NEON_AUTH_COOKIE_SECRET`
-- `GEMINI_API_KEY`
+*(Note: `GEMINI_API_KEY` is NOT needed on the server — users provide their own keys via the UI).*
 
 ### Step 3: Authorize Vercel Domain in Neon Auth
 To allow cross-origin auth flows and OAuth redirects to the production site:
@@ -267,7 +258,7 @@ For complete DNS tables, Cloudflare configuration, and troubleshooting, read the
 |---|---|---|
 | **Neon PostgreSQL** | Free shared compute, auto-suspend after inactivity. | The app handles cold start reconnects via `@prisma/adapter-pg` pool pooling. |
 | **Neon Auth** | Managed Better Auth schema (`neon_auth`). | App models live in `public` schema; linked lazily on first authenticated request. |
-| **Google Gemini API** | 15 RPM / free-tier daily quotas. | Hard per-user daily limits (15 requests/day) tracked in PostgreSQL. UI shows clean `429` error states without disrupting manual editing. |
+| **Google Gemini API** | BYOK (Google AI Studio free tier limits: 15 RPM). | User-provided API key stored in browser `localStorage`. No server database quota limits; users enjoy their full Google AI Studio quota. |
 | **Vercel Hobby** | Serverless function execution timeout (15s). | PDF generation and AI prompts are optimized to stream under 2.5 seconds. |
 
 ---

@@ -24,8 +24,11 @@ export async function POST(request: Request) {
     const file = fileEntry instanceof File ? fileEntry : null;
     const text = typeof textEntry === "string" ? textEntry : null;
 
+    const apiKeyEntry = formData.get("apiKey");
+    const apiKey = typeof apiKeyEntry === "string" && apiKeyEntry.trim().length > 0 ? apiKeyEntry.trim() : undefined;
+
     const extracted = await extractCvText({ file, text });
-    const result = await importCvText(extracted.text, extracted.fileName);
+    const result = await importCvText(extracted.text, extracted.fileName, apiKey);
 
     return NextResponse.json({
       ok: true,

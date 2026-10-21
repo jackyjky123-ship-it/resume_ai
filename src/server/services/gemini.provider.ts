@@ -25,14 +25,12 @@ const TIMEOUT_MS = 45_000;
 const MAX_INPUT_CHARS = 5_000;
 const MAX_PARSE_CHARS = 20_000;
 
-let client: GoogleGenAI | null = null;
-
-function getClient(): GoogleGenAI {
-  if (client) return client;
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error("GEMINI_API_KEY is not configured");
-  client = new GoogleGenAI({ apiKey: key });
-  return client;
+function createClient(apiKey: string): GoogleGenAI {
+  const trimmed = apiKey?.trim();
+  if (!trimmed) {
+    throw new Error("Gemini API key is required. Please add your key in the settings.");
+  }
+  return new GoogleGenAI({ apiKey: trimmed });
 }
 
 function withTimeout<T>(promise: Promise<T>, ms = TIMEOUT_MS): Promise<T> {
@@ -163,9 +161,10 @@ Output JSON schema:
 }
 
 export async function generateWithGemini(
-  input: GenerateCvInput
+  input: GenerateCvInput,
+  apiKey: string
 ): Promise<GenerationResult> {
-  const ai = getClient();
+  const ai = createClient(apiKey);
   const prompt = buildGeneratePrompt(input);
 
   const response = (await withTimeout(
@@ -199,9 +198,10 @@ Strict Rules:
 - Return ONLY valid JSON: { "improvedBullet": string, "explanation": string }`;
 
 export async function improveBulletWithGemini(
-  input: ImproveBulletInput
+  input: ImproveBulletInput,
+  apiKey: string
 ): Promise<ImproveBulletResult> {
-  const ai = getClient();
+  const ai = createClient(apiKey);
 
   const prompt = `Context:
 Role: ${input.role || "Professional"}
@@ -245,9 +245,10 @@ Strict Rules:
 - Return ONLY valid JSON: { "correctedText": string, "explanation": string }`;
 
 export async function fixGrammarWithGemini(
-  input: FixGrammarInput
+  input: FixGrammarInput,
+  apiKey: string
 ): Promise<FixGrammarResult> {
-  const ai = getClient();
+  const ai = createClient(apiKey);
 
   const prompt = `Text to proofread:
 "${input.text}"
@@ -288,9 +289,10 @@ Strict Rules:
 - Return ONLY valid JSON matching the ResumeDocument schema.`;
 
 export async function parseResumeWithGemini(
-  text: string
+  text: string,
+  apiKey: string
 ): Promise<ResumeDocument> {
-  const ai = getClient();
+  const ai = createClient(apiKey);
 
   const prompt = `Parse this resume text into a structured JSON ResumeDocument:
 

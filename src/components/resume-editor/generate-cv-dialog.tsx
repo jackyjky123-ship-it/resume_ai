@@ -38,12 +38,13 @@ import {
   type ResumeDocument,
   type ResumeEditorFormValues,
 } from "@/lib/validations/resume";
+import { useApiKey } from "@/lib/api-key-context";
 import { generateCvSuggestionsAction } from "@/server/actions/cv.actions";
 
 type GenerateCvDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  aiMode: AiMode;
+  aiMode?: AiMode;
 };
 
 const SECTION_COPY: Record<
@@ -83,8 +84,11 @@ function countLabel(count: number, singular: string, plural = `${singular}s`) {
 export function GenerateCvDialog({
   open,
   onOpenChange,
-  aiMode,
+  aiMode: propAiMode,
 }: GenerateCvDialogProps) {
+  const { apiKey, aiMode: contextAiMode } = useApiKey();
+  const effectiveMode = propAiMode ?? contextAiMode;
+
   const form = useFormContext<ResumeEditorFormValues>();
   const watched = useWatch({ control: form.control, name: "content" });
   const document = watched ?? form.getValues("content");
@@ -97,7 +101,7 @@ export function GenerateCvDialog({
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GenerationResult | null>(null);
-  const [mode, setMode] = useState<AiMode>(aiMode);
+  const [mode, setMode] = useState<AiMode>(effectiveMode);
   const [appliedSummary, setAppliedSummary] = useState(false);
   const [appliedSkills, setAppliedSkills] = useState(false);
   const [appliedProjects, setAppliedProjects] = useState<Set<string>>(
@@ -127,6 +131,7 @@ export function GenerateCvDialog({
   async function generate() {
     if (generating) return;
     const input = {
+      apiKey: apiKey ?? undefined,
       targetRole: targetRole.trim(),
       sections: selected,
       document: form.getValues("content"),
@@ -292,9 +297,7 @@ export function GenerateCvDialog({
               <Alert>
                 <AlertTitle>Demo mode</AlertTitle>
                 <AlertDescription>
-                  Gemini is not configured. Suggestions are generated locally
-                  from your current resume and the role below; no content leaves
-                  this app.
+                  No Gemini API key configured. Suggestions are generated locally using mock heuristics. Add your free Google AI Studio key via the &ldquo;API Key&rdquo; button in the editor toolbar to use Gemini.
                 </AlertDescription>
               </Alert>
             )}

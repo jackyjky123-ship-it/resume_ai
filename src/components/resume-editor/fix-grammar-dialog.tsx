@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import type { AiMode } from "@/lib/validations/ai";
+import { useApiKey } from "@/lib/api-key-context";
 import { fixGrammarAction } from "@/server/actions/cv.actions";
 
 type FixGrammarDialogProps = {
@@ -34,6 +35,7 @@ export function FixGrammarDialog({
   label = "Professional summary",
   onApply,
 }: FixGrammarDialogProps) {
+  const { apiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -53,7 +55,10 @@ export function FixGrammarDialog({
     setError(null);
 
     try {
-      const response = await fixGrammarAction({ text });
+      const response = await fixGrammarAction({
+        apiKey: apiKey ?? undefined,
+        text,
+      });
 
       if (!response.ok) {
         setError(response.error);

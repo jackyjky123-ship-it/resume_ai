@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { FileText, Sparkles, Upload } from "lucide-react";
+import { FileText, KeyRound, Sparkles, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -12,16 +12,21 @@ import {
   withFreshIds,
   type ImportApplyMode,
 } from "@/lib/resume-import";
-import type { AiMode, CvImportResult } from "@/lib/validations/ai";
+import { useApiKey } from "@/lib/api-key-context";
+import type { CvImportResult } from "@/lib/validations/ai";
 import type { ResumeEditorFormValues } from "@/lib/validations/resume";
+import { ApiKeySettingsDialog } from "./api-key-settings";
 import { ImportCvDialog } from "./import-cv-dialog";
 import { GenerateCvDialog } from "./generate-cv-dialog";
 
-export function CvTools({ aiMode }: { aiMode: AiMode }) {
+export function CvTools() {
   const form = useFormContext<ResumeEditorFormValues>();
   const templateId = form.watch("templateId") ?? "classic";
   const [importOpen, setImportOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [keySettingsOpen, setKeySettingsOpen] = useState(false);
+
+  const { aiMode, hasKey } = useApiKey();
 
   function handleLoadSample() {
     const current = form.getValues("content");
@@ -87,6 +92,16 @@ export function CvTools({ aiMode }: { aiMode: AiMode }) {
             type="button"
             variant="outline"
             size="sm"
+            onClick={() => setKeySettingsOpen(true)}
+            title="Configure your Gemini API key"
+          >
+            <KeyRound className="size-3.5" />
+            API Key
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
             onClick={() => setImportOpen(true)}
           >
             <Upload />
@@ -101,10 +116,19 @@ export function CvTools({ aiMode }: { aiMode: AiMode }) {
             Generate CV
           </Button>
         </div>
-        <span className="text-[10px] font-medium text-muted-foreground">
-          {aiMode === "gemini" ? "Gemini AI · 10 daily uses" : "Demo AI · local only"}
-        </span>
+        <button
+          type="button"
+          onClick={() => setKeySettingsOpen(true)}
+          className="text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          {hasKey ? "Gemini AI · Your API key" : "Demo AI · Local only (Add Key)"}
+        </button>
       </div>
+
+      <ApiKeySettingsDialog
+        open={keySettingsOpen}
+        onOpenChange={setKeySettingsOpen}
+      />
 
       {importOpen && (
         <ImportCvDialog

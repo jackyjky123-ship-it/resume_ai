@@ -5,7 +5,6 @@ import { ResumeEditor } from "@/components/resume-editor/resume-editor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Wordmark } from "@/components/wordmark";
 import { requireUser } from "@/lib/auth/current-user";
-import { getAiMode } from "@/server/services/ai.service";
 import { getResumeForEditor } from "@/server/services/resume.service";
 
 async function EditorWithSession({ params }: { params: Promise<{ resumeId: string }> }) {
@@ -15,7 +14,7 @@ async function EditorWithSession({ params }: { params: Promise<{ resumeId: strin
 
   if (!resume) notFound();
 
-  return <ResumeEditor resume={resume} aiMode={getAiMode()} />;
+  return <ResumeEditor resume={resume} />;
 }
 
 function EditorSkeleton() {

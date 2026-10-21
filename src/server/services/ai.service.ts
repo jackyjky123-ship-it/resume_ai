@@ -18,14 +18,6 @@ import {
 } from "@/lib/validations/ai";
 import { resumeDocumentSchema, type ResumeDocument } from "@/lib/validations/resume";
 
-/**
- * Provider boundary for every AI-backed CV operation.
- * Automatically switches to Gemini when GEMINI_API_KEY is configured.
- */
-export function getAiMode(): AiMode {
-  return process.env.GEMINI_API_KEY ? "gemini" : "mock";
-}
-
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -143,19 +135,21 @@ function enforceGroundedResult(
 
 export async function importCvText(
   text: string,
-  sourceName: string
+  sourceName: string,
+  apiKey?: string
 ): Promise<CvImportResult> {
-  const mode = getAiMode();
+  const keyToUse = apiKey?.trim();
+  const mode: AiMode = keyToUse ? "gemini" : "mock";
   const truncated = text.length > CV_IMPORT_MAX_TEXT;
   const processText = truncated ? text.slice(0, CV_IMPORT_MAX_TEXT) : text;
 
   let document: ResumeDocument;
   let warnings: string[] = [];
 
-  if (mode === "gemini") {
+  if (keyToUse) {
     try {
       const { parseResumeWithGemini } = await import("./gemini.provider");
-      document = await parseResumeWithGemini(processText);
+      document = await parseResumeWithGemini(processText, keyToUse);
       const hasContent =
         document.experience.length > 0 ||
         document.education.length > 0 ||
@@ -202,16 +196,20 @@ export async function importCvText(
   };
 }
 
-export async function generateCvSuggestions(input: GenerateCvInput): Promise<{
+export async function generateCvSuggestions(
+  input: GenerateCvInput,
+  apiKey?: string
+): Promise<{
   result: GenerationResult;
   mode: AiMode;
 }> {
-  const mode = getAiMode();
+  const keyToUse = apiKey?.trim() || input.apiKey?.trim();
+  const mode: AiMode = keyToUse ? "gemini" : "mock";
 
   let result: GenerationResult;
-  if (mode === "gemini") {
+  if (keyToUse) {
     const { generateWithGemini } = await import("./gemini.provider");
-    const raw = await generateWithGemini(input);
+    const raw = await generateWithGemini(input, keyToUse);
     result = generationResultSchema.parse(raw);
   } else {
     const raw = generateMockSuggestions(input);
@@ -225,13 +223,15 @@ export async function generateCvSuggestions(input: GenerateCvInput): Promise<{
 }
 
 export async function improveBullet(
-  input: ImproveBulletInput
+  input: ImproveBulletInput,
+  apiKey?: string
 ): Promise<ImproveBulletResult & { mode: AiMode }> {
-  const mode = getAiMode();
+  const keyToUse = apiKey?.trim() || input.apiKey?.trim();
+  const mode: AiMode = keyToUse ? "gemini" : "mock";
 
-  if (mode === "gemini") {
+  if (keyToUse) {
     const { improveBulletWithGemini } = await import("./gemini.provider");
-    const result = await improveBulletWithGemini(input);
+    const result = await improveBulletWithGemini(input, keyToUse);
     return { ...result, mode };
   }
 
@@ -247,13 +247,15 @@ export async function improveBullet(
 }
 
 export async function fixGrammar(
-  input: FixGrammarInput
+  input: FixGrammarInput,
+  apiKey?: string
 ): Promise<FixGrammarResult & { mode: AiMode }> {
-  const mode = getAiMode();
+  const keyToUse = apiKey?.trim() || input.apiKey?.trim();
+  const mode: AiMode = keyToUse ? "gemini" : "mock";
 
-  if (mode === "gemini") {
+  if (keyToUse) {
     const { fixGrammarWithGemini } = await import("./gemini.provider");
-    const result = await fixGrammarWithGemini(input);
+    const result = await fixGrammarWithGemini(input, keyToUse);
     return { ...result, mode };
   }
 

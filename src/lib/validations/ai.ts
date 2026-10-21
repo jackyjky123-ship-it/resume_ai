@@ -25,6 +25,7 @@ export const generateSectionSchema = z.enum(GENERATE_SECTIONS);
 export type GenerateSection = z.infer<typeof generateSectionSchema>;
 
 export const generateCvInputSchema = z.object({
+  apiKey: z.string().trim().optional(),
   targetRole: z
     .string()
     .trim()
@@ -93,6 +94,7 @@ export type CvImportResult = {
 };
 
 export const improveBulletInputSchema = z.object({
+  apiKey: z.string().trim().optional(),
   bullet: z.string().trim().min(3, "Select a bullet to improve").max(500),
   role: z.string().max(120).default(""),
   company: z.string().max(120).default(""),
@@ -106,6 +108,7 @@ export const improveBulletResultSchema = z.object({
 export type ImproveBulletResult = z.infer<typeof improveBulletResultSchema>;
 
 export const fixGrammarInputSchema = z.object({
+  apiKey: z.string().trim().optional(),
   text: z.string().trim().min(3, "Select text to fix").max(2_000),
 });
 export type FixGrammarInput = z.infer<typeof fixGrammarInputSchema>;

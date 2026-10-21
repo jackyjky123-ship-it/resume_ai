@@ -18,6 +18,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import type { AiMode } from "@/lib/validations/ai";
 import type { ResumeBullet } from "@/lib/validations/resume";
+import { useApiKey } from "@/lib/api-key-context";
 import { improveBulletAction } from "@/server/actions/cv.actions";
 
 type ImproveBulletDialogProps = {
@@ -37,6 +38,7 @@ export function ImproveBulletDialog({
   company = "",
   onApply,
 }: ImproveBulletDialogProps) {
+  const { apiKey } = useApiKey();
   const eligibleBullets = bullets.filter((b) => b.text.trim().length >= 3);
   const [selectedId, setSelectedId] = useState<string>(
     () => eligibleBullets[0]?.id ?? ""
@@ -66,6 +68,7 @@ export function ImproveBulletDialog({
 
     try {
       const response = await improveBulletAction({
+        apiKey: apiKey ?? undefined,
         bullet: currentSelected.text,
         role,
         company,

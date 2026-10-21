@@ -93,7 +93,7 @@ npm run db:test      # Prisma + pooled DATABASE_URL smoke test (create/read/owne
 npm run auth:test    # Neon Auth e2e through the app (needs `npm start` running on :3000)
 npm run dashboard:test  # real dashboard smoke test (needs `npm start`); keeps preview@example.com / preview-1234 for browser sign-in
 npm run editor:test  # Phase 4 schema/persistence/ownership + editor-route smoke test (needs `npm start`; cleans up its rows)
-npm run ai:test      # Phase 5 Gemini AI integration + quota accounting smoke test
+npm run ai:test      # BYOK AI integration + mock fallback smoke test
 npm run cv:test      # CV tools and parser unit smoke test
 
 neon status          # branch live state (Neon CLI authenticated via `neon login`)
@@ -104,4 +104,4 @@ neon deploy          # apply neon.ts (provisions services/functions, pulls env i
 - Test scripts (Vitest/Playwright) do not exist yet; they arrive in Phase 7 per the plan. `scripts/db-test.ts`, `scripts/auth-test.ts`, `scripts/dashboard-test.ts`, and `scripts/editor-test.ts` are phase-verification smoke tests, not the Phase 7 suites.
 - `editor:test` signs up a fresh `phase4-*` account, hits the dashboard to link the app user, verifies schema guards and DB ownership, checks that the owner's editor renders while a cross-user editor shows only the not-found UI (no title leak), checks anonymous access redirects, then removes all `phase4-*` app/auth rows in a `finally` block. It only asserts server-rendered HTML — hydration/client-hook failures are invisible to it, so click through the editor and dashboard CRUD in a browser until the Phase 7 Playwright suite exists.
 - `dashboard:test` signs in `preview@example.com` / `preview-1234` (creating it if needed) and asserts the real-data workspace renders; that account is intentionally kept for browser previews.
-- Env placeholders are documented in `.env.example`: Neon-managed vars (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_BRANCH`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_JWKS_URL`, `NEON_FUNCTION_HELLO_BASE_URL`) are written by `neon deploy`/`neon env pull` into `.env.local`; app-generated var `NEON_AUTH_COOKIE_SECRET` must be created manually; `GEMINI_API_KEY` (Phase 5) stays a placeholder. All server-only; never commit `.env*`.
+- Env placeholders are documented in `.env.example`: Neon-managed vars (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_BRANCH`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_JWKS_URL`, `NEON_FUNCTION_HELLO_BASE_URL`) are written by `neon deploy`/`neon env pull` into `.env.local`; app-generated var `NEON_AUTH_COOKIE_SECRET` must be created manually; AI features use the BYOK model (users enter their own key in the UI; no server GEMINI_API_KEY needed). All server-only; never commit `.env*`.

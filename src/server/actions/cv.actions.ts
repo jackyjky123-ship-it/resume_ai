@@ -18,27 +18,42 @@ import {
 import {
   fixGrammar,
   generateCvSuggestions,
-  getAiMode,
   improveBullet,
 } from "@/server/services/ai.service";
-import {
-  checkAiQuota,
-  recordAiUsage,
-} from "@/server/services/ai-quota.service";
 import type { ActionResult } from "./action-result";
 
 export type GenerateCvActionResult = ActionResult<{
   result: GenerationResult;
-  mode: ReturnType<typeof getAiMode>;
+  mode: AiMode;
 }>;
 
-const QUOTA_EXHAUSTED_MESSAGE =
-  "You've used all 10 AI requests for today. You can continue editing manually, or try again tomorrow.";
+function formatAiErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error) {
+    const msg = error.message.toLowerCase();
+    if (
+      msg.includes("400") ||
+      msg.includes("401") ||
+      msg.includes("403") ||
+      msg.includes("api_key_invalid") ||
+      msg.includes("api key not valid") ||
+      msg.includes("permission_denied")
+    ) {
+      return "Your Gemini API key appears to be invalid or expired. Please check your key in settings.";
+    }
+    if (
+      msg.includes("resource_exhausted") ||
+      msg.includes("429") ||
+      msg.includes("quota")
+    ) {
+      return "Your Gemini API quota limit was reached. Please wait a moment or check your Google AI Studio account.";
+    }
+  }
+  return fallback;
+}
 
 /**
- * Fixed, server-authorized suggestion operation. It never writes to the
- * database: accepted suggestions are applied in the editor and autosaved
- * through the normal validated save path.
+ * BYOK server-authorized suggestion operation. Accepts the user's API key
+ * transiently to contact Gemini without persisting or logging it.
  */
 export async function generateCvSuggestionsAction(
   rawInput: unknown
@@ -47,20 +62,8 @@ export async function generateCvSuggestionsAction(
     const user = await getSessionUser();
     if (!user) return { ok: false, error: "Your session expired. Sign in again." };
 
-    const mode = getAiMode();
-    if (mode === "gemini") {
-      const quota = await checkAiQuota(user.id);
-      if (!quota.allowed) {
-        return { ok: false, error: QUOTA_EXHAUSTED_MESSAGE };
-      }
-    }
-
     const input: GenerateCvInput = generateCvInputSchema.parse(rawInput);
-    const generated = await generateCvSuggestions(input);
-
-    if (mode === "gemini") {
-      await recordAiUsage(user.id, "generate_suggestions");
-    }
+    const generated = await generateCvSuggestions(input, input.apiKey);
 
     return {
       ok: true,
@@ -77,14 +80,17 @@ export async function generateCvSuggestionsAction(
       };
     }
 
-    // Do not log resume content or provider payloads.
+    // Do not log resume content, provider payloads, or API keys.
     console.error(
       "[cv-suggest-action]",
       error instanceof Error ? error.message : "Unexpected suggestion error"
     );
     return {
       ok: false,
-      error: "We couldn't generate suggestions right now. Try again in a moment.",
+      error: formatAiErrorMessage(
+        error,
+        "We couldn't generate suggestions right now. Try again in a moment."
+      ),
     };
   }
 }
@@ -96,20 +102,8 @@ export async function improveBulletAction(
     const user = await getSessionUser();
     if (!user) return { ok: false, error: "Your session expired. Sign in again." };
 
-    const mode = getAiMode();
-    if (mode === "gemini") {
-      const quota = await checkAiQuota(user.id);
-      if (!quota.allowed) {
-        return { ok: false, error: QUOTA_EXHAUSTED_MESSAGE };
-      }
-    }
-
     const input: ImproveBulletInput = improveBulletInputSchema.parse(rawInput);
-    const result = await improveBullet(input);
-
-    if (mode === "gemini") {
-      await recordAiUsage(user.id, "improve_bullet");
-    }
+    const result = await improveBullet(input, input.apiKey);
 
     return { ok: true, data: result };
   } catch (error) {
@@ -126,7 +120,10 @@ export async function improveBulletAction(
     );
     return {
       ok: false,
-      error: "We couldn't improve that bullet right now. Try again in a moment.",
+      error: formatAiErrorMessage(
+        error,
+        "We couldn't improve that bullet right now. Try again in a moment."
+      ),
     };
   }
 }
@@ -138,20 +135,8 @@ export async function fixGrammarAction(
     const user = await getSessionUser();
     if (!user) return { ok: false, error: "Your session expired. Sign in again." };
 
-    const mode = getAiMode();
-    if (mode === "gemini") {
-      const quota = await checkAiQuota(user.id);
-      if (!quota.allowed) {
-        return { ok: false, error: QUOTA_EXHAUSTED_MESSAGE };
-      }
-    }
-
     const input: FixGrammarInput = fixGrammarInputSchema.parse(rawInput);
-    const result = await fixGrammar(input);
-
-    if (mode === "gemini") {
-      await recordAiUsage(user.id, "fix_grammar");
-    }
+    const result = await fixGrammar(input, input.apiKey);
 
     return { ok: true, data: result };
   } catch (error) {
@@ -168,42 +153,10 @@ export async function fixGrammarAction(
     );
     return {
       ok: false,
-      error: "We couldn't fix grammar right now. Try again in a moment.",
-    };
-  }
-}
-
-export async function getAiQuotaAction(): Promise<
-  ActionResult<{
-    allowed: boolean;
-    used: number;
-    limit: number;
-    remaining: number;
-    mode: AiMode;
-  }>
-> {
-  try {
-    const user = await getSessionUser();
-    if (!user) return { ok: false, error: "Your session expired. Sign in again." };
-
-    const mode = getAiMode();
-    const quota = await checkAiQuota(user.id);
-
-    return {
-      ok: true,
-      data: {
-        ...quota,
-        mode,
-      },
-    };
-  } catch (error) {
-    console.error(
-      "[cv-quota-action]",
-      error instanceof Error ? error.message : "Unexpected quota check error"
-    );
-    return {
-      ok: false,
-      error: "Couldn't retrieve AI quota.",
+      error: formatAiErrorMessage(
+        error,
+        "We couldn't fix grammar right now. Try again in a moment."
+      ),
     };
   }
 }
