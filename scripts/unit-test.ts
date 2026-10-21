@@ -159,14 +159,15 @@ function testSectionComputation() {
 function testTemplateMetadata() {
   console.log("\n4. Template Metadata & IDs");
 
-  assert(TEMPLATE_IDS.length === 5, "5 templates are registered");
+  assert(TEMPLATE_IDS.length === 6, "6 templates are registered");
   assert(TEMPLATE_IDS.includes("classic"), "Classic template ID exists");
   assert(TEMPLATE_IDS.includes("modern"), "Modern template ID exists");
   assert(TEMPLATE_IDS.includes("compact"), "Compact template ID exists");
   assert(TEMPLATE_IDS.includes("professional"), "Professional template ID exists");
   assert(TEMPLATE_IDS.includes("editorial"), "Editorial template ID exists");
+  assert(TEMPLATE_IDS.includes("designer"), "Designer template ID exists");
 
-  assert(TEMPLATES.length === 5, "TEMPLATES array has 5 items");
+  assert(TEMPLATES.length === 6, "TEMPLATES array has 6 items");
   for (const t of TEMPLATES) {
     assert(Boolean(t.id && t.name && t.blurb), `Template "${t.name}" has id, name, and blurb`);
     assert(TEMPLATE_NAME[t.id] === t.name, `TEMPLATE_NAME maps ${t.id} to ${t.name}`);

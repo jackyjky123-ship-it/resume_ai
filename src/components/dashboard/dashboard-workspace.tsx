@@ -84,6 +84,7 @@ export function DashboardWorkspace({
       compact: 0,
       professional: 0,
       editorial: 0,
+      designer: 0,
     };
     for (const resume of resumes) base[resume.templateId] += 1;
     return base;

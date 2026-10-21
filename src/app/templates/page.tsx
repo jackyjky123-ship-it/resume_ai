@@ -104,6 +104,23 @@ const TEMPLATE_GALLERY = [
     columns: "2 Columns (Editorial Asymmetric)",
     accent: "Steel Blue",
   },
+  {
+    id: "designer",
+    name: "Designer",
+    tagline: "Structured two-column CV format with photo banner, vertical divider, and declaration.",
+    category: "Design & Creative",
+    badge: "Curated",
+    color: "border-blue-200 bg-blue-50/40",
+    features: [
+      "ID-ready portrait photo box with bold accent header",
+      "Clean vertical divider line between sidebar and main content",
+      "Dedicated contact, skills, education, and language rail",
+      "Integrated confirmation and declaration signature area",
+    ],
+    recommendedFor: "Designers, creative professionals, developers, and engineers.",
+    columns: "2 Columns (Split with Divider)",
+    accent: "Royal Blue & Charcoal",
+  },
 ];
 
 export default function TemplatesPage() {

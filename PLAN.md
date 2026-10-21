@@ -665,7 +665,7 @@ The MVP is ready for portfolio presentation when:
 - [x] An authenticated user can create, edit, duplicate, rename, and delete resumes (Dashboard & Editor CRUD).
 - [x] Resume content persists after refresh and subsequent login (Postgres JSONB `ResumeDocument` v1).
 - [x] Cross-user access attempts are rejected server-side (Service-level session filters, 404 streaming defense).
-- [x] The user can preview at least three templates (5 templates: Classic, Modern, Compact, Professional, Editorial).
+- [x] The user can preview at least three templates (6 templates: Classic, Modern, Compact, Professional, Editorial, Designer).
 - [x] AI can produce a validated suggestion within the available quota, and the user chooses whether to accept it.
 - [x] AI failure or quota exhaustion does not block manual editing or PDF export.
 - [x] PDF downloads render correctly for short and multi-page resumes (A4 server-rendered `@react-pdf/renderer`).

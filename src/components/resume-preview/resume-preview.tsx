@@ -6,6 +6,7 @@ import { ModernPreview } from "./modern-preview";
 import { CompactPreview } from "./compact-preview";
 import { ProfessionalPreview } from "./professional-preview";
 import { EditorialPreview } from "./editorial-preview";
+import { DesignerPreview } from "./designer-preview";
 
 export function ResumePreview({
   document,
@@ -66,6 +67,8 @@ export function ResumePreview({
     >
       {templateId === "editorial" ? (
         <EditorialPreview document={document} />
+      ) : templateId === "designer" ? (
+        <DesignerPreview document={document} />
       ) : isBlank ? (
         <div className="m-auto max-w-xs text-center text-sm text-neutral-400">
           <p className="font-semibold text-neutral-500">

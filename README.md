@@ -112,12 +112,13 @@ model AIUsage {
 - **Debounced Autosave**: Automatic 1.2-second debounce with in-flight queue protection, `beforeunload` unsaved-state protection, and granular save indicators.
 - **Sample Data Generator**: Instant one-click demo population for rapid template evaluation.
 
-### 🎨 5 Curated Templates
+### 🎨 6 Curated Templates
 - **Classic**: The gold-standard single-column layout preferred by corporate ATS systems and traditional recruiters.
 - **Modern**: Clean contemporary typography with subtle Instagram-inspired gradient accent bar.
 - **Compact**: Dense, high-information-density two-column layout ideal for experienced candidates and lengthy career histories.
 - **Professional**: Executive layout featuring a high-contrast dark banner header and clean section dividers.
 - **Editorial**: Distinctive split-column format with dedicated profile thumbnail frame and dashed skill grid.
+- **Designer**: Structured two-column format with portrait photo box, vertical divider line, rail contacts/skills, and declaration statement.
 
 ### 🤖 Grounded AI Assistance
 - **Bullet Point Refinement**: Rewrites experience bullets following the XYZ format (*Accomplished [X] as measured by [Y] by doing [Z]*).

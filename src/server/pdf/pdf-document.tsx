@@ -6,6 +6,7 @@ import { ModernPdf } from "./components/modern-pdf";
 import { CompactPdf } from "./components/compact-pdf";
 import { ProfessionalPdf } from "./components/professional-pdf";
 import { EditorialPdf } from "./components/editorial-pdf";
+import { DesignerPdf } from "./components/designer-pdf";
 
 export function ResumePdfDocument({ document, templateId }: ResumePdfProps) {
   const authorName = document.personal.fullName.trim() || "ResumeAI";
@@ -23,10 +24,12 @@ export function ResumePdfDocument({ document, templateId }: ResumePdfProps) {
       {templateId === "compact" && <CompactPdf document={document} />}
       {templateId === "professional" && <ProfessionalPdf document={document} />}
       {templateId === "editorial" && <EditorialPdf document={document} />}
+      {templateId === "designer" && <DesignerPdf document={document} />}
       {templateId !== "modern" &&
         templateId !== "compact" &&
         templateId !== "professional" &&
-        templateId !== "editorial" && <ClassicPdf document={document} />}
+        templateId !== "editorial" &&
+        templateId !== "designer" && <ClassicPdf document={document} />}
     </Document>
   );
 }

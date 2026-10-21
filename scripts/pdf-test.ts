@@ -226,6 +226,12 @@ async function testUnitPdfGeneration() {
   assert(editorialBuffer.length > 2000, `Editorial PDF buffer is non-empty (${editorialBuffer.length} bytes)`);
   assert(editorialBuffer.subarray(0, 5).toString("ascii") === "%PDF-", "Editorial PDF has valid %PDF- magic bytes");
 
+  // Render Designer template
+  const designerBuffer = await renderResumePdf(doc, "designer");
+  assert(Buffer.isBuffer(designerBuffer), "Designer PDF renders to Buffer");
+  assert(designerBuffer.length > 2000, `Designer PDF buffer is non-empty (${designerBuffer.length} bytes)`);
+  assert(designerBuffer.subarray(0, 5).toString("ascii") === "%PDF-", "Designer PDF has valid %PDF- magic bytes");
+
   // Render empty resume document (must not crash)
   const emptyDoc = emptyResumeDocument();
   const emptyBuffer = await renderResumePdf(emptyDoc, "classic");

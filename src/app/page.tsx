@@ -212,6 +212,36 @@ const EditorialThumb = () => (
   </div>
 );
 
+const DesignerThumb = () => (
+  <div className="flex h-full w-[138px] flex-col rounded-md bg-white p-2.5 ring-1 ring-black/5">
+    {/* Header with portrait photo placeholder */}
+    <div className="flex items-center gap-1.5 border-b border-neutral-200 pb-1.5">
+      <div className="h-6 w-5 shrink-0 rounded-xs bg-[#2563eb]" />
+      <div className="flex flex-1 flex-col gap-[3px]">
+        <Bar w="80%" dark />
+        <Bar w="50%" />
+      </div>
+    </div>
+    {/* Two columns with vertical divider */}
+    <div className="flex flex-1 pt-1.5">
+      <div className="flex w-[38%] shrink-0 flex-col gap-1 border-r border-neutral-200 pr-1">
+        <Bar w="60%" dark />
+        <Bar w="90%" />
+        <Bar w="75%" />
+        <Bar w="60%" dark />
+        <Bar w="85%" />
+      </div>
+      <div className="flex flex-1 flex-col gap-1 pl-1.5">
+        <Bar w="50%" dark />
+        <Bar w="95%" />
+        <Bar w="88%" />
+        <Bar w="50%" dark />
+        <Bar w="92%" />
+      </div>
+    </div>
+  </div>
+);
+
 const templates: {
   name: string;
   blurb: string;
@@ -247,6 +277,12 @@ const templates: {
     blurb: "Clean two-column layout with photo and skill box.",
     note: "A4 · Modern two-column",
     thumb: <EditorialThumb />,
+  },
+  {
+    name: "Designer",
+    blurb: "Two-column clean CV layout with photo banner and divider.",
+    note: "A4 · Creative & engineering",
+    thumb: <DesignerThumb />,
   },
 ];
 

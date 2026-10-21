@@ -160,11 +160,51 @@ function EditorialSheet() {
   );
 }
 
+function DesignerSheet() {
+  return (
+    <span className="flex w-full flex-col p-2.5">
+      {/* Top Header */}
+      <span className="flex items-center gap-2 border-b border-foreground/20 pb-2">
+        <span className="block h-7 w-5.5 shrink-0 rounded-xs bg-[#2563eb]" />
+        <span className="flex flex-1 flex-col gap-[3px]">
+          <Bar w="65%" tone="ink" thick />
+          <Bar w="45%" tone="line" />
+        </span>
+      </span>
+
+      {/* Main columns with vertical divider */}
+      <span className="flex pt-1.5">
+        {/* Left column (38%) */}
+        <span className="flex w-[38%] shrink-0 flex-col gap-[4px] border-r border-foreground/20 pr-1.5">
+          <Bar w="55%" tone="ink" />
+          <Bar w="85%" />
+          <Bar w="70%" />
+          <Bar w="55%" tone="ink" />
+          <Bar w="80%" />
+          <Bar w="65%" />
+        </span>
+
+        {/* Right column (62%) */}
+        <span className="flex flex-1 flex-col gap-[4px] pl-2">
+          <Bar w="50%" tone="ink" />
+          <Bar w="95%" />
+          <Bar w="90%" />
+          <Bar w="85%" />
+          <Bar w="50%" tone="ink" />
+          <Bar w="92%" />
+        </span>
+      </span>
+    </span>
+  );
+}
+
 /** Crop of the top of a resume page — fills whatever container clips it. */
 export function TemplateSheet({ templateId }: { templateId: TemplateId }) {
   if (templateId === "modern") return <ModernSheet />;
   if (templateId === "compact") return <CompactSheet />;
   if (templateId === "professional") return <ProfessionalSheet />;
   if (templateId === "editorial") return <EditorialSheet />;
+  if (templateId === "designer") return <DesignerSheet />;
   return <ClassicSheet />;
 }
+

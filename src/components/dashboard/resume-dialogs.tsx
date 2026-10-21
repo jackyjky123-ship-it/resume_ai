@@ -92,7 +92,7 @@ export function NewResumeDialog({
 
           <FieldSet>
             <FieldLegend variant="label">Template</FieldLegend>
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
               {TEMPLATES.map((template) => {
                 const selected = templateId === template.id;
                 return (
