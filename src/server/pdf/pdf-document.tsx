@@ -9,7 +9,7 @@ import { EditorialPdf } from "./components/editorial-pdf";
 import { DesignerPdf } from "./components/designer-pdf";
 
 export function ResumePdfDocument({ document, templateId }: ResumePdfProps) {
-  const authorName = document.personal.fullName.trim() || "ResumeAI";
+  const authorName = document.personal.fullName.trim() || "Niseth Code";
   const docTitle = `${authorName} - Resume`;
 
   return (
@@ -17,8 +17,8 @@ export function ResumePdfDocument({ document, templateId }: ResumePdfProps) {
       title={docTitle}
       author={authorName}
       subject="Curriculum Vitae"
-      creator="ResumeAI (resumeai.app)"
-      producer="ResumeAI PDF Engine"
+      creator="Niseth Code (nisethcode.com)"
+      producer="Niseth Code PDF Engine"
     >
       {templateId === "modern" && <ModernPdf document={document} />}
       {templateId === "compact" && <CompactPdf document={document} />}

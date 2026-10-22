@@ -14,9 +14,9 @@ import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Privacy Notice & AI Practices — ResumeAI",
+  title: "Privacy Notice & AI Practices — Niseth Code",
   description:
-    "Learn how ResumeAI handles your resume data, our zero-training AI policy, secure session storage, and how your documents stay private.",
+    "Learn how Niseth Code handles your resume data, our zero-training AI policy, secure session storage, and how your documents stay private.",
 };
 
 export default function PrivacyPage() {
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
             Privacy Notice & AI Data Practices
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-graphite sm:text-base">
-            Last updated: October 2026. ResumeAI is built with privacy-first principles.
+            Last updated: October 2026. Niseth Code is built with privacy-first principles.
             We believe your career history is personal, and our architecture is designed
             so you remain in complete control of your data.
           </p>
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
               <h2 className="font-display text-xl font-bold">1. How Artificial Intelligence is Used</h2>
             </div>
             <p className="text-sm leading-relaxed text-graphite">
-              ResumeAI uses Google Gemini API (via the official <code>@google/genai</code> SDK)
+              Niseth Code uses Google Gemini API (via the official <code>@google/genai</code> SDK)
               exclusively for real-time user-directed assistance:
             </p>
             <ul className="list-inside list-disc space-y-2 text-sm text-foreground/85">
@@ -189,7 +189,7 @@ export default function PrivacyPage() {
 
       {/* Footer */}
       <footer className="border-t border-hairline bg-white py-8 text-center text-xs text-graphite">
-        <p>© 2026 ResumeAI · Transparent privacy and security policies.</p>
+        <p>© 2026 Niseth Code · Transparent privacy and security policies.</p>
       </footer>
     </div>
   );

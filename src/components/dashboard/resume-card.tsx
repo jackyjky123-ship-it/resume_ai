@@ -117,7 +117,7 @@ export function ResumeCard({
   }
 
   return (
-    <article className="group relative flex flex-col rounded-2xl border border-hairline bg-white transition hover:border-foreground/25 hover:shadow-[0_26px_50px_-32px_rgba(38,38,38,0.4)]">
+    <article className="group relative flex flex-col rounded-2xl border border-hairline bg-white transition hover:border-[#004643]/40 hover:shadow-[0_20px_40px_-20px_rgba(0,70,67,0.18)]">
       <div
         role="button"
         tabIndex={0}
@@ -136,9 +136,9 @@ export function ResumeCard({
         </span>
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-t-2xl bg-white/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-t-2xl bg-[#004643]/15 opacity-0 backdrop-blur-[2px] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-[#004643] shadow-md">
             Open editor
             <ArrowUpRight size={12} />
           </span>

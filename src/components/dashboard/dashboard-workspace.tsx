@@ -172,7 +172,7 @@ export function DashboardWorkspace({
     <div suppressHydrationWarning className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 border-b border-hairline bg-white/85 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-6">
-          <Link href="/" className="shrink-0" aria-label="ResumeAI home">
+          <Link href="/" className="shrink-0" aria-label="Niseth Code home">
             <Wordmark />
           </Link>
           <div className="ml-auto flex items-center gap-3">

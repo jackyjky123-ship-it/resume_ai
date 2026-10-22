@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-bricolage",
-});
-
-const hanken = Hanken_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-hanken",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "ResumeAI — Free resume builder with AI writing suggestions",
+  title: "Niseth Code — Intelligent Resume Builder & Career Suite",
   description:
-    "Build a professional resume in one evening: structured editor, live preview, three templates, AI suggestions you accept or reject, and a watermark-free PDF. Free.",
+    "Craft high-impact, ATS-optimized resumes with Niseth Code. Live preview canvas, curated templates, AI writing copilot, and watermark-free PDF exports. Free forever.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -24,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${bricolage.variable} ${hanken.variable} h-full antialiased`}
+      className={`${poppins.variable} h-full antialiased`}
     >
       <head>
         <script

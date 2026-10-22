@@ -5,51 +5,51 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* ResumeAI palette */
-  --background: #fafafa;
-  --foreground: #262626;
-  --graphite: #737373;
-  --hairline: #dbdbdb;
-  --action: #0095f6;
-  --action-strong: #0084dd;
-  --heart: #ed4956;
-  --g-indigo: #4f5bd5;
-  --g-purple: #962fbf;
-  --g-pink: #d62976;
-  --g-orange: #fa7e1e;
-  --g-yellow: #feda75;
+  /* Niseth Code palette: #004643 (deep forest teal) & #F0EDE5 (warm linen/cream) */
+  --background: #faf8f5;
+  --foreground: #102422;
+  --graphite: #586e6b;
+  --hairline: #e2ded5;
+  --action: #004643;
+  --action-strong: #003330;
+  --heart: #d9383a;
+  --niseth-teal: #004643;
+  --niseth-cream: #f0ede5;
+  --niseth-gold: #dda15e;
+  --niseth-sage: #e3ede8;
+  --niseth-dark: #091c1a;
 
-  /* shadcn/ui tokens mapped onto the palette above */
+  /* shadcn/ui tokens mapped onto Niseth Code */
   --card: #ffffff;
-  --card-foreground: #262626;
+  --card-foreground: #102422;
   --popover: #ffffff;
-  --popover-foreground: #262626;
-  --primary: #0095f6;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #262626;
-  --muted: #f4f4f5;
-  --muted-foreground: #737373;
-  --accent: #f4f4f5;
-  --accent-foreground: #262626;
-  --destructive: #ed4956;
-  --border: #dbdbdb;
-  --input: #dbdbdb;
-  --ring: #0095f6;
-  --chart-1: #0095f6;
-  --chart-2: #737373;
-  --chart-3: #262626;
-  --chart-4: #dbdbdb;
-  --chart-5: #fafafa;
+  --popover-foreground: #102422;
+  --primary: #004643;
+  --primary-foreground: #f0ede5;
+  --secondary: #f0ede5;
+  --secondary-foreground: #004643;
+  --muted: #f4f1ea;
+  --muted-foreground: #586e6b;
+  --accent: #f0ede5;
+  --accent-foreground: #004643;
+  --destructive: #d9383a;
+  --border: #e2ded5;
+  --input: #e2ded5;
+  --ring: #004643;
+  --chart-1: #004643;
+  --chart-2: #2a9d8f;
+  --chart-3: #dda15e;
+  --chart-4: #586e6b;
+  --chart-5: #f0ede5;
   --radius: 0.625rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #262626;
-  --sidebar-primary: #0095f6;
+  --sidebar-foreground: #102422;
+  --sidebar-primary: #004643;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-accent-foreground: #262626;
-  --sidebar-border: #dbdbdb;
-  --sidebar-ring: #0095f6;
+  --sidebar-accent: #f0ede5;
+  --sidebar-accent-foreground: #004643;
+  --sidebar-border: #e2ded5;
+  --sidebar-ring: #004643;
 }
 
 @theme inline {
@@ -60,9 +60,13 @@
   --color-action: var(--action);
   --color-action-strong: var(--action-strong);
   --color-heart: var(--heart);
-  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-bricolage), var(--font-hanken), sans-serif;
-  --font-heading: var(--font-bricolage), var(--font-hanken), sans-serif;
+  --color-niseth-teal: var(--niseth-teal);
+  --color-niseth-cream: var(--niseth-cream);
+  --color-niseth-gold: var(--niseth-gold);
+  --color-niseth-sage: var(--niseth-sage);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -102,7 +106,7 @@
 }
 
 body {
-  font-family: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
 :focus-visible {
@@ -110,54 +114,26 @@ body {
   outline-offset: 2px;
 }
 
-.ig-ring {
-  background: conic-gradient(
-    from 210deg,
-    var(--g-yellow),
-    var(--g-orange),
-    var(--g-pink),
-    var(--g-purple),
-    var(--g-indigo),
-    var(--g-purple),
-    var(--g-pink),
-    var(--g-orange),
-    var(--g-yellow)
-  );
+.ig-ring, .niseth-ring {
+  background: linear-gradient(135deg, #004643 0%, #2a9d8f 50%, #dda15e 100%);
 }
 
-.ig-panel {
-  background: linear-gradient(
-    120deg,
-    var(--g-indigo),
-    var(--g-purple) 32%,
-    var(--g-pink) 62%,
-    var(--g-orange) 100%
-  );
+.ig-panel, .niseth-panel {
+  background: linear-gradient(135deg, #002d2a 0%, #004643 60%, #0d5f5a 100%);
 }
 
-.ig-avatar {
-  background: radial-gradient(
-    circle at 30% 30%,
-    var(--g-yellow),
-    var(--g-orange) 42%,
-    var(--g-pink) 72%,
-    var(--g-purple)
-  );
+.ig-avatar, .niseth-avatar {
+  background: linear-gradient(135deg, #004643 0%, #177169 50%, #dda15e 100%);
 }
 
-.text-ig {
-  background-image: linear-gradient(
-    90deg,
-    var(--g-purple),
-    var(--g-pink),
-    var(--g-orange)
-  );
+.text-ig, .text-niseth {
+  background-image: linear-gradient(120deg, #004643 0%, #157a6e 50%, #dda15e 100%);
   background-clip: text;
   color: transparent;
 }
 
-.ig-line {
-  background: linear-gradient(90deg, var(--g-indigo), var(--g-pink), var(--g-orange));
+.ig-line, .niseth-line {
+  background: linear-gradient(90deg, #004643, #2a9d8f, #dda15e);
 }
 
 @keyframes rise-in {
@@ -249,4 +225,27 @@ body {
   html {
     @apply font-sans;
   }
+}
+
+.niseth-glass {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 222, 213, 0.8);
+}
+
+.niseth-glass-dark {
+  background: rgba(9, 28, 26, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.niseth-glow-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.niseth-glow-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(0, 70, 67, 0.16);
+  border-color: rgba(0, 70, 67, 0.35);
 }

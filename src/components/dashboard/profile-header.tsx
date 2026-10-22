@@ -19,9 +19,9 @@ export function ProfileHeader({
 }: ProfileHeaderProps) {
   return (
     <section className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-      <span className="ig-ring grid size-20 shrink-0 place-items-center rounded-full p-[3px] sm:size-24">
+      <span className="niseth-ring grid size-20 shrink-0 place-items-center rounded-full p-[3px] shadow-sm sm:size-24">
         <span className="grid size-full place-items-center rounded-full bg-white p-[3px]">
-          <span className="ig-avatar grid size-full place-items-center rounded-full font-display text-2xl font-bold text-white sm:text-3xl">
+          <span className="niseth-avatar grid size-full place-items-center rounded-full font-display text-2xl font-bold text-[#f0ede5] sm:text-3xl">
             {initials}
           </span>
         </span>
@@ -29,30 +29,30 @@ export function ProfileHeader({
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-[#102422] sm:text-3xl">
             {displayName}
           </h1>
-          <span className="rounded-full border border-hairline bg-white px-3 py-1 text-[11px] font-semibold text-graphite">
-            Free plan
+          <span className="rounded-full border border-[#004643]/20 bg-[#f0ede5] px-3.5 py-1 text-[11px] font-bold text-[#004643]">
+            Niseth Code Member
           </span>
         </div>
-        <p className="mt-1 truncate text-sm text-graphite">{email}</p>
-        <p className="mt-3 text-sm text-graphite">
-          <span className="font-semibold text-foreground tabular-nums">{resumeCount}</span>{" "}
+        <p className="mt-1 truncate text-sm text-[#586e6b]">{email}</p>
+        <p className="mt-3 text-sm text-[#586e6b]">
+          <span className="font-semibold text-[#102422] tabular-nums">{resumeCount}</span>{" "}
           {resumeCount === 1 ? "resume" : "resumes"}
-          <span aria-hidden className="mx-2 text-hairline">
+          <span aria-hidden className="mx-2 text-[#e2ded5]">
             ·
           </span>
-          Private to your account
+          Encrypted & private to your account
         </p>
       </div>
 
       <button
         type="button"
         onClick={onCreate}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-action px-6 py-3 text-[15px] font-semibold text-white hover:bg-action-strong sm:w-auto"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#004643] px-7 py-3 text-[15px] font-semibold text-[#f0ede5] shadow-md transition hover:bg-[#003330] hover:shadow-lg sm:w-auto"
       >
-        <Plus size={17} strokeWidth={2.2} aria-hidden />
+        <Plus size={17} strokeWidth={2.4} aria-hidden />
         New resume
       </button>
     </section>

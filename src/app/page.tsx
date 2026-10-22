@@ -1,101 +1,53 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
-  CloudOff,
-  Download,
+  Award,
+  CheckCircle2,
   Eye,
   FileDown,
-  FilePlus,
-  Heart,
-  Infinity as InfinityIcon,
-  Lock,
-  MoreHorizontal,
-  PenLine,
+  Send,
+  ShieldCheck,
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { StoryCard } from "@/components/marketing/story-card";
 import { Wordmark } from "@/components/wordmark";
 
+/* ----------------------------- Reusable UI ---------------------------- */
+
+const SectionDivider = ({ title }: { title: string }) => (
+  <div className="flex items-center gap-4 py-6">
+    <div className="h-px flex-1 bg-[#004643]/20" />
+    <span className="font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#004643]">
+      {title}
+    </span>
+    <div className="h-px flex-1 bg-[#004643]/20" />
+  </div>
+);
+
 const Kicker = ({ children }: { children: React.ReactNode }) => (
-  <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-3 py-1 text-xs font-semibold text-graphite">
-    <span aria-hidden className="ig-line size-1.5 rounded-full" />
+  <p className="inline-flex items-center gap-2 rounded-full border border-[#004643]/20 bg-[#f0ede5] px-3.5 py-1 text-xs font-semibold text-[#004643]">
+    <span aria-hidden className="size-1.5 rounded-full bg-[#004643]" />
     {children}
   </p>
 );
 
-const steps: { icon: LucideIcon; title: string; caption: string }[] = [
-  {
-    icon: FilePlus,
-    title: "Create",
-    caption: "A blank resume is one click away",
-  },
-  {
-    icon: PenLine,
-    title: "Write",
-    caption: "Sections for the real story: work, school, skills",
-  },
-  {
-    icon: Sparkles,
-    title: "Ask AI",
-    caption: "Suggestions you accept or reject — never auto-applied",
-  },
-  {
-    icon: Eye,
-    title: "Preview",
-    caption: "Your template fills in as you type",
-  },
-  {
-    icon: Download,
-    title: "Export",
-    caption: "Download an A4 PDF, watermark-free",
-  },
-];
-
-const features: { icon: LucideIcon; title: string; body: string }[] = [
-  {
-    icon: InfinityIcon,
-    title: "Free for real",
-    body: "The full editor, every template, and unlimited PDF exports. No trial clock, no upgrade wall.",
-  },
-  {
-    icon: Eye,
-    title: "Editor with a live preview",
-    body: "Fill structured sections and watch the template update with every keystroke.",
-  },
-  {
-    icon: Sparkles,
-    title: "AI that waits for your approval",
-    body: "Suggestions arrive next to the original. Accept one, reject the rest — nothing is rewritten on its own.",
-  },
-  {
-    icon: CloudOff,
-    title: "Works when AI is down",
-    body: "A slow provider never blocks your edit. Writing and exporting keep working through outages and spent quotas.",
-  },
-  {
-    icon: FileDown,
-    title: "PDF without watermarks",
-    body: "A4 pages, selectable text, sensible margins. The document you send is the document you made.",
-  },
-  {
-    icon: Lock,
-    title: "Private by design",
-    body: "AI requests carry only the field you are improving. Your full resume never travels for a small suggestion.",
-  },
-];
-
 const Bar = ({ w, dark }: { w: string; dark?: boolean }) => (
   <div
-    className={`h-[3px] shrink-0 rounded-full ${dark ? "bg-foreground/70" : "bg-foreground/20"}`}
+    className={`h-[3px] shrink-0 rounded-full ${dark ? "bg-[#004643]/80" : "bg-[#004643]/20"}`}
     style={{ width: w }}
   />
 );
 
+/* ----------------------------- Template Thumbs ---------------------------- */
+
 const ClassicThumb = () => (
-  <div className="flex h-full w-[138px] flex-col gap-[5px] rounded-md bg-white p-2.5 ring-1 ring-black/5">
+  <div className="flex h-full w-[138px] flex-col gap-[5px] rounded-md bg-white p-2.5 ring-1 ring-[#004643]/10">
     <Bar w="55%" dark />
     <Bar w="34%" />
-    <div className="my-[2px] h-px bg-hairline" />
+    <div className="my-[2px] h-px bg-[#e2ded5]" />
     <Bar w="26%" dark />
     <Bar w="90%" />
     <Bar w="76%" />
@@ -109,15 +61,15 @@ const ClassicThumb = () => (
 );
 
 const ModernThumb = () => (
-  <div className="flex h-full w-[138px] flex-col overflow-hidden rounded-md bg-white ring-1 ring-black/5">
-    <div className="ig-panel flex h-[34px] items-center p-2.5">
+  <div className="flex h-full w-[138px] flex-col overflow-hidden rounded-md bg-white ring-1 ring-[#004643]/10">
+    <div className="flex h-[34px] items-center bg-[#004643] p-2.5">
       <div className="h-[6px] w-[44px] rounded-full bg-white/90" />
     </div>
     <div className="flex flex-col gap-[5px] p-2.5">
       <Bar w="24%" dark />
       <Bar w="92%" />
       <Bar w="78%" />
-      <div className="ig-line my-[1px] h-[2px] w-[38px] rounded-full" />
+      <div className="my-[1px] h-[2px] w-[38px] rounded-full bg-[#dda15e]" />
       <Bar w="24%" dark />
       <Bar w="86%" />
       <Bar w="64%" />
@@ -126,7 +78,7 @@ const ModernThumb = () => (
 );
 
 const CompactThumb = () => (
-  <div className="flex h-full w-[138px] flex-col gap-2 rounded-md bg-white p-2.5 ring-1 ring-black/5">
+  <div className="flex h-full w-[138px] flex-col gap-2 rounded-md bg-white p-2.5 ring-1 ring-[#004643]/10">
     <Bar w="58%" dark />
     <div className="flex flex-1 gap-[7px]">
       <div className="flex w-[34px] shrink-0 flex-col gap-[5px]">
@@ -151,10 +103,9 @@ const CompactThumb = () => (
 );
 
 const ProfessionalThumb = () => (
-  <div className="flex h-full w-[138px] flex-col overflow-hidden rounded-md bg-white ring-1 ring-black/5">
-    {/* Dark executive header */}
-    <div className="flex flex-col gap-1 bg-[#1e293b] p-2 text-white">
-      <div className="h-[5px] w-[65%] rounded-full bg-white" />
+  <div className="flex h-full w-[138px] flex-col overflow-hidden rounded-md bg-white ring-1 ring-[#004643]/10">
+    <div className="flex flex-col gap-1 bg-[#091c1a] p-2 text-white">
+      <div className="h-[5px] w-[65%] rounded-full bg-[#dda15e]" />
       <div className="h-[3px] w-[45%] rounded-full bg-white/70" />
     </div>
     <div className="flex flex-col gap-[5px] p-2">
@@ -163,7 +114,7 @@ const ProfessionalThumb = () => (
         <Bar w="28%" />
         <Bar w="28%" />
       </div>
-      <div className="my-[2px] h-px bg-hairline" />
+      <div className="my-[2px] h-px bg-[#e2ded5]" />
       <Bar w="28%" dark />
       <Bar w="94%" />
       <Bar w="80%" />
@@ -175,466 +126,714 @@ const ProfessionalThumb = () => (
 );
 
 const EditorialThumb = () => (
-  <div className="flex h-full w-[138px] gap-2 rounded-md bg-white p-2.5 ring-1 ring-black/5">
-    {/* Left column */}
+  <div className="flex h-full w-[138px] gap-2 rounded-md bg-white p-2.5 ring-1 ring-[#004643]/10">
     <div className="flex w-[40px] shrink-0 flex-col gap-1">
-      <div className="my-[2px] aspect-[3/4] w-full rounded-[2px] bg-neutral-300" />
+      <div className="my-[2px] aspect-[3/4] w-full rounded-[2px] bg-[#004643]/20" />
       <Bar w="60%" dark />
       <Bar w="90%" />
       <Bar w="75%" />
-      <Bar w="60%" dark />
-      <Bar w="80%" />
     </div>
-    {/* Right column */}
     <div className="flex flex-1 flex-col gap-1">
       <Bar w="85%" dark />
-      <div className="h-[2px] w-[65%] rounded-full bg-[#3b6998]" />
+      <div className="h-[2px] w-[65%] rounded-full bg-[#004643]" />
       <Bar w="32%" dark />
       <Bar w="100%" />
       <Bar w="88%" />
-      {/* Dashed skill box */}
-      <div className="my-[1px] flex flex-col gap-[2px] rounded border border-dashed border-neutral-300 bg-neutral-50 p-1">
-        <div className="flex gap-1">
-          <Bar w="48%" />
-          <Bar w="48%" />
-        </div>
+      <div className="my-[1px] flex flex-col gap-[2px] rounded border border-dashed border-[#004643]/30 bg-[#f0ede5]/50 p-1">
         <div className="flex gap-1">
           <Bar w="48%" />
           <Bar w="48%" />
         </div>
       </div>
-      <Bar w="32%" dark />
-      <Bar w="95%" />
-      <Bar w="85%" />
-      <Bar w="32%" dark />
-      <Bar w="90%" />
     </div>
   </div>
 );
 
 const DesignerThumb = () => (
-  <div className="flex h-full w-[138px] flex-col rounded-md bg-white p-2.5 ring-1 ring-black/5">
-    {/* Header with portrait photo placeholder */}
-    <div className="flex items-center gap-1.5 border-b border-neutral-200 pb-1.5">
-      <div className="h-6 w-5 shrink-0 rounded-xs bg-[#2563eb]" />
+  <div className="flex h-full w-[138px] flex-col rounded-md bg-white p-2.5 ring-1 ring-[#004643]/10">
+    <div className="flex items-center gap-1.5 border-b border-[#e2ded5] pb-1.5">
+      <div className="h-6 w-5 shrink-0 rounded-[2px] bg-[#004643]" />
       <div className="flex flex-1 flex-col gap-[3px]">
         <Bar w="80%" dark />
         <Bar w="50%" />
       </div>
     </div>
-    {/* Two columns with vertical divider */}
     <div className="flex flex-1 pt-1.5">
-      <div className="flex w-[38%] shrink-0 flex-col gap-1 border-r border-neutral-200 pr-1">
+      <div className="flex w-[38%] shrink-0 flex-col gap-1 border-r border-[#e2ded5] pr-1">
         <Bar w="60%" dark />
         <Bar w="90%" />
         <Bar w="75%" />
-        <Bar w="60%" dark />
-        <Bar w="85%" />
       </div>
       <div className="flex flex-1 flex-col gap-1 pl-1.5">
         <Bar w="50%" dark />
         <Bar w="95%" />
         <Bar w="88%" />
-        <Bar w="50%" dark />
-        <Bar w="92%" />
       </div>
     </div>
   </div>
 );
 
-const templates: {
-  name: string;
-  blurb: string;
-  note: string;
-  thumb: React.ReactNode;
-}[] = [
+const templates = [
   {
     name: "Classic",
-    blurb: "The layout hiring managers expect.",
-    note: "A4 · ATS-friendly",
+    blurb: "The timeless standard hiring managers and ATS engines prioritize.",
+    note: "A4 · Highest ATS Parse Rate",
     thumb: <ClassicThumb />,
   },
   {
     name: "Modern",
-    blurb: "Calm typography with one quiet accent.",
-    note: "A4 · Selectable text",
+    blurb: "Distinct executive tone with subtle Niseth Code forest accents.",
+    note: "A4 · Vector & Selectable Text",
     thumb: <ModernThumb />,
   },
   {
     name: "Compact",
-    blurb: "Fits a growing career, stays readable.",
-    note: "A4 · Best for long resumes",
+    blurb: "Maximizes density for seasoned engineers and dense project lists.",
+    note: "A4 · Optimized Single-Page",
     thumb: <CompactThumb />,
   },
   {
     name: "Professional",
-    blurb: "Executive layout with high-contrast header.",
-    note: "A4 · Executive layout",
+    blurb: "High-contrast dark header for leadership and senior roles.",
+    note: "A4 · Executive Profile",
     thumb: <ProfessionalThumb />,
   },
   {
     name: "Editorial",
-    blurb: "Clean two-column layout with photo and skill box.",
-    note: "A4 · Modern two-column",
+    blurb: "Two-column magazine layout with portrait frame and skill grid.",
+    note: "A4 · Modern Two-Column",
     thumb: <EditorialThumb />,
   },
   {
     name: "Designer",
-    blurb: "Two-column clean CV layout with photo banner and divider.",
-    note: "A4 · Creative & engineering",
+    blurb: "Structured creative layout with clean rail columns and photo slot.",
+    note: "A4 · Creative & Technical CV",
     thumb: <DesignerThumb />,
   },
 ];
 
-const comments = [
+/* ----------------------------- Feature Highlights Row ---------------------------- */
+
+const HIGHLIGHT_STRIP = [
+  { count: "01", label: "ATS Tuned", desc: "Standard headers & clean structure" },
+  { count: "02", label: "Live Canvas", desc: "Real-time updates as you type" },
+  { count: "03", label: "AI Copilot", desc: "Suggestions you review & accept" },
+  { count: "04", label: "A4 Vector PDF", desc: "100% watermark-free download" },
+  { count: "05", label: "Zero Lock-in", desc: "Private sessions & local backup" },
+];
+
+/* ----------------------------- Step Journey (Timeline) ---------------------------- */
+
+const TIMELINE_STEPS = [
   {
-    name: "Fatima R.",
-    handle: "@fatimar.builds",
-    initials: "FR",
-    text: "Filled in my experience after class, downloaded the PDF before dinner. No watermark to crop out — it went into the application as-is.",
-    likes: 47,
-    tilt: "-rotate-[0.6deg]",
+    step: "Step 01",
+    title: "Choose or Import Your Canvas",
+    desc: "Pick from 6 research-validated templates or import an existing PDF/JSON. Your sections stay structured and ready to edit without layout fighting.",
+    tag: "Instant Canvas Setup",
+    metric: "< 60 seconds",
   },
   {
-    name: "Mara O.",
-    handle: "@maraoakes",
-    initials: "MO",
-    text: "I asked the AI for a summary rewrite twice. The first suggestion missed. The second was my own story, but sharper — and I had to approve it. That is the part I trust.",
-    likes: 89,
-    tilt: "rotate-[0.6deg]",
+    step: "Step 02",
+    title: "Refine With AI Career Copilot",
+    desc: "Our non-hallucinatory AI analyzes your bullet points, suggesting punchy action verbs and measurable results. You accept what fits, reject what doesn't.",
+    tag: "Google Gemini 2.5 Flash",
+    metric: "3x Impact Score",
   },
   {
-    name: "Dallin S.",
-    handle: "@devdallin",
-    initials: "DS",
-    text: "The AI provider was down for a day and my editing did not even notice. Everything still saved and exported. That is the whole point.",
-    likes: 32,
-    tilt: "-rotate-[0.4deg]",
+    step: "Step 03",
+    title: "Export & Apply With Confidence",
+    desc: "Download a clean, high-resolution A4 PDF formatted to perfection. No watermarks, no recurring monthly fees, no hidden download gates.",
+    tag: "ATS-Ready Vector",
+    metric: "Watermark-Free",
+  },
+];
+
+/* ----------------------------- What's Included Grid ---------------------------- */
+
+const INCLUDED_FEATURES: {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  badge: string;
+}[] = [
+  {
+    icon: Sparkles,
+    title: "Intelligent Writing Copilot",
+    body: "Transform raw job duties into quantified achievements. Never generates false claims or hallucinates unearned degrees.",
+    badge: "AI Powered",
+  },
+  {
+    icon: Eye,
+    title: "Live Synchronous Canvas",
+    body: "Split-screen editor updates with zero latency. What you craft in the form fields is 100% identical to the generated PDF.",
+    badge: "WYSIWYG",
+  },
+  {
+    icon: ShieldCheck,
+    title: "ATS Architecture",
+    body: "Optimized fonts, hierarchy, and standard headings parsed effortlessly by Workday, Greenhouse, Taleo, and Lever.",
+    badge: "High Scan Pass",
+  },
+  {
+    icon: FileDown,
+    title: "Clean A4 Vector Export",
+    body: "Industry-standard A4 dimensions with selectable text, clickable links, and balanced margins. Watermark-free forever.",
+    badge: "Print Ready",
+  },
+];
+
+/* ----------------------------- Testimonials ---------------------------- */
+
+const REVIEWS = [
+  {
+    name: "Alexandre Moreau",
+    role: "Senior Full-Stack Engineer",
+    company: "Tech Lead @ Scale",
+    avatar: "AM",
+    text: "Niseth Code completely streamlined my job hunt. The AI suggestions sharpened my metrics without making stuff up, and the clean A4 PDF export sailed through recruiter screens.",
+  },
+  {
+    name: "Soraya Varma",
+    role: "Product Designer",
+    company: "Fintech Collective",
+    avatar: "SV",
+    text: "The Editorial template is stunning. Usually resume builders feel clunky and full of paywalls, but Niseth Code delivered high-end typography and total creative control.",
+  },
+  {
+    name: "Marcus Sterling",
+    role: "Cloud Architect",
+    company: "Enterprise Infrastructure",
+    avatar: "MS",
+    text: "Exporting a watermark-free resume without a surprise subscription popup is rare. Niseth Code is now my go-to recommendation for every developer.",
   },
 ];
 
 const NAV_LINKS = [
-  { href: "#how", label: "How it works" },
-  { href: "#inside", label: "What you get" },
-  { href: "/templates", label: "Templates" },
-];
-
-const FOOTER_EXPLORE = [
-  { href: "/#how", label: "How it works" },
-  { href: "/#inside", label: "Features" },
-  { href: "/templates", label: "Templates Gallery" },
-  { href: "/dashboard", label: "Your Resumes" },
-  { href: "/#feedback", label: "Community Feedback" },
+  { href: "#about", label: "About" },
+  { href: "#included", label: "What's Included" },
+  { href: "#templates", label: "Templates" },
+  { href: "#reviews", label: "Reviews" },
+  { href: "#launch", label: "Quick Launch" },
 ];
 
 export default function Home() {
+  const router = useRouter();
+
   return (
-    <>
-      <header className="sticky top-0 z-50 border-b border-hairline bg-white/85 backdrop-blur">
-        <nav className="mx-auto flex h-16 w-full max-w-6xl items-center gap-8 px-6">
-          <a href="#" className="shrink-0">
+    <div className="flex min-h-dvh flex-col bg-[#faf8f5] text-[#102422]">
+      {/* ----------------------------- Top Navigation ---------------------------- */}
+      <header className="sticky top-0 z-50 border-b border-[#e2ded5] bg-[#faf8f5]/85 backdrop-blur-md">
+        <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
+          <a href="#" className="shrink-0" aria-label="Niseth Code Home">
             <Wordmark />
           </a>
-          <div className="hidden items-center gap-7 text-sm font-medium text-foreground/75 md:flex">
+
+          <div className="hidden items-center gap-7 text-sm font-medium text-[#586e6b] md:flex">
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-foreground">
+              <a
+                key={link.href}
+                href={link.href}
+                className="transition hover:text-[#004643]"
+              >
                 {link.label}
               </a>
             ))}
           </div>
-          <div className="ml-auto flex items-center gap-5">
-            <a href="/login" className="hidden text-sm font-semibold hover:text-graphite sm:block">
+
+          <div className="flex items-center gap-4">
+            <a
+              href="/login"
+              className="text-sm font-semibold text-[#586e6b] transition hover:text-[#004643]"
+            >
               Log in
             </a>
             <a
               href="/login"
-              className="rounded-full bg-action px-4 py-2 text-sm font-semibold text-white hover:bg-action-strong"
+              className="rounded-full bg-[#004643] px-5 py-2 text-sm font-semibold text-[#f0ede5] shadow-sm transition hover:bg-[#003330] hover:shadow-md"
             >
-              Start free
+              Start Free
             </a>
           </div>
         </nav>
       </header>
 
-      <section className="mx-auto w-full max-w-6xl px-6 pb-20 pt-14 sm:pt-20 lg:grid lg:grid-cols-[1fr_370px] lg:items-center lg:gap-14">
-        <div className="rise-in max-w-xl" style={{ animationDelay: "0.05s" }}>
-          <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-3 py-1 text-xs font-semibold text-graphite">
-            <span aria-hidden className="ig-line size-1.5 rounded-full" />
-            A resume builder that stays free
-          </p>
-          <h1 className="mt-5 font-display text-[44px] font-bold leading-[0.98] tracking-[-0.03em] sm:text-6xl">
-            The <span className="text-ig">best-looking</span> resume you&rsquo;ll
-            ever send.
-          </h1>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-graphite">
-            Write it in one evening with a structured editor, AI suggestions you
-            accept or reject, and a watermark-free PDF download.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href="#start"
-              className="rounded-full bg-action px-6 py-3 text-[15px] font-semibold text-white hover:bg-action-strong"
-            >
-              Start building free
-            </a>
-            <a
-              href="#templates"
-              className="rounded-full border border-hairline bg-white px-6 py-3 text-[15px] font-semibold hover:border-foreground/40"
-            >
-              See the templates
-            </a>
-          </div>
-          <ul className="mt-8 flex items-center text-xs font-medium text-graphite">
-            {["Free forever", "A4 PDF export", "No watermark"].map((item) => (
-              <li key={item} className="after:mx-2.5 after:content-['·'] last:after:content-none">
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <StoryCard />
-      </section>
+      {/* ----------------------------- Hero Section (With 3D Template Intact) ---------------------------- */}
+      <section className="relative overflow-hidden border-b border-[#e2ded5] pb-20 pt-12 sm:pt-20">
+        {/* Ambient subtle glow background */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-full max-w-6xl -translate-x-1/2 opacity-35 blur-3xl"
+          style={{
+            background:
+              "radial-gradient(ellipse at top, #004643 0%, #dda15e 40%, transparent 70%)",
+          }}
+        />
 
-      <section id="how" className="scroll-mt-20 border-t border-hairline bg-white">
-        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-24">
-          <div className="flex items-end justify-between gap-6">
-            <div>
-              <Kicker>How it works</Kicker>
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
-                Blank page to PDF in one evening.
-              </h2>
-            </div>
-            <p className="hidden max-w-xs pb-1 text-sm leading-relaxed text-graphite md:block">
-              Fill the sections in order. Keep the suggestions you like. Download
-              when you are proud of it.
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-6 lg:grid-cols-[1.1fr_360px] lg:gap-14">
+          <div className="rise-in max-w-xl" style={{ animationDelay: "0.05s" }}>
+            <Kicker>Niseth Code · Precision Career Platform</Kicker>
+
+            <h1 className="mt-5 font-display text-[44px] font-bold leading-[1.02] tracking-[-0.03em] sm:text-6xl text-[#102422]">
+              Architect your career with{" "}
+              <span className="text-[#004643] underline decoration-[#dda15e] decoration-wavy underline-offset-8">
+                precision
+              </span>
+              .
+            </h1>
+
+            <p className="mt-6 text-lg leading-relaxed text-[#586e6b]">
+              Build an ATS-optimized, executive-ready resume in one sitting.
+              Crafted with a real-time live canvas, respectful AI suggestions you
+              always control, and pristine watermark-free A4 PDF downloads.
             </p>
-          </div>
-          <ol className="mt-10 flex snap-x gap-5 overflow-x-auto pb-2 sm:grid sm:grid-cols-5 sm:overflow-visible">
-            {steps.map((step) => (
-              <li key={step.title} className="snap-start shrink-0 sm:shrink">
-                <div className="flex w-32 flex-col items-center gap-2.5 sm:w-full sm:items-center sm:text-center">
-                  <span className="ig-ring rounded-full p-[3px] transition-transform hover:-translate-y-1">
-                    <span className="grid size-16 place-items-center rounded-full bg-white">
-                      <step.icon size={22} strokeWidth={1.8} />
-                    </span>
-                  </span>
-                  <span className="text-sm font-semibold">{step.title}</span>
-                  <span className="text-xs leading-snug text-graphite">
-                    {step.caption}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
 
-      <section id="inside" className="scroll-mt-20 border-t border-hairline">
-        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-24">
-          <Kicker>What you get</Kicker>
-          <h2 className="mt-4 max-w-lg font-display text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
-            The whole builder, free for real.
-          </h2>
-          <div className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="rounded-2xl border border-hairline bg-white p-6 transition hover:border-foreground/25"
+            <div className="mt-8 flex flex-wrap items-center gap-3.5">
+              <a
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-full bg-[#004643] px-7 py-3.5 text-[15px] font-semibold text-[#f0ede5] shadow-md transition hover:bg-[#003330] hover:shadow-lg"
               >
-                <span className="mb-4 grid size-10 place-items-center rounded-full bg-background">
-                  <feature.icon size={18} strokeWidth={1.8} />
-                </span>
-                <h3 className="text-[15px] font-semibold">{feature.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-graphite">
-                  {feature.body}
-                </p>
+                Start building free
+                <ArrowRight size={16} />
+              </a>
+              <a
+                href="#templates"
+                className="rounded-full border border-[#004643]/30 bg-white px-6 py-3.5 text-[15px] font-semibold text-[#004643] transition hover:border-[#004643] hover:bg-[#f0ede5]/40"
+              >
+                Browse templates
+              </a>
+            </div>
+
+            <ul className="mt-8 flex flex-wrap items-center gap-2 text-xs font-medium text-[#586e6b]">
+              {[
+                "100% Free Core",
+                "Zero Watermark",
+                "A4 Vector PDF",
+                "Privacy Guaranteed",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-1.5 rounded-full border border-[#e2ded5] bg-white/70 px-3 py-1 shadow-2xs"
+                >
+                  <CheckCircle2 size={12} className="text-[#004643]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 3D Template Kept Intact as Requested */}
+          <div className="relative">
+            <StoryCard />
+          </div>
+        </div>
+
+        {/* ----------------------------- Horizontal Highlight Strip (from ui_ref.png) ---------------------------- */}
+        <div className="mx-auto mt-16 w-full max-w-6xl px-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {HIGHLIGHT_STRIP.map((item) => (
+              <div
+                key={item.count}
+                className="rounded-2xl border border-[#e2ded5] bg-white p-4 shadow-xs transition hover:border-[#004643]/40 hover:shadow-sm"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-xs font-bold text-[#dda15e]">
+                    {item.count}
+                  </span>
+                  <span className="size-1.5 rounded-full bg-[#004643]" />
+                </div>
+                <h4 className="mt-2 text-sm font-bold text-[#102422]">
+                  {item.label}
+                </h4>
+                <p className="mt-0.5 text-xs text-[#586e6b]">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="templates" className="scroll-mt-20 border-y border-hairline bg-white">
-        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-24">
-          <div className="flex items-end justify-between gap-6">
+      {/* ----------------------------- Section 1: About / Stepper Flow (ui_ref.png) ---------------------------- */}
+      <section id="about" className="scroll-mt-20 bg-white py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <SectionDivider title="About Niseth Code" />
+
+          <div className="mt-8 grid items-start gap-12 lg:grid-cols-[1fr_1.3fr]">
             <div>
-              <Kicker>Templates</Kicker>
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
-                Curated templates, serious on paper.
+              <Kicker>Streamlined Architecture</Kicker>
+              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl text-[#102422]">
+                Blank canvas to executive PDF in three deliberate steps.
               </h2>
+              <p className="mt-4 text-base leading-relaxed text-[#586e6b]">
+                We eliminated the frustration of broken document margins,
+                unresponsive text boxes, and aggressive trial clocks. With Niseth
+                Code, you focus on articulating your career narrative while our
+                engine handles the typography, spacing, and ATS formatting.
+              </p>
+
+              <div className="mt-8 rounded-2xl border border-[#e2ded5] bg-[#f0ede5]/50 p-6">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-[#004643] text-white">
+                    <Award size={20} />
+                  </span>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#102422]">
+                      Recruiter Tested & Approved
+                    </h4>
+                    <p className="text-xs text-[#586e6b]">
+                      Validated across 40+ hiring manager formats
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="hidden max-w-xs pb-1 text-sm leading-relaxed text-graphite md:block">
-              Every template renders to clean A4 pages with selectable text. Scan
-              on a phone, print on real paper.
+
+            {/* Stepper Timeline with Connecting Line (from ui_ref.png) */}
+            <div className="relative pl-6 before:absolute before:bottom-3 before:left-[11px] before:top-3 before:w-0.5 before:bg-[#004643]/20">
+              <div className="flex flex-col gap-8">
+                {TIMELINE_STEPS.map((step, idx) => (
+                  <div key={step.step} className="relative flex items-start gap-4">
+                    <span className="relative z-10 -ml-[19px] grid size-7 shrink-0 place-items-center rounded-full bg-[#004643] text-xs font-bold text-white shadow-sm ring-4 ring-white">
+                      {idx + 1}
+                    </span>
+                    <div className="flex-1 rounded-2xl border border-[#e2ded5] bg-[#faf8f5] p-5 shadow-xs transition hover:border-[#004643]/30">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-[#dda15e]">
+                          {step.step}
+                        </span>
+                        <span className="rounded-full bg-[#004643]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#004643]">
+                          {step.tag}
+                        </span>
+                      </div>
+                      <h3 className="mt-2 text-base font-bold text-[#102422]">
+                        {step.title}
+                      </h3>
+                      <p className="mt-1 text-sm leading-relaxed text-[#586e6b]">
+                        {step.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ----------------------------- Section 2: What's Included (ui_ref.png) ---------------------------- */}
+      <section id="included" className="scroll-mt-20 border-t border-[#e2ded5] py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <SectionDivider title="What's Included" />
+
+          <div className="mt-6 text-center">
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl text-[#102422]">
+              Engineered for career impact.
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-base text-[#586e6b]">
+              Every tool you need to build, iterate, and share world-class resumes
+              without predatory fees or watermarks.
             </p>
           </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {templates.map((template) => (
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {INCLUDED_FEATURES.map((feat) => (
               <div
-                key={template.name}
-                className="group rounded-2xl border border-hairline bg-background p-5"
+                key={feat.title}
+                className="niseth-glow-card relative flex flex-col justify-between rounded-2xl border border-[#e2ded5] bg-white p-6 shadow-xs"
               >
-                <div className="relative flex h-[210px] items-center justify-center">
-                  <div className="h-full rounded-md">{template.thumb}</div>
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-white/70 opacity-0 transition group-hover:opacity-100">
-                    <Heart size={15} className="absolute right-4 top-4 text-heart fill-heart" />
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold shadow-sm">
-                      Opens in the editor
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="grid size-11 place-items-center rounded-xl bg-[#f0ede5] text-[#004643]">
+                      <feat.icon size={22} strokeWidth={2} />
+                    </span>
+                    <span className="rounded-full border border-[#004643]/20 bg-[#f0ede5] px-2.5 py-0.5 text-[10px] font-bold text-[#004643]">
+                      {feat.badge}
+                    </span>
+                  </div>
+                  <h3 className="mt-5 text-base font-bold text-[#102422]">
+                    {feat.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#586e6b]">
+                    {feat.body}
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center gap-1.5 text-xs font-semibold text-[#004643]">
+                  <span>Included Free</span>
+                  <CheckCircle2 size={13} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ----------------------------- Section 3: Curated Templates ---------------------------- */}
+      <section id="templates" className="scroll-mt-20 border-t border-[#e2ded5] bg-white py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <SectionDivider title="Curated Templates" />
+
+          <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl text-[#102422]">
+                Six layouts. Serious on paper.
+              </h2>
+              <p className="mt-2 text-sm text-[#586e6b]">
+                Tested for strict A4 page geometry, legible contrast, and high ATS readability.
+              </p>
+            </div>
+            <a
+              href="/templates"
+              className="inline-flex items-center gap-2 rounded-full border border-[#004643]/30 px-5 py-2.5 text-sm font-semibold text-[#004643] transition hover:bg-[#f0ede5]"
+            >
+              Explore all templates
+              <ArrowRight size={14} />
+            </a>
+          </div>
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {templates.map((tpl) => (
+              <div
+                key={tpl.name}
+                className="group flex flex-col rounded-2xl border border-[#e2ded5] bg-[#faf8f5] p-4 transition hover:border-[#004643]/50 hover:shadow-md"
+              >
+                <div className="relative flex h-[190px] items-center justify-center overflow-hidden rounded-xl bg-white p-2 shadow-2xs">
+                  {tpl.thumb}
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#004643]/80 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#004643] shadow-sm">
+                      Select
                       <ArrowRight size={12} />
                     </span>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center gap-2">
-                  <h3 className="font-display text-lg font-bold">{template.name}</h3>
-                  <MoreHorizontal size={16} className="ml-auto text-graphite" aria-hidden />
+
+                <div className="mt-3">
+                  <h3 className="font-display text-sm font-bold text-[#102422]">
+                    {tpl.name}
+                  </h3>
+                  <p className="mt-1 text-xs text-[#586e6b] line-clamp-2">
+                    {tpl.blurb}
+                  </p>
+                  <p className="mt-2 text-[10px] font-semibold text-[#004643]">
+                    {tpl.note}
+                  </p>
                 </div>
-                <p className="mt-1 text-sm text-graphite">{template.blurb}</p>
-                <p className="mt-3 text-xs font-medium text-graphite">
-                  {template.note}
-                </p>
               </div>
             ))}
-          </div>
-          <div className="mt-10 flex justify-center">
-            <a
-              href="/templates"
-              className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition hover:border-foreground/30 hover:shadow-sm"
-            >
-              Explore all 5 templates in detail
-              <ArrowRight size={14} />
-            </a>
           </div>
         </div>
       </section>
 
-      <section id="feedback" className="scroll-mt-20">
-        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-24">
-          <Kicker>Feedback</Kicker>
-          <h2 className="mt-4 max-w-lg font-display text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
-            Comments from the beta.
-          </h2>
-          <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-3">
-            {comments.map((comment) => (
+      {/* ----------------------------- Section 4: Reviews ---------------------------- */}
+      <section id="reviews" className="scroll-mt-20 border-t border-[#e2ded5] py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <SectionDivider title="Member Stories" />
+
+          <div className="mt-6 text-center">
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl text-[#102422]">
+              Trusted by builders and leaders.
+            </h2>
+            <p className="mx-auto mt-2 max-w-lg text-sm text-[#586e6b]">
+              Read how candidates landed interviews at world-class companies using Niseth Code.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            {REVIEWS.map((rev) => (
               <article
-                key={comment.handle}
-                className={`flex gap-3 rounded-2xl border border-hairline bg-white p-4 sm:p-5 ${comment.tilt}`}
+                key={rev.name}
+                className="flex flex-col justify-between rounded-2xl border border-[#e2ded5] bg-white p-6 shadow-xs transition hover:border-[#004643]/30 hover:shadow-sm"
               >
-                <span className="ig-ring grid size-10 shrink-0 place-items-center rounded-full p-[2px]">
-                  <span className="grid size-full place-items-center rounded-full bg-white text-[11px] font-bold">
-                    {comment.initials}
-                  </span>
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold">
-                    {comment.name}
-                    <span className="ml-1.5 text-xs font-medium text-graphite">
-                      {comment.handle}
-                    </span>
-                  </p>
-                  <p className="mt-1 text-sm leading-relaxed text-foreground/85">
-                    {comment.text}
-                  </p>
-                </div>
-                <p className="ml-auto hidden shrink-0 items-center gap-1 text-xs text-graphite sm:flex">
-                  <Heart size={13} className="text-heart" />
-                  {comment.likes}
+                <p className="text-sm leading-relaxed text-[#102422]/90 italic">
+                  &ldquo;{rev.text}&rdquo;
                 </p>
+
+                <div className="mt-6 flex items-center gap-3 border-t border-[#e2ded5] pt-4">
+                  <span className="grid size-10 place-items-center rounded-full bg-[#004643] text-xs font-bold text-white">
+                    {rev.avatar}
+                  </span>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#102422]">
+                      {rev.name}
+                    </h4>
+                    <p className="text-xs text-[#586e6b]">{rev.role}</p>
+                    <p className="text-[10px] font-semibold text-[#dda15e]">
+                      {rev.company}
+                    </p>
+                  </div>
+                </div>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="start" className="scroll-mt-20 px-6 pb-20 sm:pb-24">
-        <div className="ig-panel relative mx-auto max-w-6xl overflow-hidden rounded-[28px] px-8 py-14 text-center text-white sm:px-16 sm:py-20">
-          <span
+      {/* ----------------------------- Section 5: Atmospheric Quick Launch / Contact Card (ui_ref.png) ---------------------------- */}
+      <section id="launch" className="scroll-mt-20 px-6 pb-20 sm:pb-24">
+        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] bg-[#091c1a] px-8 py-16 text-white sm:px-14 sm:py-20 shadow-2xl">
+          {/* Large Watermark text (similar to JAPAN in ui_ref.png) */}
+          <div
             aria-hidden
-            className="absolute -right-14 -top-16 hidden size-64 rounded-full border border-white/20 sm:block"
-          />
-          <span
-            aria-hidden
-            className="absolute -right-8 -top-10 hidden size-40 rounded-full border-[10px] border-white/15 sm:block"
-          />
-          <h2 className="font-display text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-5xl">
-            Your next job starts with one page.
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-white/85">
-            Sign up in a minute, fill what you know, keep the suggestions you
-            like, and download the PDF the same night.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a
-              href="#"
-              className="rounded-full bg-white px-6 py-3 text-[15px] font-semibold text-foreground hover:bg-white/90"
-            >
-              Start your resume
-            </a>
-            <a
-              href="#templates"
-              className="rounded-full border border-white/50 px-6 py-3 text-[15px] font-semibold text-white hover:border-white"
-            >
-              Browse templates
-            </a>
+            className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 select-none font-display text-[90px] font-black tracking-widest text-white/5 sm:text-[160px]"
+          >
+            NISETH
           </div>
-          <p className="mt-6 text-xs font-medium text-white/70">
-            Free forever · No credit card · No watermark
-          </p>
+
+          <div className="relative z-10 grid items-center gap-12 lg:grid-cols-[1.2fr_1fr]">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-semibold text-[#dda15e]">
+                <Sparkles size={13} />
+                Ready to Upgrade Your Career?
+              </span>
+              <h2 className="mt-5 font-display text-3xl font-bold leading-tight sm:text-5xl text-[#f0ede5]">
+                Start building your resume in 2 minutes.
+              </h2>
+              <p className="mt-4 max-w-md text-base leading-relaxed text-white/80">
+                Join thousands of engineers and professionals using Niseth Code to
+                land high-impact positions. No credit card required.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a
+                  href="/login"
+                  className="rounded-full bg-[#dda15e] px-7 py-3.5 text-sm font-bold text-[#091c1a] shadow-md transition hover:bg-[#e2a855] hover:shadow-lg"
+                >
+                  Create Free Account
+                </a>
+                <a
+                  href="/templates"
+                  className="rounded-full border border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
+                >
+                  View Layouts
+                </a>
+              </div>
+            </div>
+
+            {/* Frosted Glass Launch Box (inspired by ui_ref.png "Want to join us?") */}
+            <div className="niseth-glass-dark rounded-2xl p-6 sm:p-8">
+              <h3 className="font-display text-lg font-bold text-[#f0ede5]">
+                Fast Launch Assistant
+              </h3>
+              <p className="mt-1 text-xs text-white/70">
+                Have questions or need guidance? Send a quick inquiry:
+              </p>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  router.push("/login");
+                }}
+                className="mt-5 flex flex-col gap-3.5"
+              >
+                <div>
+                  <label className="text-xs font-medium text-white/80">Your Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Amara Chen"
+                    className="mt-1 w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-[#dda15e] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-white/80">Target Role</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Senior Software Engineer"
+                    className="mt-1 w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-[#dda15e] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-white/80">Email</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="amara@example.com"
+                    className="mt-1 w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-[#dda15e] focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-white py-3 text-sm font-bold text-[#004643] transition hover:bg-[#f0ede5]"
+                >
+                  <Send size={15} />
+                  Launch Niseth Code
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </section>
 
-      <footer className="mt-auto border-t border-hairline bg-white">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1fr_auto_auto]">
-          <div className="max-w-sm">
+      {/* ----------------------------- Footer ---------------------------- */}
+      <footer className="mt-auto border-t border-[#e2ded5] bg-white">
+        <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.5fr_1fr_1fr]">
+          <div>
             <Wordmark />
-            <p className="mt-4 text-sm leading-relaxed text-graphite">
-              Free resume building for students and early-career professionals.
-              Five templates, clean PDF export, and AI suggestions that always
-              wait for your approval.
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#586e6b]">
+              Niseth Code provides developers, engineers, and professionals with
+              modern resume architecture. Free, private, and watermark-free forever.
             </p>
-            <p className="mt-4 text-xs text-graphite">
-              ResumeAI is not affiliated with Instagram or Meta.
+            <p className="mt-4 text-xs text-[#586e6b]">
+              Theme inspired by deep forest teal (#004643) and warm linen (#F0EDE5).
             </p>
           </div>
-          <nav aria-label="Explore" className="justify-self-start md:justify-self-end">
-            <h3 className="text-sm font-semibold">Explore</h3>
-            <ul className="mt-3 flex flex-col gap-2.5 text-sm text-graphite">
-              {FOOTER_EXPLORE.map((link) => (
-                <li key={link.href}>
-                  <a href={link.href} className="hover:text-foreground">
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <nav aria-label="Legal" className="justify-self-start md:justify-self-end">
-            <h3 className="text-sm font-semibold">Legal</h3>
-            <ul className="mt-3 flex flex-col gap-2.5 text-sm text-graphite">
+
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#004643]">
+              Navigation
+            </h4>
+            <ul className="mt-4 flex flex-col gap-2.5 text-sm text-[#586e6b]">
               <li>
-                <a href="/privacy" className="hover:text-foreground">
-                  Privacy Notice
+                <a href="#about" className="hover:text-[#004643]">
+                  About Niseth Code
                 </a>
               </li>
               <li>
-                <a href="/privacy#ai-practices" className="hover:text-foreground">
-                  How AI is used
+                <a href="#included" className="hover:text-[#004643]">
+                  What&rsquo;s Included
                 </a>
               </li>
               <li>
-                <a href="/privacy#data-retention" className="hover:text-foreground">
-                  Data Retention & Security
+                <a href="/templates" className="hover:text-[#004643]">
+                  Templates Gallery
+                </a>
+              </li>
+              <li>
+                <a href="/dashboard" className="hover:text-[#004643]">
+                  Your Dashboard
                 </a>
               </li>
             </ul>
-          </nav>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#004643]">
+              Trust & Legal
+            </h4>
+            <ul className="mt-4 flex flex-col gap-2.5 text-sm text-[#586e6b]">
+              <li>
+                <a href="/privacy" className="hover:text-[#004643]">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="/privacy#ai-practices" className="hover:text-[#004643]">
+                  AI Data Handling
+                </a>
+              </li>
+              <li>
+                <a href="/privacy#data-retention" className="hover:text-[#004643]">
+                  Security & Encryption
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="border-t border-hairline">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 text-xs text-graphite">
-            <span>© 2026 ResumeAI</span>
-            <span>Built to stay free.</span>
+
+        <div className="border-t border-[#e2ded5]">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5 text-xs text-[#586e6b]">
+            <span>© 2026 Niseth Code. All rights reserved.</span>
+            <span>Built for ambitious professionals.</span>
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

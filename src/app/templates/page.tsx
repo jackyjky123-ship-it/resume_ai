@@ -13,9 +13,9 @@ import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Resume Templates Gallery — ResumeAI",
+  title: "Resume Templates Gallery — Niseth Code",
   description:
-    "Explore our 5 free, beautifully formatted resume templates. Clean A4 layouts, ATS-friendly structures, selectable text, and watermark-free PDF exports.",
+    "Explore our research-backed, beautifully formatted resume templates. Clean A4 layouts, ATS-friendly structures, selectable text, and watermark-free PDF exports.",
 };
 
 const TEMPLATE_GALLERY = [
@@ -298,7 +298,7 @@ export default function TemplatesPage() {
 
       {/* Footer */}
       <footer className="border-t border-hairline bg-white py-8 text-center text-xs text-graphite">
-        <p>© 2026 ResumeAI · Free resume builder with live preview and watermark-free PDF exports.</p>
+        <p>© 2026 Niseth Code · Free resume builder with live preview and watermark-free PDF exports.</p>
       </footer>
     </div>
   );

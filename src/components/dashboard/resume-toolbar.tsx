@@ -50,7 +50,7 @@ export function ResumeToolbar({
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder="Search resumes"
-          className="w-full rounded-full border border-hairline bg-white py-2.5 pl-10 pr-4 text-sm placeholder:text-graphite"
+          className="w-full rounded-full border border-hairline bg-white py-2.5 pl-10 pr-4 text-sm placeholder:text-graphite focus:border-[#004643] focus:outline-none"
         />
       </label>
 
@@ -65,12 +65,12 @@ export function ResumeToolbar({
               onClick={() => onTemplateFilterChange(filter.id)}
               className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition ${
                 active
-                  ? "border-foreground bg-foreground text-white"
-                  : "border-hairline bg-white text-foreground/80 hover:border-foreground/30"
+                  ? "border-[#004643] bg-[#004643] text-[#f0ede5] shadow-xs"
+                  : "border-hairline bg-white text-foreground/80 hover:border-[#004643]/40"
               }`}
             >
               {filter.label}
-              <span className={`tabular-nums ${active ? "text-white/60" : "text-graphite"}`}>
+              <span className={`tabular-nums ${active ? "text-[#f0ede5]/70" : "text-graphite"}`}>
                 {filter.count}
               </span>
             </button>
