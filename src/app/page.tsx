@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -318,15 +320,28 @@ const NAV_LINKS = [
 
 export default function Home() {
   const router = useRouter();
+  const [launchName, setLaunchName] = useState("");
+  const [launchRole, setLaunchRole] = useState("");
+  const [launchEmail, setLaunchEmail] = useState("");
+
+  const handleLaunchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (launchName.trim()) params.set("name", launchName.trim());
+    if (launchRole.trim()) params.set("role", launchRole.trim());
+    if (launchEmail.trim()) params.set("email", launchEmail.trim());
+    params.set("mode", "signup");
+    router.push(`/login?${params.toString()}`);
+  };
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#faf8f5] text-[#102422]">
       {/* ----------------------------- Top Navigation ---------------------------- */}
       <header className="sticky top-0 z-50 border-b border-[#e2ded5] bg-[#faf8f5]/85 backdrop-blur-md">
         <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
-          <a href="#" className="shrink-0" aria-label="Niseth Code Home">
+          <Link href="/" className="shrink-0" aria-label="Niseth Code Home">
             <Wordmark />
-          </a>
+          </Link>
 
           <div className="hidden items-center gap-7 text-sm font-medium text-[#586e6b] md:flex">
             {NAV_LINKS.map((link) => (
@@ -341,18 +356,18 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/login"
               className="text-sm font-semibold text-[#586e6b] transition hover:text-[#004643]"
             >
               Log in
-            </a>
-            <a
-              href="/login"
+            </Link>
+            <Link
+              href="/login?mode=signup"
               className="rounded-full bg-[#004643] px-5 py-2 text-sm font-semibold text-[#f0ede5] shadow-sm transition hover:bg-[#003330] hover:shadow-md"
             >
               Start Free
-            </a>
+            </Link>
           </div>
         </nav>
       </header>
@@ -388,13 +403,13 @@ export default function Home() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
-              <a
-                href="/login"
+              <Link
+                href="/login?mode=signup"
                 className="inline-flex items-center gap-2 rounded-full bg-[#004643] px-7 py-3.5 text-[15px] font-semibold text-[#f0ede5] shadow-md transition hover:bg-[#003330] hover:shadow-lg"
               >
                 Start building free
                 <ArrowRight size={16} />
-              </a>
+              </Link>
               <a
                 href="#templates"
                 className="rounded-full border border-[#004643]/30 bg-white px-6 py-3.5 text-[15px] font-semibold text-[#004643] transition hover:border-[#004643] hover:bg-[#f0ede5]/40"
@@ -433,7 +448,7 @@ export default function Home() {
             {HIGHLIGHT_STRIP.map((item) => (
               <div
                 key={item.count}
-                className="rounded-2xl border border-[#e2ded5] bg-white p-4 shadow-xs transition hover:border-[#004643]/40 hover:shadow-sm"
+                className="rounded-2xl border border-[#e2ded5] bg-white p-4 shadow-xs transition hover:border-[#004643]/40 hover:shadow-sm last:col-span-2 sm:last:col-span-1"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-display text-xs font-bold text-[#dda15e]">
@@ -579,20 +594,21 @@ export default function Home() {
                 Tested for strict A4 page geometry, legible contrast, and high ATS readability.
               </p>
             </div>
-            <a
+            <Link
               href="/templates"
               className="inline-flex items-center gap-2 rounded-full border border-[#004643]/30 px-5 py-2.5 text-sm font-semibold text-[#004643] transition hover:bg-[#f0ede5]"
             >
               Explore all templates
               <ArrowRight size={14} />
-            </a>
+            </Link>
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {templates.map((tpl) => (
-              <div
+              <Link
                 key={tpl.name}
-                className="group flex flex-col rounded-2xl border border-[#e2ded5] bg-[#faf8f5] p-4 transition hover:border-[#004643]/50 hover:shadow-md"
+                href={`/login?template=${tpl.name.toLowerCase()}&mode=signup`}
+                className="group flex flex-col rounded-2xl border border-[#e2ded5] bg-[#faf8f5] p-4 transition hover:border-[#004643]/50 hover:shadow-md cursor-pointer"
               >
                 <div className="relative flex h-[190px] items-center justify-center overflow-hidden rounded-xl bg-white p-2 shadow-2xs">
                   {tpl.thumb}
@@ -615,7 +631,7 @@ export default function Home() {
                     {tpl.note}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -690,18 +706,18 @@ export default function Home() {
                 land high-impact positions. No credit card required.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <a
-                  href="/login"
+                <Link
+                  href="/login?mode=signup"
                   className="rounded-full bg-[#dda15e] px-7 py-3.5 text-sm font-bold text-[#091c1a] shadow-md transition hover:bg-[#e2a855] hover:shadow-lg"
                 >
                   Create Free Account
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/templates"
                   className="rounded-full border border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
                 >
                   View Layouts
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -711,14 +727,11 @@ export default function Home() {
                 Fast Launch Assistant
               </h3>
               <p className="mt-1 text-xs text-white/70">
-                Have questions or need guidance? Send a quick inquiry:
+                Have questions or ready to begin? Start your setup:
               </p>
 
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  router.push("/login");
-                }}
+                onSubmit={handleLaunchSubmit}
                 className="mt-5 flex flex-col gap-3.5"
               >
                 <div>
@@ -726,6 +739,8 @@ export default function Home() {
                   <input
                     type="text"
                     required
+                    value={launchName}
+                    onChange={(e) => setLaunchName(e.target.value)}
                     placeholder="Amara Chen"
                     className="mt-1 w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-[#dda15e] focus:outline-none"
                   />
@@ -734,6 +749,8 @@ export default function Home() {
                   <label className="text-xs font-medium text-white/80">Target Role</label>
                   <input
                     type="text"
+                    value={launchRole}
+                    onChange={(e) => setLaunchRole(e.target.value)}
                     placeholder="e.g. Senior Software Engineer"
                     className="mt-1 w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-[#dda15e] focus:outline-none"
                   />
@@ -743,6 +760,8 @@ export default function Home() {
                   <input
                     type="email"
                     required
+                    value={launchEmail}
+                    onChange={(e) => setLaunchEmail(e.target.value)}
                     placeholder="amara@example.com"
                     className="mt-1 w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-[#dda15e] focus:outline-none"
                   />
@@ -791,14 +810,14 @@ export default function Home() {
                 </a>
               </li>
               <li>
-                <a href="/templates" className="hover:text-[#004643]">
+                <Link href="/templates" className="hover:text-[#004643]">
                   Templates Gallery
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/dashboard" className="hover:text-[#004643]">
+                <Link href="/dashboard" className="hover:text-[#004643]">
                   Your Dashboard
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -809,19 +828,19 @@ export default function Home() {
             </h4>
             <ul className="mt-4 flex flex-col gap-2.5 text-sm text-[#586e6b]">
               <li>
-                <a href="/privacy" className="hover:text-[#004643]">
+                <Link href="/privacy" className="hover:text-[#004643]">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy#ai-practices" className="hover:text-[#004643]">
+                <Link href="/privacy#ai-practices" className="hover:text-[#004643]">
                   AI Data Handling
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy#data-retention" className="hover:text-[#004643]">
+                <Link href="/privacy#data-retention" className="hover:text-[#004643]">
                   Security & Encryption
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

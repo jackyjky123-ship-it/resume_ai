@@ -1,6 +1,11 @@
 import "server-only";
 
 import { CV_IMPORT_MAX_TEXT } from "@/lib/cv-files";
+
+export function sanitizeErrorMessage(message: string): string {
+  // Redact potential Gemini or Google Cloud API keys (AIza...)
+  return message.replace(/AIza[0-9A-Za-z-_]{20,}/g, "[REDACTED_API_KEY]");
+}
 import {
   generateMockSuggestions,
   parseResumeTextLocally,

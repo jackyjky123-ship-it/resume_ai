@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import { getSessionUser } from "@/lib/auth/current-user";
-import { importCvText } from "@/server/services/ai.service";
+import { importCvText, sanitizeErrorMessage } from "@/server/services/ai.service";
 import {
   CvImportError,
   extractCvText,
@@ -52,10 +52,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Never log extracted CV text or file contents.
+    // Never log extracted CV text, file contents, or API keys.
     console.error(
       "[cv-import-route]",
-      error instanceof Error ? error.message : "Unexpected import error"
+      error instanceof Error ? sanitizeErrorMessage(error.message) : "Unexpected import error"
     );
     return NextResponse.json(
       {

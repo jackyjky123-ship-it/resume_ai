@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FileText, Upload } from "lucide-react";
+import { FileText, Upload, X } from "lucide-react";
 
 import { ResumePreview } from "@/components/resume-preview/resume-preview";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -225,7 +225,22 @@ export function ImportCvDialog({
                   <span className="text-xs text-muted-foreground">
                     {formatFileSize(file.size)}
                   </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => selectFile(null)}
+                    aria-label="Remove selected file"
+                    className="size-7 p-0 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="size-3.5" />
+                  </Button>
                 </div>
+              )}
+              {file && pastedText.trim().length > 0 && (
+                <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                  The selected file takes precedence. Clear the file to parse your pasted text instead.
+                </p>
               )}
             </div>
 

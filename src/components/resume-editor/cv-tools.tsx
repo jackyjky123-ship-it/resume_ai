@@ -45,6 +45,7 @@ export function CvTools() {
     }
 
     const sample = createSampleResumeDocument();
+    form.reset({ ...form.getValues(), content: sample });
     form.setValue("content", sample, {
       shouldDirty: true,
       shouldValidate: true,
@@ -62,6 +63,7 @@ export function CvTools() {
         ? mergeResumeDocuments(current, document)
         : withFreshIds(document);
 
+    form.reset({ ...form.getValues(), content: next });
     form.setValue("content", next, {
       shouldDirty: true,
       shouldValidate: true,

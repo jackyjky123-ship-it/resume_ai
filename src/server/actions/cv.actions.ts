@@ -19,6 +19,7 @@ import {
   fixGrammar,
   generateCvSuggestions,
   improveBullet,
+  sanitizeErrorMessage,
 } from "@/server/services/ai.service";
 import type { ActionResult } from "./action-result";
 
@@ -83,7 +84,7 @@ export async function generateCvSuggestionsAction(
     // Do not log resume content, provider payloads, or API keys.
     console.error(
       "[cv-suggest-action]",
-      error instanceof Error ? error.message : "Unexpected suggestion error"
+      error instanceof Error ? sanitizeErrorMessage(error.message) : "Unexpected suggestion error"
     );
     return {
       ok: false,
@@ -116,7 +117,7 @@ export async function improveBulletAction(
 
     console.error(
       "[cv-improve-bullet-action]",
-      error instanceof Error ? error.message : "Unexpected bullet improvement error"
+      error instanceof Error ? sanitizeErrorMessage(error.message) : "Unexpected bullet improvement error"
     );
     return {
       ok: false,
@@ -149,7 +150,7 @@ export async function fixGrammarAction(
 
     console.error(
       "[cv-fix-grammar-action]",
-      error instanceof Error ? error.message : "Unexpected grammar fix error"
+      error instanceof Error ? sanitizeErrorMessage(error.message) : "Unexpected grammar fix error"
     );
     return {
       ok: false,

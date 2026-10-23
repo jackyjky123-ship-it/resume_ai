@@ -557,8 +557,8 @@ export function GenerateCvDialog({
                               </p>
                             ) : (
                               <ul className="list-disc space-y-1 pl-4 text-sm">
-                                {project.originalBullets.map((bullet) => (
-                                  <li key={bullet}>{bullet}</li>
+                                {project.originalBullets.map((bullet, bIdx) => (
+                                  <li key={`orig-${project.projectId}-${bIdx}`}>{bullet}</li>
                                 ))}
                               </ul>
                             )}
@@ -568,8 +568,8 @@ export function GenerateCvDialog({
                               Suggested
                             </p>
                             <ul className="list-disc space-y-1 pl-4 text-sm">
-                              {project.suggestedBullets.map((bullet) => (
-                                <li key={bullet}>{bullet}</li>
+                              {project.suggestedBullets.map((bullet, bIdx) => (
+                                <li key={`sugg-${project.projectId}-${bIdx}`}>{bullet}</li>
                               ))}
                             </ul>
                           </div>

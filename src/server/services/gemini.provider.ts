@@ -20,7 +20,7 @@ import {
   type ResumeDocument,
 } from "@/lib/validations/resume";
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 const TIMEOUT_MS = 45_000;
 const MAX_INPUT_CHARS = 5_000;
 const MAX_PARSE_CHARS = 20_000;
@@ -45,10 +45,19 @@ function withTimeout<T>(promise: Promise<T>, ms = TIMEOUT_MS): Promise<T> {
 
 function cleanJsonResponse(text: string | undefined): string {
   if (!text) throw new Error("Empty response from Gemini");
-  return text
-    .replace(/^\s*```(?:json)?\s*/i, "")
-    .replace(/\s*```\s*$/i, "")
-    .trim();
+  const trimmed = text.trim();
+  // Strip markdown code fences if present anywhere in the output
+  const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (fencedMatch?.[1]) {
+    return fencedMatch[1].trim();
+  }
+  // Otherwise, extract substring between first { and last }
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  if (start !== -1 && end > start) {
+    return trimmed.slice(start, end + 1);
+  }
+  return trimmed;
 }
 
 /** Build a concise resume snapshot for the prompt — only the fields needed. */
