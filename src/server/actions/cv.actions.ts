@@ -20,6 +20,7 @@ import {
   generateCvSuggestions,
   improveBullet,
   sanitizeErrorMessage,
+  testApiKey,
 } from "@/server/services/ai.service";
 import type { ActionResult } from "./action-result";
 
@@ -157,6 +158,32 @@ export async function fixGrammarAction(
       error: formatAiErrorMessage(
         error,
         "We couldn't fix grammar right now. Try again in a moment."
+      ),
+    };
+  }
+}
+
+/** Test transient BYOK Gemini API key for validity. */
+export async function testApiKeyAction(
+  apiKey: string
+): Promise<ActionResult<{ valid: boolean; model: string }>> {
+  try {
+    const user = await getSessionUser();
+    if (!user) return { ok: false, error: "Your session expired. Sign in again." };
+    if (!apiKey || !apiKey.trim()) return { ok: false, error: "Please enter an API key to test." };
+
+    const result = await testApiKey(apiKey.trim());
+    return { ok: true, data: result };
+  } catch (error) {
+    console.error(
+      "[test-api-key-action]",
+      error instanceof Error ? sanitizeErrorMessage(error.message) : "Unexpected key test error"
+    );
+    return {
+      ok: false,
+      error: formatAiErrorMessage(
+        error,
+        "Failed to connect to Google Gemini. Please verify your API key is valid and has active quotas in Google AI Studio."
       ),
     };
   }

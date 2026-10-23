@@ -3,6 +3,7 @@ import "server-only";
 import type { Prisma } from "@/generated/prisma/client";
 import {
   emptyResumeDocument,
+  generateStarterResumeDocument,
   parseResumeDocument,
   resumeTemplateSchema,
   saveResumeInputSchema,
@@ -98,10 +99,14 @@ export async function createResumeForUser(
   userId: string,
   input: CreateResumeInput
 ): Promise<DashboardResume> {
+  const content = input.starterRole
+    ? generateStarterResumeDocument(input.starterRole)
+    : emptyResumeDocument();
+
   const row = await createResumeRecord(userId, {
     title: input.title,
     templateId: input.templateId,
-    content: asJson(emptyResumeDocument()),
+    content: asJson(content),
   });
 
   return toDashboardResume(row);

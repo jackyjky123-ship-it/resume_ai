@@ -1,5 +1,6 @@
 import React from "react";
 import type { ResumeDocument } from "@/lib/validations/resume";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   contactLine,
   dateRange,
@@ -9,7 +10,7 @@ import {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-2.5 flex items-center gap-2">
+    <div data-page-break="heading" className="mb-2.5 flex items-center gap-2">
       <span className="h-3 w-1 rounded-full bg-[#0095f6]" aria-hidden />
       <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-900">
         {children}
@@ -19,6 +20,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 export function ModernPreview({ document }: { document: ResumeDocument }) {
+  const { isKhmer } = useLanguage();
   const contact = contactLine(document);
   const experience = document.experience.filter(
     (entry) =>
@@ -45,7 +47,7 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
   return (
     <div className="flex flex-col gap-5 text-slate-800">
       {/* Modern Header with Brand Accent Line */}
-      <header className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4 text-left">
+      <header data-page-break="item" className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4 text-left">
         <div className="min-w-0 flex-1">
           <div className="mb-2 h-1 w-8 rounded-full bg-[#0095f6]" aria-hidden />
           <h1 className="font-display text-[26px] font-bold leading-tight tracking-tight text-slate-950">
@@ -57,7 +59,7 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
             </p>
           )}
           {contact.length > 0 && (
-            <p className="mt-2 text-[12px] text-slate-500">
+            <p className="mt-2 text-[12px] text-slate-500 break-words leading-relaxed">
               {contact.join("  ·  ")}
             </p>
           )}
@@ -75,8 +77,8 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
       </header>
 
       {hasText(document.summary) && (
-        <section>
-          <SectionHeading>Summary</SectionHeading>
+        <section data-page-break="item">
+          <SectionHeading>{isKhmer ? "សេចក្តីសង្ខេប" : "Summary"}</SectionHeading>
           <p className="whitespace-pre-line text-[13px] leading-relaxed text-slate-700">
             {document.summary.trim()}
           </p>
@@ -85,12 +87,12 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
 
       {experience.length > 0 && (
         <section>
-          <SectionHeading>Experience</SectionHeading>
+          <SectionHeading>{isKhmer ? "បទពិសោធន៍ការងារ" : "Experience"}</SectionHeading>
           <div className="flex flex-col gap-4">
             {experience.map((entry) => {
               const bullets = entry.bullets.filter((b) => hasText(b.text));
               return (
-                <div key={entry.id}>
+                <div key={entry.id} data-page-break="item">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                     <p className="font-semibold text-slate-900">
                       {entry.role.trim() || "Role"}
@@ -131,10 +133,10 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
 
       {education.length > 0 && (
         <section>
-          <SectionHeading>Education</SectionHeading>
+          <SectionHeading>{isKhmer ? "ការអប់រំ" : "Education"}</SectionHeading>
           <div className="flex flex-col gap-3">
             {education.map((entry) => (
-              <div key={entry.id}>
+              <div key={entry.id} data-page-break="item">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                   <p className="font-semibold text-slate-900">
                     {[entry.degree.trim(), entry.field.trim()]
@@ -164,8 +166,8 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
 
       {/* Skills as Modern Tags */}
       {skills.length > 0 && (
-        <section>
-          <SectionHeading>Skills</SectionHeading>
+        <section data-page-break="item">
+          <SectionHeading>{isKhmer ? "ជំនាញ" : "Skills"}</SectionHeading>
           <div className="flex flex-wrap gap-1.5">
             {skills.map((entry) => (
               <span
@@ -181,14 +183,14 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
 
       {projects.length > 0 && (
         <section>
-          <SectionHeading>Projects</SectionHeading>
+          <SectionHeading>{isKhmer ? "គម្រោង" : "Projects"}</SectionHeading>
           <div className="flex flex-col gap-3.5">
             {projects.map((entry) => {
               const bullets = entry.bullets.filter((b) => hasText(b.text));
               return (
-                <div key={entry.id}>
+                <div key={entry.id} data-page-break="item">
                   <p className="font-semibold text-slate-900">
-                    {entry.name.trim() || "Project"}
+                    {entry.name.trim() || (isKhmer ? "គម្រោង" : "Project")}
                     {hasText(entry.url) && (
                       <span className="font-normal text-slate-500">
                         {" "}
@@ -222,16 +224,17 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
 
       {certifications.length > 0 && (
         <section>
-          <SectionHeading>Certifications</SectionHeading>
+          <SectionHeading>{isKhmer ? "វិញ្ញាបនបត្រ" : "Certifications"}</SectionHeading>
           <ul className="flex flex-col gap-1.5">
             {certifications.map((entry) => (
               <li
                 key={entry.id}
+                data-page-break="item"
                 className="flex flex-wrap items-baseline justify-between gap-x-3"
               >
                 <span>
                   <span className="font-semibold text-slate-900">
-                    {entry.name.trim() || "Certification"}
+                    {entry.name.trim() || (isKhmer ? "វិញ្ញាបនបត្រ" : "Certification")}
                   </span>
                   {hasText(entry.issuer) && (
                     <span className="text-slate-600">
@@ -250,8 +253,8 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
       )}
 
       {languages.length > 0 && (
-        <section>
-          <SectionHeading>Languages</SectionHeading>
+        <section data-page-break="item">
+          <SectionHeading>{isKhmer ? "ភាសា" : "Languages"}</SectionHeading>
           <p className="text-[13px] text-slate-700">
             {languages
               .map((entry) => languageLabel(entry.name, entry.proficiency))

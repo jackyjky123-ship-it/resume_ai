@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { Wordmark } from "@/components/wordmark";
 import { DashboardWorkspace } from "@/components/dashboard/dashboard-workspace";
 import { requireUser } from "@/lib/auth/current-user";
 import { listResumeCards } from "@/server/services/resume.service";
@@ -18,27 +17,30 @@ async function WorkspaceWithSession() {
 
 function DashboardSkeleton() {
   return (
-    <div suppressHydrationWarning className="flex min-h-dvh flex-col">
-      <header className="border-b border-hairline bg-white/85">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-6">
-          <Wordmark />
+    <div suppressHydrationWarning className="flex-1 flex flex-col p-6 sm:p-8 lg:p-10 max-w-7xl mx-auto w-full space-y-8 animate-pulse">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-hairline pb-6">
+        <div className="space-y-2">
+          <span className="block h-8 w-60 rounded-xl bg-hairline/60" />
+          <span className="block h-4 w-96 rounded-lg bg-hairline/40" />
         </div>
-      </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-20 pt-8 sm:pt-10">
-        <div className="flex animate-pulse items-center gap-6">
-          <span className="size-20 shrink-0 rounded-full bg-hairline/60 sm:size-24" />
-          <div className="flex-1 space-y-3">
-            <span className="block h-7 w-52 rounded-full bg-hairline/60" />
-            <span className="block h-4 w-40 rounded-full bg-hairline/40" />
-            <span className="block h-4 w-64 rounded-full bg-hairline/40" />
-          </div>
-        </div>
-        <div className="mt-8 grid gap-5 border-t border-hairline pt-6 sm:grid-cols-2 lg:grid-cols-3">
+        <span className="block h-10 w-36 rounded-xl bg-hairline/60" />
+      </div>
+
+      <div className="rounded-xl border border-hairline bg-card/60 h-28 divide-x divide-hairline hidden sm:grid sm:grid-cols-4" />
+      <div className="sm:hidden grid grid-cols-2 gap-3">
+        {[0, 1, 2, 3].map((key) => (
+          <span key={key} className="block h-24 rounded-xl border border-hairline bg-card/60" />
+        ))}
+      </div>
+
+      <div className="space-y-4 pt-4">
+        <span className="block h-6 w-40 rounded-lg bg-hairline/60" />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((key) => (
-            <span key={key} className="block h-[236px] rounded-2xl border border-hairline bg-white/60" />
+            <span key={key} className="block h-[236px] rounded-2xl border border-hairline bg-card/60" />
           ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

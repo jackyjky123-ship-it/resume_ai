@@ -8,12 +8,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 import { resizeImageToDataUrl } from "@/lib/image-utils";
+import { useLanguage } from "@/lib/i18n/context";
 import type { ResumeEditorFormValues } from "@/lib/validations/resume";
 import { FixGrammarDialog } from "./fix-grammar-dialog";
 import { SectionShell, TextAreaField, TextField } from "./form-fields";
 
 function ProfilePhotoUploader() {
   const form = useFormContext<ResumeEditorFormValues>();
+  const { isKhmer } = useLanguage();
   const photoUrl = form.watch("content.personal.photoUrl") ?? "";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -39,9 +41,9 @@ function ProfilePhotoUploader() {
           shouldValidate: true,
         }
       );
-      toast.success("Profile photo updated.");
+      toast.success(isKhmer ? "បានកែសម្រួលរូបថតរួចរាល់។" : "Profile photo updated.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to load image.");
+      toast.error(err instanceof Error ? err.message : (isKhmer ? "បរាជ័យក្នុងការផ្ទុករូបភាព។" : "Failed to load image."));
     } finally {
       setIsProcessing(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -63,13 +65,13 @@ function ProfilePhotoUploader() {
       }
     );
     setShowUrlInput(false);
-    toast.success("Profile photo removed.");
+    toast.success(isKhmer ? "បានលុបរូបថតរួចរាល់។" : "Profile photo removed.");
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-card/50 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-4">
-        <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted/60 text-muted-foreground shadow-sm">
+    <div className="flex flex-col gap-3.5 rounded-2xl border border-border/80 bg-card/60 p-4 sm:flex-row sm:items-center sm:justify-between shadow-2xs">
+      <div className="flex items-center gap-3.5">
+        <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted/60 text-muted-foreground shadow-2xs">
           {photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -82,9 +84,13 @@ function ProfilePhotoUploader() {
           )}
         </div>
         <div>
-          <h4 className="text-sm font-medium text-foreground">Profile photo</h4>
+          <h4 className="text-sm font-semibold text-foreground">
+            {isKhmer ? "រូបថតផ្ទាល់ខ្លួន" : "Profile photo"}
+          </h4>
           <p className="text-xs text-muted-foreground">
-            Featured on the Professional template. Clean square headshot recommended.
+            {isKhmer
+              ? "បង្ហាញលើគំរូ Editorial, Designer, និង Professional។ ណែនាំរូបថតមុខត្រង់ច្បាស់។"
+              : "Featured on Editorial, Designer, and Professional templates. Clean portrait headshot recommended."}
           </p>
         </div>
       </div>
@@ -103,9 +109,14 @@ function ProfilePhotoUploader() {
           size="sm"
           disabled={isProcessing}
           onClick={() => fileInputRef.current?.click()}
+          className="h-8 gap-1.5 text-xs font-medium"
         >
           <Upload className="size-3.5" />
-          {isProcessing ? "Optimizing…" : photoUrl ? "Change photo" : "Upload photo"}
+          {isProcessing
+            ? isKhmer ? "កំពុងដំណើរការ…" : "Optimizing…"
+            : photoUrl
+              ? isKhmer ? "ប្តូររូបថត" : "Change photo"
+              : isKhmer ? "បញ្ចូលរូបថត" : "Upload photo"}
         </Button>
 
         {photoUrl ? (
@@ -113,11 +124,11 @@ function ProfilePhotoUploader() {
             type="button"
             variant="ghost"
             size="sm"
-            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            className="h-8 gap-1.5 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
             onClick={handleRemovePhoto}
           >
             <Trash2 className="size-3.5" />
-            Remove
+            {isKhmer ? "លុប" : "Remove"}
           </Button>
         ) : (
           <Button
@@ -125,9 +136,10 @@ function ProfilePhotoUploader() {
             variant="ghost"
             size="sm"
             onClick={() => setShowUrlInput((prev) => !prev)}
+            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
           >
             <Link2 className="size-3.5" />
-            Image link
+            {isKhmer ? "តំណរូបភាព" : "Image link"}
           </Button>
         )}
       </div>
@@ -136,7 +148,7 @@ function ProfilePhotoUploader() {
         <div className="mt-2 w-full">
           <TextField
             name="content.personal.photoUrl"
-            label="Image link (URL)"
+            label={isKhmer ? "តំណរូបភាព (URL)" : "Image link (URL)"}
             placeholder="https://example.com/photo.jpg"
             maxLength={2_000_000}
           />
@@ -146,12 +158,14 @@ function ProfilePhotoUploader() {
   );
 }
 
-export function PersonalSection({ action }: { action?: React.ReactNode }) {
+export function PersonalSection({ action }: { action?: React.ReactNode } = {}) {
+  const { t, isKhmer } = useLanguage();
+
   return (
     <SectionShell
       id="section-personal"
-      title="Personal information"
-      description="How employers reach you. Only what you fill in appears in the preview."
+      title={t.editor.sectionPersonal}
+      description={t.editor.personalDesc}
       action={action}
     >
       <FieldGroup>
@@ -159,58 +173,58 @@ export function PersonalSection({ action }: { action?: React.ReactNode }) {
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField
             name="content.personal.fullName"
-            label="Full name"
-            placeholder="Amara Chen"
+            label={t.editor.fullName}
+            placeholder={isKhmer ? "សុខា ចាន់" : "Amara Chen"}
             autoComplete="name"
             maxLength={100}
           />
           <TextField
             name="content.personal.roleApplied"
-            label="Role applied for"
-            placeholder="e.g. Senior Software Engineer"
+            label={t.editor.roleApplied}
+            placeholder={isKhmer ? "វិស្វករផ្នែកទន់ជាន់ខ្ពស់" : "e.g. Senior Software Engineer"}
             autoComplete="organization-title"
             maxLength={120}
           />
           <TextField
             name="content.personal.email"
-            label="Email"
-            placeholder="you@example.com"
+            label={t.editor.email}
+            placeholder={isKhmer ? "sokha@example.com" : "you@example.com"}
             autoComplete="email"
             inputMode="email"
             maxLength={200}
           />
           <TextField
             name="content.personal.phone"
-            label="Phone"
-            placeholder="+1 555 010 7788"
+            label={t.editor.phone}
+            placeholder={isKhmer ? "+855 12 345 678" : "+1 555 010 7788"}
             autoComplete="tel"
             inputMode="tel"
             maxLength={40}
           />
           <TextField
             name="content.personal.location"
-            label="Location"
-            placeholder="Toronto, Canada"
+            label={t.editor.location}
+            placeholder={isKhmer ? "ភ្នំពេញ, កម្ពុជា" : "Toronto, Canada"}
             autoComplete="address-level2"
             maxLength={120}
           />
           <TextField
             name="content.personal.website"
-            label="Website"
+            label={t.editor.website}
             placeholder="you.dev"
             inputMode="url"
             maxLength={200}
           />
           <TextField
             name="content.personal.linkedin"
-            label="LinkedIn"
+            label={t.editor.linkedin}
             placeholder="linkedin.com/in/you"
             inputMode="url"
             maxLength={200}
           />
           <TextField
             name="content.personal.github"
-            label="GitHub"
+            label={t.editor.github}
             placeholder="github.com/you"
             inputMode="url"
             maxLength={200}
@@ -218,7 +232,7 @@ export function PersonalSection({ action }: { action?: React.ReactNode }) {
           <TextField
             name="content.personal.telegram"
             label="Telegram"
-            placeholder="@yourusername or t.me/yourusername"
+            placeholder={isKhmer ? "@គណនី ឬ t.me/គណនី" : "@yourusername or t.me/yourusername"}
             maxLength={120}
           />
         </div>
@@ -229,6 +243,7 @@ export function PersonalSection({ action }: { action?: React.ReactNode }) {
 
 export function SummarySection() {
   const form = useFormContext<ResumeEditorFormValues>();
+  const { t } = useLanguage();
   const [grammarOpen, setGrammarOpen] = useState(false);
   const summary = form.watch("content.summary") ?? "";
   const hasContent = summary.trim().length >= 5;
@@ -236,8 +251,8 @@ export function SummarySection() {
   return (
     <SectionShell
       id="section-summary"
-      title="Professional summary"
-      description="Two or three sentences about what you do and the impact you make."
+      title={t.editor.sectionSummary}
+      description={t.editor.summaryDesc}
       action={
         hasContent ? (
           <Button
@@ -247,15 +262,15 @@ export function SummarySection() {
             onClick={() => setGrammarOpen(true)}
           >
             <Sparkles className="size-3.5" />
-            Proofread
+            {t.cvTools.fixGrammar}
           </Button>
         ) : null
       }
     >
       <TextAreaField
         name="content.summary"
-        label="Summary"
-        placeholder="Frontend-leaning developer who ships accessible interfaces and measurable performance wins…"
+        label={t.editor.sectionSummary}
+        placeholder={t.editor.summaryPlaceholder}
         rows={5}
         maxLength={2_000}
       />
@@ -264,7 +279,7 @@ export function SummarySection() {
           open
           onOpenChange={setGrammarOpen}
           text={summary}
-          label="Professional summary"
+          label={t.editor.sectionSummary}
           onApply={(corrected) => {
             form.setValue("content.summary", corrected, {
               shouldDirty: true,

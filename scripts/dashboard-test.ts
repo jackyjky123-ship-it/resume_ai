@@ -5,6 +5,7 @@
 // session. The preview account is intentionally NOT deleted, so you can sign
 // in with it in the browser: preview@example.com / preview-1234
 /* eslint-disable no-console */
+export {};
 
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 const EMAIL = "preview@example.com";

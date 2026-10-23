@@ -12,6 +12,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   newBullet,
   type ResumeBullet,
@@ -37,16 +38,22 @@ type BulletLinesFieldProps = {
 export function BulletLinesField({
   name,
   label,
-  description = "One bullet per line. Keep each line short and metric-driven.",
+  description,
   placeholder,
   rows = 5,
   role = "",
   company = "",
 }: BulletLinesFieldProps) {
   const form = useFormContext<ResumeEditorFormValues>();
+  const { t, isKhmer } = useLanguage();
   const id = useId();
   const [improveOpen, setImproveOpen] = useState(false);
   const { error } = form.getFieldState(name, form.formState);
+
+  const defaultDesc = isKhmer
+    ? "ចំណុចមួយក្នុងមួយជួរ។ សរសេរឱ្យខ្លី និងបង្ហាញលទ្ធផលជាក់ស្តែង។"
+    : "One bullet per line. Keep each line short and metric-driven.";
+  const effectiveDesc = description ?? defaultDesc;
 
   const rawBullets = form.watch(name);
   const bullets = (Array.isArray(rawBullets) ? rawBullets : []) as ResumeBullet[];
@@ -65,7 +72,7 @@ export function BulletLinesField({
             className="h-6 gap-1 px-1.5 text-xs text-muted-foreground hover:text-foreground"
           >
             <Sparkles className="size-3" />
-            Polish with AI
+            {t.aiDialogs.polishBtn}
           </Button>
         )}
       </div>
@@ -97,7 +104,7 @@ export function BulletLinesField({
           );
         }}
       />
-      <FieldDescription>{description}</FieldDescription>
+      <FieldDescription>{effectiveDesc}</FieldDescription>
       <FieldError errors={[error]} />
 
       {improveOpen && (

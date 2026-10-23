@@ -1,10 +1,11 @@
 import React from "react";
 import type { ResumeDocument } from "@/lib/validations/resume";
+import { useLanguage } from "@/lib/i18n/context";
 import { dateRange, formatTelegram, hasText } from "./preview-utils";
 
 function SidebarHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-2 border-b-2 border-slate-900 pb-0.5">
+    <div data-page-break="heading" className="mb-2 border-b-2 border-slate-900 pb-0.5">
       <h3 className="font-display text-[14px] font-bold tracking-tight text-slate-950">
         {children}
       </h3>
@@ -14,7 +15,7 @@ function SidebarHeading({ children }: { children: React.ReactNode }) {
 
 function MainHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-2 border-b-2 border-slate-900 pb-0.5">
+    <div data-page-break="heading" className="mb-2 border-b-2 border-slate-900 pb-0.5">
       <h3 className="font-display text-[15px] font-bold tracking-tight text-slate-950">
         {children}
       </h3>
@@ -56,6 +57,7 @@ function AvatarSilhouette() {
 }
 
 export function EditorialPreview({ document }: { document: ResumeDocument }) {
+  const { isKhmer } = useLanguage();
   const hasPhoto = hasText(document.personal.photoUrl);
 
   const experience = document.experience.filter(
@@ -90,18 +92,18 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
     hasText(document.personal.telegram);
 
   return (
-    <div className="flex gap-8 text-slate-800">
-      {/* Left Sidebar (35% width) */}
-      <aside className="flex w-[35%] shrink-0 flex-col gap-5">
+    <div className="flex gap-7 text-slate-800">
+      {/* Left Sidebar (36% width) */}
+      <aside className="flex w-[36%] shrink-0 flex-col gap-5">
 
         {/* Profile Photo / Avatar Frame */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xs border border-slate-300 bg-slate-100 shadow-2xs">
+        <div data-page-break="item" className="relative aspect-[3/4] w-full overflow-hidden rounded-xs border border-slate-300 bg-slate-100 shadow-2xs">
           {hasPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={document.personal.photoUrl}
               alt={document.personal.fullName || "Profile"}
-              className="size-full object-contain"
+              className="size-full object-cover object-top"
             />
           ) : (
             <AvatarSilhouette />
@@ -110,24 +112,24 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
         {/* Contact Section */}
         <section>
-          <SidebarHeading>Contact</SidebarHeading>
+          <SidebarHeading>{isKhmer ? "ទំនាក់ទំនង" : "Contact"}</SidebarHeading>
           {hasAnyContact ? (
             <div className="flex flex-col gap-2.5 text-[11.5px]">
               {hasText(document.personal.location) && (
-                <div>
-                  <span className="block font-bold text-slate-950">Address:</span>
-                  <span className="text-slate-700 leading-snug">
+                <div data-page-break="item">
+                  <span className="block font-bold text-slate-950">{isKhmer ? "អាសយដ្ឋាន:" : "Address:"}</span>
+                  <span className="text-slate-700 leading-snug break-words">
                     {document.personal.location.trim()}
                   </span>
                 </div>
               )}
 
               {hasText(document.personal.phone) && (
-                <div>
-                  <span className="block font-bold text-slate-950">Phone:</span>
+                <div data-page-break="item">
+                  <span className="block font-bold text-slate-950">{isKhmer ? "ទូរស័ព្ទ:" : "Phone:"}</span>
                   <a
                     href={`tel:${document.personal.phone.trim()}`}
-                    className="text-slate-700 hover:text-[#3b6998] leading-snug"
+                    className="text-slate-700 hover:text-[#3b6998] leading-snug break-words"
                   >
                     {document.personal.phone.trim()}
                   </a>
@@ -135,11 +137,11 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
               )}
 
               {hasText(document.personal.email) && (
-                <div>
-                  <span className="block font-bold text-slate-950">Email:</span>
+                <div data-page-break="item">
+                  <span className="block font-bold text-slate-950">{isKhmer ? "អ៊ីមែល:" : "Email:"}</span>
                   <a
                     href={`mailto:${document.personal.email.trim()}`}
-                    className="break-all text-slate-700 hover:text-[#3b6998] leading-snug"
+                    className="break-words [overflow-wrap:anywhere] text-slate-700 hover:text-[#3b6998] leading-snug"
                   >
                     {document.personal.email.trim()}
                   </a>
@@ -147,7 +149,7 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
               )}
 
               {hasText(document.personal.linkedin) && (
-                <div>
+                <div data-page-break="item">
                   <span className="block font-bold text-slate-950">LinkedIn:</span>
                   <a
                     href={
@@ -157,18 +159,18 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="break-all text-slate-700 hover:text-[#3b6998] leading-snug"
+                    className="break-words [overflow-wrap:anywhere] text-slate-700 hover:text-[#3b6998] leading-snug"
                   >
                     {document.personal.linkedin
                       .trim()
-                      .replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, "linkedin.com/")
+                      .replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, "linkedin.com/in/")
                       .replace(/^https?:\/\/(www\.)?linkedin\.com\//i, "linkedin.com/")}
                   </a>
                 </div>
               )}
 
               {hasText(document.personal.website) && (
-                <div>
+                <div data-page-break="item">
                   <span className="block font-bold text-slate-950">Website:</span>
                   <a
                     href={
@@ -178,7 +180,7 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="break-all text-slate-700 hover:text-[#3b6998] leading-snug"
+                    className="break-words [overflow-wrap:anywhere] text-slate-700 hover:text-[#3b6998] leading-snug"
                   >
                     {document.personal.website.trim().replace(/^https?:\/\//i, "")}
                   </a>
@@ -186,7 +188,7 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
               )}
 
               {hasText(document.personal.github) && (
-                <div>
+                <div data-page-break="item">
                   <span className="block font-bold text-slate-950">GitHub:</span>
                   <a
                     href={
@@ -196,7 +198,7 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="break-all text-slate-700 hover:text-[#3b6998] leading-snug"
+                    className="break-words [overflow-wrap:anywhere] text-slate-700 hover:text-[#3b6998] leading-snug"
                   >
                     {document.personal.github
                       .trim()
@@ -206,13 +208,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
               )}
 
               {hasText(document.personal.telegram) && (
-                <div>
+                <div data-page-break="item">
                   <span className="block font-bold text-slate-950">Telegram:</span>
                   <a
                     href={formatTelegram(document.personal.telegram).url}
                     target="_blank"
                     rel="noreferrer"
-                    className="break-all text-slate-700 hover:text-[#3b6998] leading-snug"
+                    className="break-words [overflow-wrap:anywhere] text-slate-700 hover:text-[#3b6998] leading-snug"
                   >
                     {formatTelegram(document.personal.telegram).label}
                   </a>
@@ -221,25 +223,25 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
             </div>
           ) : (
             <div className="flex flex-col gap-2.5 text-[11.5px] text-slate-600">
-              <div>
+              <div data-page-break="item">
                 <span className="block font-bold text-slate-950">Address:</span>
                 <span className="text-slate-500 leading-snug">
                   177 Great Portland Street, London WSW 6PQ
                 </span>
               </div>
-              <div>
+              <div data-page-break="item">
                 <span className="block font-bold text-slate-950">Phone:</span>
                 <span className="text-slate-500 leading-snug">+44 (0)20 7666 8555</span>
               </div>
-              <div>
+              <div data-page-break="item">
                 <span className="block font-bold text-slate-950">Email:</span>
                 <span className="text-slate-500 leading-snug">christoper.m@gmail.com</span>
               </div>
-              <div>
+              <div data-page-break="item">
                 <span className="block font-bold text-slate-950">LinkedIn:</span>
                 <span className="text-slate-500 leading-snug">linkedin.com/christopher.morgan</span>
               </div>
-              <div>
+              <div data-page-break="item">
                 <span className="block font-bold text-slate-950">Telegram:</span>
                 <span className="text-slate-500 leading-snug">t.me/christopher.morgan</span>
               </div>
@@ -249,11 +251,11 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
         {/* Languages Section */}
         <section>
-          <SidebarHeading>Languages</SidebarHeading>
+          <SidebarHeading>{isKhmer ? "ភាសា" : "Languages"}</SidebarHeading>
           {languages.length > 0 ? (
             <div className="flex flex-col gap-1 text-[11.5px] font-medium text-slate-800">
               {languages.map((l) => (
-                <div key={l.id}>
+                <div key={l.id} data-page-break="item">
                   {l.name.trim()}
                   {hasText(l.proficiency) ? ` – ${l.proficiency.trim()}` : ""}
                 </div>
@@ -261,9 +263,9 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
             </div>
           ) : (
             <div className="flex flex-col gap-1 text-[11.5px] font-medium text-slate-600">
-              <div>Spanish – C2</div>
-              <div>Chinese – A1</div>
-              <div>German – A2</div>
+              <div data-page-break="item">Spanish – C2</div>
+              <div data-page-break="item">Chinese – A1</div>
+              <div data-page-break="item">German – A2</div>
             </div>
           )}
         </section>
@@ -271,10 +273,10 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
         {/* Projects / Additional Sidebar Section */}
         {projects.length > 0 && (
           <section>
-            <SidebarHeading>Key Projects</SidebarHeading>
+            <SidebarHeading>{isKhmer ? "គម្រោងសំខាន់ៗ" : "Key Projects"}</SidebarHeading>
             <div className="flex flex-col gap-3 text-[11.5px]">
               {projects.map((proj) => (
-                <div key={proj.id} className="flex flex-col">
+                <div key={proj.id} data-page-break="item" className="flex flex-col">
                   <div className="flex items-baseline justify-between gap-1">
                     <span className="font-bold text-slate-950">
                       {proj.name.trim() || "Project"}
@@ -318,9 +320,9 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
       {/* Right Main Column (65% width) */}
       <main className="flex flex-1 flex-col gap-5 min-w-0">
         {/* Name & Target Role Header */}
-        <div>
+        <div data-page-break="item">
           <h1 className="font-display text-[28px] font-black leading-tight tracking-tight text-slate-950 sm:text-[34px]">
-            {document.personal.fullName.trim() || "Your Name"}
+            {document.personal.fullName.trim() || (isKhmer ? "ឈ្មោះរបស់អ្នក" : "Your Name")}
           </h1>
           {hasText(document.personal.roleApplied) ? (
             <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-slate-600">
@@ -334,8 +336,8 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
         </div>
 
         {/* Summary Section */}
-        <section>
-          <MainHeading>Summary</MainHeading>
+        <section data-page-break="item">
+          <MainHeading>{isKhmer ? "សេចក្តីសង្ខេប" : "Summary"}</MainHeading>
           {hasText(document.summary) ? (
             <p className="whitespace-pre-line text-[11.5px] leading-relaxed text-slate-700">
               {document.summary.trim()}
@@ -352,16 +354,16 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
         {/* Skill Highlights Section (Dashed border box with 2-column bullets) */}
         <section>
-          <h3 className="mb-2 font-display text-[15px] font-bold tracking-tight text-slate-950">
-            Skill Highlights
+          <h3 data-page-break="heading" className="mb-2 font-display text-[15px] font-bold tracking-tight text-slate-950">
+            {isKhmer ? "ជំនាញលេចធ្លោ" : "Skill Highlights"}
           </h3>
-          <div className="rounded-md border border-dashed border-slate-400/80 bg-slate-50/50 p-3.5">
+          <div data-page-break="item" className="rounded-md border border-dashed border-slate-400/80 bg-slate-50/50 p-3.5">
             {skills.length > 0 ? (
-              <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[11.5px] text-slate-800">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11.5px] text-slate-800">
                 {skills.map((skill) => (
-                  <div key={skill.id} className="flex items-start gap-2">
-                    <span className="font-bold text-slate-950 select-none">•</span>
-                    <span className="font-medium">{skill.name.trim()}</span>
+                  <div key={skill.id} className="flex items-start gap-2 min-w-0">
+                    <span className="font-bold text-slate-950 select-none shrink-0">•</span>
+                    <span className="font-medium break-words leading-snug">{skill.name.trim()}</span>
                   </div>
                 ))}
               </div>
@@ -398,7 +400,7 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
         {/* Experience Section */}
         <section>
-          <MainHeading>Experience</MainHeading>
+          <MainHeading>{isKhmer ? "បទពិសោធន៍ការងារ" : "Experience"}</MainHeading>
           {experience.length > 0 ? (
             <div className="flex flex-col gap-4">
               {experience.map((entry) => {
@@ -406,10 +408,11 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                 const dates = dateRange(
                   entry.startDate,
                   entry.endDate,
-                  entry.current
+                  entry.current,
+                  isKhmer ? "km" : "en"
                 );
                 return (
-                  <div key={entry.id} className="flex flex-col">
+                  <div key={entry.id} data-page-break="item" className="flex flex-col">
                     {/* Line 1: Role - Dates */}
                     <div className="text-[12.5px] font-bold text-slate-950">
                       <span>{entry.role.trim() || "Role"}</span>
@@ -464,13 +467,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
         {/* Education Section */}
         <section>
-          <MainHeading>Education</MainHeading>
+          <MainHeading>{isKhmer ? "ការអប់រំ" : "Education"}</MainHeading>
           {education.length > 0 ? (
             <div className="flex flex-col gap-3">
               {education.map((entry) => {
-                const dates = dateRange(entry.startDate, entry.endDate);
+                const dates = dateRange(entry.startDate, entry.endDate, false, isKhmer ? "km" : "en");
                 return (
-                  <div key={entry.id} className="flex flex-col text-[12px]">
+                  <div key={entry.id} data-page-break="item" className="flex flex-col text-[12px]">
                     <div className="text-slate-950">
                       {hasText(entry.degree) && (
                         <span className="font-medium">
@@ -520,12 +523,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
 
         {/* Certifications Section */}
         <section>
-          <MainHeading>Certifications</MainHeading>
+          <MainHeading>{isKhmer ? "វិញ្ញាបនបត្រ" : "Certifications"}</MainHeading>
           {certifications.length > 0 ? (
             <div className="flex flex-col gap-2">
               {certifications.map((entry) => (
                 <div
                   key={entry.id}
+                  data-page-break="item"
                   className="text-[11.5px] leading-snug text-slate-800"
                 >
                   <span className="font-bold text-slate-950">

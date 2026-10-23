@@ -18,6 +18,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import type { AiMode } from "@/lib/validations/ai";
 import { useApiKey } from "@/lib/api-key-context";
+import { useLanguage } from "@/lib/i18n/context";
 import { fixGrammarAction } from "@/server/actions/cv.actions";
 
 type FixGrammarDialogProps = {
@@ -36,6 +37,7 @@ export function FixGrammarDialog({
   onApply,
 }: FixGrammarDialogProps) {
   const { apiKey } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -47,7 +49,11 @@ export function FixGrammarDialog({
 
   async function handleFix() {
     if (!text.trim() || text.trim().length < 3) {
-      setError("Please write some text before fixing grammar.");
+      setError(
+        isKhmer
+          ? "សូមសរសេរអត្ថបទមួយចំនួនជាមុនសិន មុនពេលកែវេយ្យាករណ៍។"
+          : "Please write some text before fixing grammar."
+      );
       return;
     }
 
@@ -72,7 +78,11 @@ export function FixGrammarDialog({
         mode: response.data.mode,
       });
     } catch {
-      setError("Could not reach the proofreading service. Please try again.");
+      setError(
+        isKhmer
+          ? "មិនអាចទាក់ទងសេវាកម្មត្រួតពិនិត្យបានទេ។ សូមព្យាយាមម្តងទៀត។"
+          : "Could not reach the proofreading service. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -81,7 +91,11 @@ export function FixGrammarDialog({
   function handleAccept() {
     if (!result) return;
     onApply(result.corrected);
-    toast.success(`${label} updated. Autosave will save it.`);
+    toast.success(
+      isKhmer
+        ? `បានកែសម្រួល ${label} រួចរាល់។ ប្រព័ន្ធនឹងរក្សាទុកដោយស្វ័យប្រវត្តិ។`
+        : `${label} updated. Autosave will save it.`
+    );
     onOpenChange(false);
   }
 
@@ -90,7 +104,7 @@ export function FixGrammarDialog({
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
-            Proofread with AI
+            {t.aiDialogs.grammarTitle}
             {result?.mode && (
               <Badge variant="secondary">
                 {result.mode === "gemini" ? "Gemini" : "Demo AI"}
@@ -98,13 +112,13 @@ export function FixGrammarDialog({
             )}
           </DialogTitle>
           <DialogDescription>
-            Polish grammar, punctuation, and phrasing while preserving your exact meaning.
+            {t.aiDialogs.grammarDesc}
           </DialogDescription>
         </DialogHeader>
 
         {error && (
           <Alert variant="destructive">
-            <AlertTitle>Couldn&apos;t proofread</AlertTitle>
+            <AlertTitle>{isKhmer ? "មានបញ្ហាក្នុងការពិនិត្យ" : "Couldn't proofread"}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -113,10 +127,10 @@ export function FixGrammarDialog({
           <div className="flex flex-col gap-4">
             <div className="rounded-lg border border-border bg-muted/30 p-3">
               <p className="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Current text:
+                {isKhmer ? "អត្ថបទបច្ចុប្បន្ន៖" : "Current text:"}
               </p>
               <p className="text-sm whitespace-pre-wrap text-foreground">
-                {text.trim() || "No text entered yet."}
+                {text.trim() || (isKhmer ? "មិនទាន់មានអត្ថបទនៅឡើយទេ។" : "No text entered yet.")}
               </p>
             </div>
 
@@ -127,7 +141,7 @@ export function FixGrammarDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={loading}
               >
-                Cancel
+                {t.common.cancel}
               </Button>
               <Button
                 type="button"
@@ -137,12 +151,12 @@ export function FixGrammarDialog({
                 {loading ? (
                   <>
                     <Spinner />
-                    Checking…
+                    {t.aiDialogs.improving}
                   </>
                 ) : (
                   <>
                     <Sparkles />
-                    Proofread text
+                    {t.aiDialogs.fixGrammarBtn}
                   </>
                 )}
               </Button>
@@ -153,13 +167,13 @@ export function FixGrammarDialog({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-muted/40 p-3">
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Original
+                  {t.aiDialogs.current}
                 </p>
                 <p className="text-sm whitespace-pre-wrap">{result.original}</p>
               </div>
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">
-                  Suggested
+                  {t.aiDialogs.suggested}
                 </p>
                 <p className="text-sm font-medium whitespace-pre-wrap text-foreground">
                   {result.corrected}
@@ -169,7 +183,9 @@ export function FixGrammarDialog({
 
             {result.explanation && (
               <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">Changes:</span>{" "}
+                <span className="font-semibold text-foreground">
+                  {isKhmer ? "ការកែសម្រួល៖" : "Changes:"}
+                </span>{" "}
                 {result.explanation}
               </p>
             )}
@@ -181,11 +197,11 @@ export function FixGrammarDialog({
                 onClick={() => setResult(null)}
               >
                 <X />
-                Keep original
+                {t.aiDialogs.skip}
               </Button>
               <Button type="button" onClick={handleAccept}>
                 <Check />
-                Use suggested text
+                {t.aiDialogs.applyFix}
               </Button>
             </DialogFooter>
           </div>

@@ -20,6 +20,7 @@
     "cv:ui:test": "tsx scripts/cv-ui-test.ts",
     "ai:test": "tsx scripts/ai-test.ts",
     "pdf:test": "tsx scripts/pdf-test.ts",
+    "i18n:test": "tsx scripts/i18n-test.ts",
     "test:unit": "tsx scripts/unit-test.ts",
     "test:integration": "tsx scripts/integration-test.ts",
     "test": "tsx scripts/unit-test.ts",

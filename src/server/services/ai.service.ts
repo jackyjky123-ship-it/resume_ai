@@ -272,3 +272,8 @@ export async function fixGrammar(
     mode,
   };
 }
+
+export async function testApiKey(apiKey: string): Promise<{ valid: boolean; model: string }> {
+  const { testGeminiConnection } = await import("./gemini.provider");
+  return testGeminiConnection(apiKey);
+}

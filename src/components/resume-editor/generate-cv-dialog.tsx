@@ -39,6 +39,7 @@ import {
   type ResumeEditorFormValues,
 } from "@/lib/validations/resume";
 import { useApiKey } from "@/lib/api-key-context";
+import { useLanguage } from "@/lib/i18n/context";
 import { generateCvSuggestionsAction } from "@/server/actions/cv.actions";
 
 type GenerateCvDialogProps = {
@@ -47,27 +48,35 @@ type GenerateCvDialogProps = {
   aiMode?: AiMode;
 };
 
-const SECTION_COPY: Record<
+const getSectionCopy = (isKhmer: boolean): Record<
   GenerateSection,
   { label: string; description: string }
-> = {
+> => ({
   summary: {
-    label: "Professional summary",
-    description: "A grounded rewrite using your current role and strengths.",
+    label: isKhmer ? "សេចក្តីសង្ខេបវិជ្ជាជីវៈ" : "Professional summary",
+    description: isKhmer
+      ? "កែសម្រួលផ្អែកលើតួនាទី និងចំណុចខ្លាំងបច្ចុប្បន្នរបស់អ្នក។"
+      : "A grounded rewrite using your current role and strengths.",
   },
   skills: {
-    label: "Skills",
-    description: "Only skills mentioned elsewhere in your resume.",
+    label: isKhmer ? "ជំនាញ" : "Skills",
+    description: isKhmer
+      ? "ជំនាញដែលបានលើកឡើងនៅក្នុងប្រវត្តិរូបរបស់អ្នក។"
+      : "Only skills mentioned elsewhere in your resume.",
   },
   projectHighlights: {
-    label: "Project highlights",
-    description: "Turn existing project descriptions into concise bullets.",
+    label: isKhmer ? "គំនួសពណ៌គម្រោង" : "Project highlights",
+    description: isKhmer
+      ? "បំលែងការពិពណ៌នាគម្រោងទៅជាចំណុចខ្លីៗ និងច្បាស់លាស់។"
+      : "Turn existing project descriptions into concise bullets.",
   },
   languages: {
-    label: "Languages",
-    description: "Format entries you already have. Fluency is never invented.",
+    label: isKhmer ? "ភាសា" : "Languages",
+    description: isKhmer
+      ? "រៀបចំទម្រង់ភាសាដែលមានស្រាប់ ដោយគ្មានការប្រឌិតកម្រិតជំនាញឡើយ។"
+      : "Format entries you already have. Fluency is never invented.",
   },
-};
+});
 
 function availableSections(document: ResumeDocument): GenerateSection[] {
   return GENERATE_SECTIONS.filter((section) => {
@@ -87,7 +96,9 @@ export function GenerateCvDialog({
   aiMode: propAiMode,
 }: GenerateCvDialogProps) {
   const { apiKey, aiMode: contextAiMode } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const effectiveMode = propAiMode ?? contextAiMode;
+  const sectionCopy = getSectionCopy(isKhmer);
 
   const form = useFormContext<ResumeEditorFormValues>();
   const watched = useWatch({ control: form.control, name: "content" });
@@ -281,13 +292,13 @@ export function GenerateCvDialog({
       <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
-            Generate CV suggestions
+            {t.aiDialogs.generateCvTitle}
             <Badge variant="secondary">{mode === "mock" ? "Demo AI" : "Gemini"}</Badge>
           </DialogTitle>
           <DialogDescription>
             {phase === "setup"
-              ? "Enter the role you want to apply for. Suggestions use only facts already in this resume — nothing is invented or saved until you accept it."
-              : "Review each suggestion. Accepting updates the editor; autosave handles saving. Keeping the current version is always an option."}
+              ? t.aiDialogs.generateCvDescSetup
+              : t.aiDialogs.generateCvDescResults}
           </DialogDescription>
         </DialogHeader>
 
@@ -295,22 +306,24 @@ export function GenerateCvDialog({
           <>
             {mode === "mock" && (
               <Alert>
-                <AlertTitle>Demo mode</AlertTitle>
+                <AlertTitle>{isKhmer ? "ទម្រង់សាកល្បង" : "Demo mode"}</AlertTitle>
                 <AlertDescription>
-                  No Gemini API key configured. Suggestions are generated locally using mock heuristics. Add your free Google AI Studio key via the &ldquo;API Key&rdquo; button in the editor toolbar to use Gemini.
+                  {isKhmer
+                    ? "មិនទាន់បានកំណត់ Gemini API key ទេ។ គំនិតយោបល់ត្រូវបានបង្កើតក្នុងស្រុកតាមទម្រង់សាកល្បង។ សូមបន្ថែម Google AI Studio key ឥតគិតថ្លៃរបស់អ្នកតាមរយៈប៊ូតុង “API Key” ដើម្បីប្រើ Gemini។"
+                    : "No Gemini API key configured. Suggestions are generated locally using mock heuristics. Add your free Google AI Studio key via the “API Key” button in the editor toolbar to use Gemini."}
                 </AlertDescription>
               </Alert>
             )}
 
             {error && (
               <Alert variant="destructive">
-                <AlertTitle>Couldn&apos;t generate suggestions</AlertTitle>
+                <AlertTitle>{isKhmer ? "មិនអាចបង្កើតគំនិតយោបល់បានទេ" : "Couldn't generate suggestions"}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="target-role">Target role</Label>
+              <Label htmlFor="target-role">{t.aiDialogs.targetRole}</Label>
               <Input
                 id="target-role"
                 value={targetRole}
@@ -319,20 +332,19 @@ export function GenerateCvDialog({
                   setTargetRole(event.target.value);
                   if (error) setError(null);
                 }}
-                placeholder="e.g. Senior frontend developer"
+                placeholder={t.aiDialogs.targetRolePlaceholder}
                 autoFocus
               />
               <p className="text-xs text-muted-foreground">
-                Used for framing only. It never becomes a skill or experience
-                claim unless you add it yourself.
+                {t.aiDialogs.targetRoleHelp}
               </p>
             </div>
 
             <fieldset className="flex flex-col gap-2">
-              <legend className="mb-1 text-sm font-medium">Sections</legend>
+              <legend className="mb-1 text-sm font-medium">{t.aiDialogs.sections}</legend>
               {GENERATE_SECTIONS.map((section) => {
                 const available = availability[section];
-                const copy = SECTION_COPY[section];
+                const copy = sectionCopy[section];
                 return (
                   <label
                     key={section}
@@ -353,8 +365,12 @@ export function GenerateCvDialog({
                         {available
                           ? copy.description
                           : section === "projectHighlights"
-                            ? "Add a project first to generate highlights."
-                            : "Add a language first; fluency is never invented."}
+                            ? isKhmer
+                              ? "សូមបន្ថែមគម្រោងជាមុនសិន ដើម្បីបង្កើតគំនួសពណ៌។"
+                              : "Add a project first to generate highlights."
+                            : isKhmer
+                              ? "សូមបន្ថែមភាសាជាមុនសិន។"
+                              : "Add a language first; fluency is never invented."}
                       </span>
                     </span>
                   </label>
@@ -369,7 +385,7 @@ export function GenerateCvDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={generating}
               >
-                Cancel
+                {t.common.cancel}
               </Button>
               <Button
                 type="button"
@@ -379,12 +395,12 @@ export function GenerateCvDialog({
                 {generating ? (
                   <>
                     <Spinner />
-                    Generating…
+                    {t.aiDialogs.generatingBtn}
                   </>
                 ) : (
                   <>
                     <Sparkles />
-                    Generate suggestions
+                    {t.aiDialogs.generateBtn}
                   </>
                 )}
               </Button>
@@ -395,13 +411,13 @@ export function GenerateCvDialog({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold">
-                  Suggestions for {targetRole.trim()}
+                  {t.aiDialogs.suggestionsFor.replace("{role}", targetRole.trim())}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Grounded in your current resume facts.
+                  {t.aiDialogs.groundedInFacts}
                 </p>
               </div>
-              <Badge variant="outline">Not saved until accepted</Badge>
+              <Badge variant="outline">{t.aiDialogs.notSavedUntilAccepted}</Badge>
             </div>
 
             {mode === "mock" && (
@@ -685,7 +701,7 @@ function SuggestionCard({
   skipped = false,
   onApply,
   onSkip,
-  applyLabel = "Use this suggestion",
+  applyLabel,
   applyDisabled = false,
   children,
 }: {
@@ -698,17 +714,21 @@ function SuggestionCard({
   applyDisabled?: boolean;
   children: React.ReactNode;
 }) {
+  const { isKhmer } = useLanguage();
+  const defaultApplyLabel = isKhmer ? "ប្រើប្រាស់គំនិតនេះ" : "Use this suggestion";
+  const effectiveApplyLabel = applyLabel ?? defaultApplyLabel;
+
   return (
     <section className="rounded-xl border border-border">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-3 py-2">
         <h3 className="text-sm font-semibold">{title}</h3>
         {applied ? (
           <Badge variant="secondary" className="gap-1">
-            <CheckCircle2 /> Applied
+            <CheckCircle2 /> {isKhmer ? "បានអនុវត្ត" : "Applied"}
           </Badge>
         ) : skipped ? (
           <Badge variant="outline" className="gap-1">
-            <X /> Kept current
+            <X /> {isKhmer ? "រក្សាបច្ចុប្បន្ន" : "Kept current"}
           </Badge>
         ) : (
           (onApply || onSkip) && (
@@ -720,7 +740,7 @@ function SuggestionCard({
                   variant="outline"
                   onClick={onSkip}
                 >
-                  Keep current
+                  {isKhmer ? "រក្សាបច្ចុប្បន្ន" : "Keep current"}
                 </Button>
               )}
               {onApply && (
@@ -731,7 +751,7 @@ function SuggestionCard({
                   disabled={applyDisabled}
                 >
                   <Check />
-                  {applyLabel}
+                  {effectiveApplyLabel}
                 </Button>
               )}
             </div>

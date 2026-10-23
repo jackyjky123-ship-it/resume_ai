@@ -107,17 +107,17 @@ type SectionShellProps = {
 
 export function SectionShell({ id, title, description, action, children }: SectionShellProps) {
   return (
-    <Card id={id} className="scroll-mt-28">
-      <CardHeader className="border-b border-border/70">
-        <div className="flex items-start justify-between gap-3">
+    <Card id={id} className="scroll-mt-28 rounded-2xl border border-border/80 shadow-xs">
+      <CardHeader className="border-b border-border/70 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <CardTitle className="font-display text-lg font-bold">{title}</CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
+            <CardTitle className="font-display text-lg font-bold text-foreground">{title}</CardTitle>
+            {description && <CardDescription className="text-xs text-muted-foreground">{description}</CardDescription>}
           </div>
-          {action}
+          {action && <div className="shrink-0">{action}</div>}
         </div>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className="pt-6">{children}</CardContent>
     </Card>
   );
 }

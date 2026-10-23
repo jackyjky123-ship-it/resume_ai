@@ -33,6 +33,7 @@ import {
 } from "@/lib/resume-import";
 import type { AiMode, CvImportResult } from "@/lib/validations/ai";
 import { useApiKey } from "@/lib/api-key-context";
+import { useLanguage } from "@/lib/i18n/context";
 import { resumeDocumentSchema } from "@/lib/validations/resume";
 import type { TemplateId } from "@/lib/resume-meta";
 
@@ -69,6 +70,7 @@ export function ImportCvDialog({
   onApply,
 }: ImportCvDialogProps) {
   const { apiKey, aiMode: contextAiMode } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const effectiveAiMode = propAiMode ?? contextAiMode;
 
   const [file, setFile] = useState<File | null>(null);
@@ -183,12 +185,11 @@ export function ImportCvDialog({
       <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
-            Update CV from an existing file
+            {t.aiDialogs.importTitle}
             {mode === "mock" && <Badge variant="secondary">Demo parser</Badge>}
           </DialogTitle>
           <DialogDescription>
-            Upload an old CV or paste its text. We will map what we can into the
-            editor, then you can review it before anything replaces your resume.
+            {t.aiDialogs.importDesc}
           </DialogDescription>
         </DialogHeader>
 
@@ -280,18 +281,18 @@ export function ImportCvDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={parsing}
               >
-                Cancel
+                {t.common.cancel}
               </Button>
               <Button type="button" onClick={() => void parseCv()} disabled={!canParse}>
                 {parsing ? (
                   <>
                     <Spinner />
-                    Reading CV…
+                    {t.aiDialogs.parsing}
                   </>
                 ) : (
                   <>
                     <Upload data-icon="inline-start" />
-                    Read CV
+                    {t.aiDialogs.parseCv}
                   </>
                 )}
               </Button>
@@ -309,7 +310,7 @@ export function ImportCvDialog({
 
             {result.warnings.length > 0 && (
               <Alert>
-                <AlertTitle>Review these parts</AlertTitle>
+                <AlertTitle>{isKhmer ? "សូមពិនិត្យមើលផ្នែកទាំងនេះ" : "Review these parts"}</AlertTitle>
                 <AlertDescription>
                   <ul className="list-disc space-y-1 pl-4">
                     {result.warnings.map((warning) => (
@@ -334,20 +335,22 @@ export function ImportCvDialog({
               <div className="flex items-start gap-3 rounded-lg border border-border p-3">
                 <RadioGroupItem value="merge" id="import-merge" className="mt-0.5" />
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="import-merge">Merge with this resume</Label>
+                  <Label htmlFor="import-merge">{t.aiDialogs.applyModeMerge}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Keep your current values, fill empty personal fields, and add
-                    imported entries. Existing rows stay.
+                    {isKhmer
+                      ? "រក្សាទុកទិន្នន័យបច្ចុប្បន្នរបស់អ្នក បំពេញចន្លោះទទេ និងបន្ថែមព័ត៌មានដែលបាននាំចូល។"
+                      : "Keep your current values, fill empty personal fields, and add imported entries. Existing rows stay."}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3 rounded-lg border border-border p-3">
                 <RadioGroupItem value="replace" id="import-replace" className="mt-0.5" />
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="import-replace">Replace this resume</Label>
+                  <Label htmlFor="import-replace">{t.aiDialogs.applyModeReplace}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Use the imported content as the new starting point. Current
-                    content will be removed from the editor.
+                    {isKhmer
+                      ? "ប្រើប្រាស់ទិន្នន័យដែលបាននាំចូលជាប្រវត្តិរូបថ្មី។ ទិន្នន័យចាស់ក្នុងផ្ទាំងកែសម្រួលនឹងត្រូវបានជំនួស។"
+                      : "Use the imported content as the new starting point. Current content will be removed from the editor."}
                   </p>
                 </div>
               </div>
@@ -355,22 +358,27 @@ export function ImportCvDialog({
 
             <p className="text-xs text-muted-foreground">
               {mode === "mock"
-                ? "Demo parser: this import uses local section rules, not Gemini. Review every field before applying."
-                : "Only the extracted text was sent to the AI provider. The original file was not stored."}{" "}
-              Applying marks the editor as changed; autosave persists the
-              reviewed result.
+                ? isKhmer
+                  ? "កម្មវិធីញែកទិន្នន័យសាកល្បង៖ ការនាំចូលនេះប្រើប្រាស់ក្បួនច្បាប់ក្នុងស្រុក មិនមែន Gemini ទេ។ សូមពិនិត្យមើលគ្រប់ផ្នែកមុនពេលអនុវត្ត។"
+                  : "Demo parser: this import uses local section rules, not Gemini. Review every field before applying."
+                : isKhmer
+                  ? "មានតែអត្ថបទដែលទាញយកប៉ុណ្ណោះដែលត្រូវបានផ្ញើទៅកាន់ AI។ ឯកសារដើមមិនត្រូវបានរក្សាទុកឡើយ។"
+                  : "Only the extracted text was sent to the AI provider. The original file was not stored."}{" "}
+              {isKhmer
+                ? "ការអនុវត្តនឹងកត់ត្រាការផ្លាស់ប្តូរ ហើយប្រព័ន្ធនឹងរក្សាទុកដោយស្វ័យប្រវត្តិ។"
+                : "Applying marks the editor as changed; autosave persists the reviewed result."}
             </p>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={startOver}>
-                Back
+                {t.common.back}
               </Button>
               <Button
                 type="button"
                 onClick={() => onApply(result.document, applyMode)}
                 disabled={!hasImportableContent(result.document)}
               >
-                Apply imported CV
+                {t.aiDialogs.applyImport}
               </Button>
             </DialogFooter>
           </>

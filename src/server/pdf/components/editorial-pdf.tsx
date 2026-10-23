@@ -24,11 +24,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   sidebar: {
-    width: "35%",
+    width: "36%",
     paddingRight: 14,
   },
   main: {
-    width: "65%",
+    width: "64%",
     paddingLeft: 10,
   },
 
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
   photo: {
     width: "100%",
     height: "100%",
-    objectFit: "contain",
+    objectFit: "cover",
+    objectPosition: "top",
   },
   initialsBox: {
     width: "100%",

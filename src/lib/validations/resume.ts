@@ -101,9 +101,19 @@ export const resumeDocumentSchema = z.object({
 
 export const resumeTemplateSchema = z.enum(TEMPLATE_IDS);
 
+export const STARTER_ROLES = [
+  "barista",
+  "retail",
+  "software",
+  "support",
+  "intern",
+] as const;
+export type StarterRole = (typeof STARTER_ROLES)[number];
+
 export const createResumeInputSchema = z.object({
   title: z.string().trim().min(1, "Give your resume a title").max(80),
   templateId: resumeTemplateSchema,
+  starterRole: z.enum(STARTER_ROLES).optional(),
 });
 
 export const updateResumeInputSchema = createResumeInputSchema.extend({
@@ -176,6 +186,161 @@ export function emptyResumeDocument(): ResumeDocument {
     certifications: [],
     languages: [],
   };
+}
+
+/** Pre-populates clean starter drafts for students and first-time applicants. */
+export function generateStarterResumeDocument(role: StarterRole): ResumeDocument {
+  const doc = emptyResumeDocument();
+  if (role === "barista") {
+    doc.personal.roleApplied = "Barista & Café Specialist";
+    doc.summary = "Energetic, customer-focused barista with a strong passion for craft coffee, latte art, and fast-paced counter operations. Dedicated to delivering friendly, memorable customer experiences while maintaining cleanliness and register accuracy.";
+    doc.skills = [
+      { id: newId(), name: "Espresso Extraction & Grinder Dial-in" },
+      { id: newId(), name: "Milk Steaming & Latte Art" },
+      { id: newId(), name: "POS Operations & Cash Handling" },
+      { id: newId(), name: "Food Safety & Cleanliness Standards" },
+      { id: newId(), name: "Customer Relations & Queue Management" },
+      { id: newId(), name: "Inventory Restocking & Merchandising" },
+    ];
+    doc.experience = [
+      {
+        id: newId(),
+        company: "Artisan Coffee House",
+        role: "Barista",
+        location: "City Center",
+        startDate: "2023",
+        endDate: "Present",
+        current: true,
+        bullets: [
+          { id: newId(), text: "Handcrafted 150+ specialty coffee, espresso, and cold brew orders daily with consistent quality and presentation." },
+          { id: newId(), text: "Operated POS terminal, handled cash transactions with 100% register accuracy, and fulfilled online mobile orders." },
+          { id: newId(), text: "Maintained rigorous hygiene and food safety protocols, performing daily espresso machine backflushing and station sanitization." },
+        ],
+      },
+    ];
+    doc.education = [
+      {
+        id: newId(),
+        school: "City Community College",
+        degree: "Associate Degree / General Studies",
+        field: "Hospitality & Business",
+        location: "City, State",
+        startDate: "2022",
+        endDate: "2024",
+        details: "Coursework in Customer Service Communication and Business Basics.",
+      },
+    ];
+  } else if (role === "retail") {
+    doc.personal.roleApplied = "Retail Sales Associate";
+    doc.summary = "Proactive and customer-oriented Retail Associate with experience in merchandise displays, cashier operations, and personalized product recommendations. Committed to boosting store sales through engaging customer service.";
+    doc.skills = [
+      { id: newId(), name: "Customer Assistance & Sales" },
+      { id: newId(), name: "Point of Sale (POS) & Checkout" },
+      { id: newId(), name: "Visual Merchandising & Floor Sets" },
+      { id: newId(), name: "Inventory Audits & Stockroom Organization" },
+      { id: newId(), name: "Loss Prevention Awareness" },
+      { id: newId(), name: "Product Knowledge & Upselling" },
+    ];
+    doc.experience = [
+      {
+        id: newId(),
+        company: "Urban Retail Outfitters",
+        role: "Sales Associate",
+        location: "Metro Mall",
+        startDate: "2023",
+        endDate: "Present",
+        current: true,
+        bullets: [
+          { id: newId(), text: "Greeted customers promptly, assessed individual preferences, and provided knowledgeable styling recommendations." },
+          { id: newId(), text: "Managed checkout operations, processed returns and exchanges smoothly, and achieved 98% positive customer satisfaction ratings." },
+          { id: newId(), text: "Organized display tables and floor inventory according to visual merchandising guidelines to drive foot traffic." },
+        ],
+      },
+    ];
+  } else if (role === "software") {
+    doc.personal.roleApplied = "Junior Software Engineer / CS Student";
+    doc.summary = "Computer Science student with practical experience building modern full-stack web applications. Skilled in TypeScript, React, Next.js, and SQL, with a passion for clean architecture, accessible UI, and collaborative Git workflows.";
+    doc.skills = [
+      { id: newId(), name: "TypeScript & JavaScript (ES6+)" },
+      { id: newId(), name: "React, Next.js & Tailwind CSS" },
+      { id: newId(), name: "Node.js, PostgreSQL & Prisma" },
+      { id: newId(), name: "Git, GitHub & CI/CD Actions" },
+      { id: newId(), name: "RESTful APIs & GraphQL" },
+      { id: newId(), name: "Data Structures & Algorithms" },
+    ];
+    doc.projects = [
+      {
+        id: newId(),
+        name: "Full-Stack Web Platform",
+        url: "https://github.com/my-profile/project",
+        description: "Modern web application with relational database persistence, responsive UI, and secure authentication.",
+        bullets: [
+          { id: newId(), text: "Engineered responsive full-stack application using Next.js 16 App Router and serverless PostgreSQL." },
+          { id: newId(), text: "Implemented secure user authentication, optimistic UI updates, and automated GitHub Actions test pipelines." },
+        ],
+      },
+    ];
+    doc.education = [
+      {
+        id: newId(),
+        school: "State University",
+        degree: "B.S. in Computer Science",
+        field: "Software Engineering",
+        location: "Campus",
+        startDate: "2022",
+        endDate: "2026",
+        details: "Relevant Coursework: Data Structures, Web Engineering, Database Systems, Computer Networks.",
+      },
+    ];
+  } else if (role === "support") {
+    doc.personal.roleApplied = "Customer Support Specialist";
+    doc.summary = "Empathetic, quick-thinking Support Specialist skilled in omnichannel customer communication, ticket resolution, and active listening. Focused on turning challenging support inquiries into positive brand experiences.";
+    doc.skills = [
+      { id: newId(), name: "Omnichannel Support (Email, Chat, Phone)" },
+      { id: newId(), name: "Zendesk, Intercom & CRM Tools" },
+      { id: newId(), name: "Conflict De-escalation & Empathy" },
+      { id: newId(), name: "Technical Troubleshooting" },
+      { id: newId(), name: "Knowledge Base Article Writing" },
+    ];
+    doc.experience = [
+      {
+        id: newId(),
+        company: "Digital Services Co.",
+        role: "Customer Support Representative",
+        location: "Remote",
+        startDate: "2023",
+        endDate: "Present",
+        current: true,
+        bullets: [
+          { id: newId(), text: "Resolved 60+ customer tickets daily via chat and email with 95%+ first-contact resolution rate." },
+          { id: newId(), text: "Authored 10+ FAQ and troubleshooting articles in internal knowledge base, reducing repeat customer inquiries." },
+        ],
+      },
+    ];
+  } else if (role === "intern") {
+    doc.personal.roleApplied = "Campus / Academic Intern";
+    doc.summary = "Dedicated university student with strong analytical, writing, and collaborative research capabilities. Fast learner seeking an internship opportunity to apply academic training to real-world business challenges.";
+    doc.skills = [
+      { id: newId(), name: "Research & Data Synthesis" },
+      { id: newId(), name: "Written & Verbal Communication" },
+      { id: newId(), name: "Microsoft Office & Google Workspace" },
+      { id: newId(), name: "Project Coordination & Deadlines" },
+      { id: newId(), name: "Team Presentation Skills" },
+    ];
+    doc.education = [
+      {
+        id: newId(),
+        school: "University",
+        degree: "Bachelor of Arts / Science",
+        field: "Major Subject",
+        location: "City, State",
+        startDate: "2023",
+        endDate: "2027",
+        details: "Dean's Honor List • Active member of student society and project teams.",
+      },
+    ];
+  }
+  return doc;
 }
 
 export function newExperienceEntry(): ExperienceEntry {

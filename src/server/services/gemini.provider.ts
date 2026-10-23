@@ -122,6 +122,7 @@ Strict Rules:
 - Only suggest skills that are already mentioned or clearly evidenced in the resume content.
 - Never add languages or invent fluency levels.
 - For projects and languages, ALWAYS preserve the exact ID provided in [ID: ...].
+- Language preservation: if the user's content or target role is in Khmer, provide all suggestions, summaries, and notes in natural professional Khmer; if in English, provide in English.
 - Return ONLY valid JSON matching the requested structure.`;
 
 function buildGeneratePrompt(input: GenerateCvInput): string {
@@ -204,6 +205,7 @@ Strict Rules:
 - NEVER invent numbers, percentages, dollar figures, or technologies not in the original text.
 - If the original lacked metrics, keep it qualitative rather than guessing.
 - Keep the improved bullet under 300 characters.
+- Language preservation: if the input bullet is in Khmer, provide the improved bullet and explanation in natural professional Khmer; if in English, provide in English.
 - Return ONLY valid JSON: { "improvedBullet": string, "explanation": string }`;
 
 export async function improveBulletWithGemini(
@@ -251,6 +253,7 @@ Fix grammar, spelling, punctuation, and phrasing clarity.
 Strict Rules:
 - Preserve the exact meaning, voice, and details.
 - Never add new facts or claims.
+- Language preservation: if the text is in Khmer, correct Khmer grammar and phrasing and explain in Khmer; if in English, do so in English.
 - Return ONLY valid JSON: { "correctedText": string, "explanation": string }`;
 
 export async function fixGrammarWithGemini(
@@ -560,3 +563,20 @@ function normalizeParsedResume(raw: unknown): ResumeDocument {
 
   return parsed.success ? parsed.data : emptyResumeDocument();
 }
+
+/** Lightweight connection test to verify that the BYOK key is functional. */
+export async function testGeminiConnection(apiKey: string): Promise<{ valid: boolean; model: string }> {
+  const trimmed = apiKey?.trim();
+  if (!trimmed) throw new Error("API key is required");
+  const ai = createClient(trimmed);
+  const response = await withTimeout(
+    ai.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: "Reply with 'ready'.",
+    }),
+    15_000
+  );
+  if (!response.text) throw new Error("No response received from Gemini");
+  return { valid: true, model: GEMINI_MODEL };
+}
+

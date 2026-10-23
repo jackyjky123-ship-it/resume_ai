@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Check } from "lucide-react";
 import type { DashboardResume, TemplateId } from "@/lib/resume-meta";
 import { TEMPLATES } from "@/lib/resume-meta";
+import { useLanguage } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -46,9 +47,10 @@ export function NewResumeDialog({
   onClose,
   onCreate,
 }: NewResumeDialogProps) {
+  const { t, isKhmer } = useLanguage();
   // The workspace remounts this dialog via `key` on every open, so fresh
   // defaults need no effect — see dashboard-workspace.tsx.
-  const [title, setTitle] = useState("Untitled resume");
+  const [title, setTitle] = useState(isKhmer ? "ប្រវត្តិរូបថ្មី" : "Untitled resume");
   const [templateId, setTemplateId] = useState<TemplateId>("classic");
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -63,9 +65,11 @@ export function NewResumeDialog({
     >
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl font-bold">Start a new resume</DialogTitle>
+          <DialogTitle className="font-display text-xl font-bold">{t.dashboard.newResumeTitle}</DialogTitle>
           <DialogDescription>
-            Pick a title and a starting template. You can change both later.
+            {isKhmer
+              ? "កំណត់ចំណងជើង និងជ្រើសរើសគំរូចាប់ផ្តើម។ អ្នកអាចផ្លាស់ប្តូរបាននៅពេលក្រោយ។"
+              : "Pick a title and a starting template. You can change both later."}
           </DialogDescription>
         </DialogHeader>
 
@@ -77,7 +81,7 @@ export function NewResumeDialog({
           className="flex flex-col gap-5"
         >
           <Field>
-            <FieldLabel htmlFor="new-resume-title">Resume title</FieldLabel>
+            <FieldLabel htmlFor="new-resume-title">{t.dashboard.resumeTitleLabel}</FieldLabel>
             <Input
               id="new-resume-title"
               ref={titleRef}
@@ -91,7 +95,7 @@ export function NewResumeDialog({
           </Field>
 
           <FieldSet>
-            <FieldLegend variant="label">Template</FieldLegend>
+            <FieldLegend variant="label">{t.editor.templateLabel}</FieldLegend>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
               {TEMPLATES.map((template) => {
                 const selected = templateId === template.id;
@@ -130,7 +134,9 @@ export function NewResumeDialog({
               })}
             </div>
             <p className="text-xs text-muted-foreground">
-              You can switch templates any time — your content stays.
+              {isKhmer
+                ? "អ្នកអាចប្តូរគំរូបានគ្រប់ពេលវេលា — ព័ត៌មានរបស់អ្នកនៅដដែល។"
+                : "You can switch templates any time — your content stays."}
             </p>
           </FieldSet>
 
@@ -142,11 +148,11 @@ export function NewResumeDialog({
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={pending}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button type="submit" disabled={!trimmed || pending}>
               {pending && <Spinner data-icon="inline-start" />}
-              Create resume
+              {pending ? t.dashboard.creating : t.dashboard.createFirst}
             </Button>
           </DialogFooter>
         </form>
@@ -172,6 +178,7 @@ export function RenameResumeDialog({
   onClose,
   onRename,
 }: RenameResumeDialogProps) {
+  const { t, isKhmer } = useLanguage();
   // Remounted via `key={resume.id}` on the workspace side, so the initial
   // value seeds from the selected resume without a sync effect.
   const [title, setTitle] = useState(resume?.title ?? "");
@@ -188,9 +195,11 @@ export function RenameResumeDialog({
     >
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl font-bold">Rename resume</DialogTitle>
+          <DialogTitle className="font-display text-xl font-bold">{t.dashboard.renameTitle}</DialogTitle>
           <DialogDescription>
-            Give this resume a name that is easy to spot on the dashboard.
+            {isKhmer
+              ? "កំណត់ឈ្មោះដែលងាយស្រួលចំណាំនៅលើផ្ទាំងគ្រប់គ្រង។"
+              : "Give this resume a name that is easy to spot on the dashboard."}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -201,7 +210,7 @@ export function RenameResumeDialog({
           className="flex flex-col gap-5"
         >
           <Field>
-            <FieldLabel htmlFor="rename-resume-title">Resume title</FieldLabel>
+            <FieldLabel htmlFor="rename-resume-title">{t.dashboard.resumeTitleLabel}</FieldLabel>
             <Input
               id="rename-resume-title"
               ref={inputRef}
@@ -222,11 +231,11 @@ export function RenameResumeDialog({
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={pending}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button type="submit" disabled={!trimmed || pending}>
               {pending && <Spinner data-icon="inline-start" />}
-              Save name
+              {pending ? t.dashboard.renaming : t.common.save}
             </Button>
           </DialogFooter>
         </form>
@@ -252,6 +261,8 @@ export function DeleteResumeDialog({
   onClose,
   onDelete,
 }: DeleteResumeDialogProps) {
+  const { t, isKhmer } = useLanguage();
+
   return (
     <AlertDialog
       open={resume !== null}
@@ -262,11 +273,13 @@ export function DeleteResumeDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="font-display text-lg font-bold">
-            Delete this resume?
+            {t.dashboard.deleteConfirmTitle}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            <span className="font-semibold text-foreground">“{resume?.title}”</span> will be
-            removed from the list. This can&rsquo;t be undone.
+            <span className="font-semibold text-foreground">“{resume?.title}”</span>{" "}
+            {isKhmer
+              ? "នឹងត្រូវបានលុបចេញពីប្រព័ន្ធ។ សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។"
+              : "will be removed from the list. This can't be undone."}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -277,7 +290,7 @@ export function DeleteResumeDialog({
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>Keep resume</AlertDialogCancel>
+          <AlertDialogCancel disabled={pending}>{isKhmer ? "រក្សាទុក" : "Keep resume"}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             disabled={pending}
@@ -287,7 +300,7 @@ export function DeleteResumeDialog({
             }}
           >
             {pending && <Spinner data-icon="inline-start" />}
-            Delete
+            {pending ? t.dashboard.deleting : t.common.delete}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

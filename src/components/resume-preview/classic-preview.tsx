@@ -1,5 +1,6 @@
 import React from "react";
 import type { ResumeDocument } from "@/lib/validations/resume";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   contactLine,
   dateRange,
@@ -9,13 +10,14 @@ import {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-2 border-b border-neutral-300 pb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-700">
+    <h3 data-page-break="heading" className="mb-2 border-b border-neutral-300 pb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-700">
       {children}
     </h3>
   );
 }
 
 export function ClassicPreview({ document }: { document: ResumeDocument }) {
+  const { isKhmer } = useLanguage();
   const contact = contactLine(document);
   const experience = document.experience.filter(
     (entry) =>
@@ -41,7 +43,7 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <header className="text-center">
+      <header data-page-break="item" className="text-center">
         {hasText(document.personal.photoUrl) && (
           <div className="mx-auto mb-3 size-20 overflow-hidden rounded-full border-2 border-neutral-200 shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -53,7 +55,7 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
           </div>
         )}
         <h1 className="font-display text-[26px] font-bold leading-tight tracking-tight text-neutral-900">
-          {document.personal.fullName.trim() || "Your name"}
+          {document.personal.fullName.trim() || (isKhmer ? "ឈ្មោះរបស់អ្នក" : "Your name")}
         </h1>
         {hasText(document.personal.roleApplied) && (
           <p className="mt-1 text-[13px] font-semibold uppercase tracking-wider text-neutral-600">
@@ -61,15 +63,15 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
           </p>
         )}
         {contact.length > 0 && (
-          <p className="mt-1.5 text-[12px] text-neutral-500">
+          <p className="mt-1.5 text-[12px] text-neutral-500 break-words leading-relaxed">
             {contact.join("  ·  ")}
           </p>
         )}
       </header>
 
       {hasText(document.summary) && (
-        <section>
-          <SectionHeading>Summary</SectionHeading>
+        <section data-page-break="item">
+          <SectionHeading>{isKhmer ? "សេចក្តីសង្ខេប" : "Summary"}</SectionHeading>
           <p className="whitespace-pre-line text-neutral-800">
             {document.summary.trim()}
           </p>
@@ -78,15 +80,15 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
 
       {experience.length > 0 && (
         <section>
-          <SectionHeading>Experience</SectionHeading>
+          <SectionHeading>{isKhmer ? "បទពិសោធន៍ការងារ" : "Experience"}</SectionHeading>
           <div className="flex flex-col gap-3.5">
             {experience.map((entry) => {
               const bullets = entry.bullets.filter((b) => hasText(b.text));
               return (
-                <div key={entry.id}>
+                <div key={entry.id} data-page-break="item">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                     <p className="font-semibold text-neutral-900">
-                      {entry.role.trim() || "Role"}
+                      {entry.role.trim() || (isKhmer ? "តួនាទី" : "Role")}
                       {hasText(entry.company) && (
                         <span className="font-normal text-neutral-600">
                           {" "}
@@ -95,7 +97,7 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
                       )}
                     </p>
                     <p className="text-[12px] text-neutral-500">
-                      {dateRange(entry.startDate, entry.endDate, entry.current)}
+                      {dateRange(entry.startDate, entry.endDate, entry.current, isKhmer ? "km" : "en")}
                     </p>
                   </div>
                   {hasText(entry.location) && (
@@ -119,15 +121,15 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
 
       {education.length > 0 && (
         <section>
-          <SectionHeading>Education</SectionHeading>
+          <SectionHeading>{isKhmer ? "ការអប់រំ" : "Education"}</SectionHeading>
           <div className="flex flex-col gap-2.5">
             {education.map((entry) => (
-              <div key={entry.id}>
+              <div key={entry.id} data-page-break="item">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                   <p className="font-semibold text-neutral-900">
                     {[entry.degree.trim(), entry.field.trim()]
                       .filter(Boolean)
-                      .join(", ") || "Program"}
+                      .join(", ") || (isKhmer ? "ជំនាញសិក្សា" : "Program")}
                     {hasText(entry.school) && (
                       <span className="font-normal text-neutral-600">
                         {" "}
@@ -136,7 +138,7 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
                     )}
                   </p>
                   <p className="text-[12px] text-neutral-500">
-                    {dateRange(entry.startDate, entry.endDate)}
+                    {dateRange(entry.startDate, entry.endDate, false, isKhmer ? "km" : "en")}
                   </p>
                 </div>
                 {hasText(entry.details) && (
@@ -151,8 +153,8 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
       )}
 
       {skills.length > 0 && (
-        <section>
-          <SectionHeading>Skills</SectionHeading>
+        <section data-page-break="item">
+          <SectionHeading>{isKhmer ? "ជំនាញ" : "Skills"}</SectionHeading>
           <p className="text-neutral-800">
             {skills.map((entry) => entry.name.trim()).join("  ·  ")}
           </p>
@@ -161,14 +163,14 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
 
       {projects.length > 0 && (
         <section>
-          <SectionHeading>Projects</SectionHeading>
+          <SectionHeading>{isKhmer ? "គម្រោង" : "Projects"}</SectionHeading>
           <div className="flex flex-col gap-3">
             {projects.map((entry) => {
               const bullets = entry.bullets.filter((b) => hasText(b.text));
               return (
-                <div key={entry.id}>
+                <div key={entry.id} data-page-break="item">
                   <p className="font-semibold text-neutral-900">
-                    {entry.name.trim() || "Project"}
+                    {entry.name.trim() || (isKhmer ? "គម្រោង" : "Project")}
                     {hasText(entry.url) && (
                       <span className="font-normal text-neutral-500">
                         {" "}
@@ -197,16 +199,17 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
 
       {certifications.length > 0 && (
         <section>
-          <SectionHeading>Certifications</SectionHeading>
+          <SectionHeading>{isKhmer ? "វិញ្ញាបនបត្រ" : "Certifications"}</SectionHeading>
           <ul className="flex flex-col gap-1">
             {certifications.map((entry) => (
               <li
                 key={entry.id}
+                data-page-break="item"
                 className="flex flex-wrap items-baseline justify-between gap-x-3"
               >
                 <span>
                   <span className="font-semibold text-neutral-900">
-                    {entry.name.trim() || "Certification"}
+                    {entry.name.trim() || (isKhmer ? "វិញ្ញាបនបត្រ" : "Certification")}
                   </span>
                   {hasText(entry.issuer) && (
                     <span className="text-neutral-600">
@@ -225,8 +228,8 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
       )}
 
       {languages.length > 0 && (
-        <section>
-          <SectionHeading>Languages</SectionHeading>
+        <section data-page-break="item">
+          <SectionHeading>{isKhmer ? "ភាសា" : "Languages"}</SectionHeading>
           <p className="text-neutral-800">
             {languages
               .map((entry) => languageLabel(entry.name, entry.proficiency))

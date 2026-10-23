@@ -2,6 +2,7 @@
 
 import { ChevronDown, Search } from "lucide-react";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-meta";
+import { useLanguage } from "@/lib/i18n/context";
 
 export type TemplateFilter = TemplateId | "all";
 export type SortKey = "edited" | "created" | "name";
@@ -27,8 +28,10 @@ export function ResumeToolbar({
   counts,
   totalCount,
 }: ResumeToolbarProps) {
+  const { t, isKhmer } = useLanguage();
+
   const filters: { id: TemplateFilter; label: string; count: number }[] = [
-    { id: "all", label: "All", count: totalCount },
+    { id: "all", label: t.dashboard.allTemplates, count: totalCount },
     ...TEMPLATES.map((template) => ({
       id: template.id,
       label: template.name,
@@ -38,23 +41,26 @@ export function ResumeToolbar({
 
   return (
     <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-hairline pt-6">
-      <label className="relative min-w-[220px] flex-1 sm:max-w-xs">
-        <span className="sr-only">Search resumes</span>
+      <label className="relative min-w-[200px] flex-1 sm:max-w-xs">
+        <span className="sr-only">{t.common.search}</span>
         <Search
-          size={16}
+          size={14}
           aria-hidden
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-graphite"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-graphite/70"
         />
         <input
           type="search"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search resumes"
-          className="w-full rounded-full border border-hairline bg-white py-2.5 pl-10 pr-4 text-sm placeholder:text-graphite focus:border-[#004643] focus:outline-none"
+          placeholder={t.dashboard.searchPlaceholder}
+          className="w-full rounded-xl border border-hairline bg-card py-2 pl-9 pr-8 text-xs sm:text-sm placeholder:text-muted-foreground shadow-2xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
+        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 font-mono text-[10px] text-muted-foreground border border-hairline bg-muted px-1.5 py-0.5 rounded">
+          /
+        </span>
       </label>
 
-      <div role="group" aria-label="Filter by template" className="flex flex-wrap items-center gap-1.5">
+      <div role="group" aria-label={t.common.filter} className="flex flex-wrap items-center gap-1.5">
         {filters.map((filter) => {
           const active = templateFilter === filter.id;
           return (
@@ -63,14 +69,14 @@ export function ResumeToolbar({
               type="button"
               aria-pressed={active}
               onClick={() => onTemplateFilterChange(filter.id)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition ${
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 ${
                 active
-                  ? "border-[#004643] bg-[#004643] text-[#f0ede5] shadow-xs"
-                  : "border-hairline bg-white text-foreground/80 hover:border-[#004643]/40"
+                  ? "border-primary bg-primary text-primary-foreground shadow-2xs hover:bg-primary/90"
+                  : "border-hairline bg-card text-foreground/80 hover:border-primary/40 hover:bg-muted/70 hover:text-foreground"
               }`}
             >
-              {filter.label}
-              <span className={`tabular-nums ${active ? "text-[#f0ede5]/70" : "text-graphite"}`}>
+              <span>{filter.label}</span>
+              <span className={`text-[11px] tabular-nums ${active ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
                 {filter.count}
               </span>
             </button>
@@ -79,20 +85,20 @@ export function ResumeToolbar({
       </div>
 
       <label className="relative ml-auto flex items-center">
-        <span className="sr-only">Sort resumes</span>
+        <span className="sr-only">Sort</span>
         <select
           value={sortKey}
           onChange={(event) => onSortKeyChange(event.target.value as SortKey)}
-          className="appearance-none rounded-full border border-hairline bg-white py-2.5 pl-4 pr-9 text-sm font-medium"
+          className="appearance-none rounded-lg border border-hairline bg-card py-1.5 pl-3 pr-8 text-xs font-medium shadow-2xs hover:border-primary/40 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
         >
-          <option value="edited">Last edited</option>
-          <option value="created">Newest</option>
-          <option value="name">Name A–Z</option>
+          <option value="edited" className="bg-card text-foreground">{t.dashboard.sortLastModified}</option>
+          <option value="created" className="bg-card text-foreground">{isKhmer ? "ថ្មីបំផុត" : "Newest"}</option>
+          <option value="name" className="bg-card text-foreground">{t.dashboard.sortTitle}</option>
         </select>
         <ChevronDown
-          size={14}
+          size={13}
           aria-hidden
-          className="pointer-events-none absolute right-3.5 text-graphite"
+          className="pointer-events-none absolute right-2.5 text-graphite"
         />
       </label>
     </div>

@@ -23,6 +23,9 @@ import {
 } from "lucide-react";
 
 import { Wordmark } from "@/components/wordmark";
+import { ThemeToggle } from "@/components/dashboard/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
+import { useLanguage } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,41 +55,32 @@ import { ProjectsSection } from "./projects-section";
 import { SkillsSection } from "./skills-section";
 import { useResumeAutosave, type SaveStatus } from "./use-resume-autosave";
 
-const SECTION_LINKS = [
-  { id: "section-personal", label: "Personal" },
-  { id: "section-summary", label: "Summary" },
-  { id: "section-experience", label: "Experience" },
-  { id: "section-education", label: "Education" },
-  { id: "section-skills", label: "Skills" },
-  { id: "section-projects", label: "Projects" },
-  { id: "section-certifications", label: "Certifications" },
-  { id: "section-languages", label: "Languages" },
-] as const;
-
 function SaveIndicator({ status, onRetry }: { status: SaveStatus; onRetry: () => void }) {
+  const { t } = useLanguage();
+
   if (status === "saving") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
         <Spinner />
-        Saving…
+        {t.common.saving}
       </span>
     );
   }
 
   if (status === "dirty") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <PenLine className="size-3.5" aria-hidden />
-        Unsaved changes
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:text-amber-300">
+        <PenLine className="size-3" aria-hidden />
+        {t.common.unsaved}
       </span>
     );
   }
 
   if (status === "invalid") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive">
-        <TriangleAlert className="size-3.5" aria-hidden />
-        Fix highlighted fields to save
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/40 px-2.5 py-0.5 text-xs font-medium text-destructive dark:text-red-300">
+        <TriangleAlert className="size-3" aria-hidden />
+        {t.common.fixFields}
       </span>
     );
   }
@@ -96,23 +90,35 @@ function SaveIndicator({ status, onRetry }: { status: SaveStatus; onRetry: () =>
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive underline underline-offset-2"
+        className="inline-flex items-center gap-1.5 rounded-full border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/40 px-2.5 py-0.5 text-xs font-medium text-destructive underline underline-offset-2 hover:bg-red-100 dark:hover:bg-red-900/60"
       >
-        <TriangleAlert className="size-3.5" aria-hidden />
-        Couldn’t save — retry
+        <TriangleAlert className="size-3" aria-hidden />
+        {t.common.saveFailed}
       </button>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-      <Check className="size-3.5" aria-hidden />
-      Saved
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:text-emerald-300">
+      <Check className="size-3 text-emerald-600 dark:text-emerald-400" aria-hidden />
+      {t.common.saved}
     </span>
   );
 }
 
 function SectionNav() {
+  const { t } = useLanguage();
+  const sectionLinks = [
+    { id: "section-personal", label: t.editor.sectionPersonal },
+    { id: "section-summary", label: t.editor.sectionSummary },
+    { id: "section-experience", label: t.editor.sectionExperience },
+    { id: "section-education", label: t.editor.sectionEducation },
+    { id: "section-skills", label: t.editor.sectionSkills },
+    { id: "section-projects", label: t.editor.sectionProjects },
+    { id: "section-certifications", label: t.editor.sectionCertifications },
+    { id: "section-languages", label: t.editor.sectionLanguages },
+  ];
+
   function scrollTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -120,14 +126,14 @@ function SectionNav() {
   return (
     <nav
       aria-label="Editor sections"
-      className="sticky top-16 z-20 -mx-1 mb-5 flex gap-1 overflow-x-auto bg-background/95 px-1 py-2 backdrop-blur"
+      className="sticky top-16 z-20 -mx-1 mb-6 flex gap-1.5 overflow-x-auto bg-background/95 px-1 py-2.5 backdrop-blur no-scrollbar"
     >
-      {SECTION_LINKS.map((section) => (
+      {sectionLinks.map((section) => (
         <button
           key={section.id}
           type="button"
           onClick={() => scrollTo(section.id)}
-          className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-foreground/30 hover:text-foreground"
+          className="shrink-0 rounded-full border border-border/80 bg-card px-3.5 py-1.5 text-xs font-medium text-muted-foreground shadow-2xs transition-colors duration-150 hover:border-primary/40 hover:bg-muted hover:text-foreground active:scale-95 cursor-pointer"
         >
           {section.label}
         </button>
@@ -160,6 +166,7 @@ export function ResumeEditor({
   });
 
   const router = useRouter();
+  const { t, isKhmer } = useLanguage();
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isSavingAndExiting, setIsSavingAndExiting] = useState(false);
@@ -175,16 +182,24 @@ export function ResumeEditor({
       setIsSavingAndExiting(true);
       const saved = await saveNow();
       if (saved) {
-        toast.success("Resume saved. Returning to dashboard…");
+        toast.success(
+          isKhmer
+            ? "បានរក្សាទុកប្រវត្តិរូប។ កំពុងត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង…"
+            : "Resume saved. Returning to dashboard…"
+        );
         router.push("/dashboard");
         router.refresh();
       }
     } catch {
-      toast.error("Couldn’t save resume. Please try again.");
+      toast.error(
+        isKhmer
+          ? "មិនអាចរក្សាទុកប្រវត្តិរូបបានទេ។ សូមព្យាយាមម្តងទៀត។"
+          : "Couldn’t save resume. Please try again."
+      );
     } finally {
       setIsSavingAndExiting(false);
     }
-  }, [saveNow, router]);
+  }, [saveNow, router, isKhmer]);
 
   const handleDownloadPdf = useCallback(async () => {
     try {
@@ -197,7 +212,7 @@ export function ResumeEditor({
         const body = (await response.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(body?.error || "Failed to generate resume PDF.");
+        throw new Error(body?.error || (isKhmer ? "បរាជ័យក្នុងការបង្កើតឯកសារ PDF។" : "Failed to generate resume PDF."));
       }
 
       const blob = await response.blob();
@@ -217,33 +232,41 @@ export function ResumeEditor({
       downloadLink.remove();
       window.URL.revokeObjectURL(objectUrl);
 
-      toast.success("PDF downloaded.");
+      toast.success(isKhmer ? "បានទាញយកឯកសារ PDF ដោយជោគជ័យ។" : "PDF downloaded.");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Couldn't download resume PDF."
+        error instanceof Error
+          ? error.message
+          : isKhmer
+            ? "មិនអាចទាញយក PDF បានទេ។"
+            : "Couldn't download resume PDF."
       );
     } finally {
       setIsDownloadingPdf(false);
     }
-  }, [resume.id, saveNow]);
+  }, [resume.id, saveNow, isKhmer]);
 
   const handleBackClick = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
       if (
         hasUnsavedChanges() &&
-        !window.confirm("You have unsaved changes. Leave the editor anyway?")
+        !window.confirm(
+          isKhmer
+            ? "អ្នកមានការផ្លាស់ប្តូរដែលមិនទាន់រក្សាទុក។ តើអ្នកចង់ចាកចេញឬទេ?"
+            : "You have unsaved changes. Leave the editor anyway?"
+        )
       ) {
         event.preventDefault();
       }
     },
-    [hasUnsavedChanges]
+    [hasUnsavedChanges, isKhmer]
   );
 
   return (
     <ApiKeyProvider>
       <FormProvider {...form}>
       <div className="min-h-dvh bg-background">
-        <header className="sticky top-0 z-30 border-b border-hairline bg-white/90 backdrop-blur">
+        <header className="sticky top-0 z-30 border-b border-hairline bg-card/90 backdrop-blur">
           <div className="mx-auto flex h-16 w-full max-w-[1500px] items-center gap-3 px-4 sm:px-6">
             <Link
               href="/dashboard"
@@ -264,34 +287,39 @@ export function ResumeEditor({
               <Wordmark />
             </Link>
 
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <Input
-                aria-label="Resume title"
-                maxLength={80}
-                className="h-9 max-w-md border-transparent bg-transparent px-2 font-display text-lg font-bold shadow-none focus-visible:border-ring"
-                {...form.register("title")}
-              />
-              <span className="hidden lg:inline-flex">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <div className="group relative flex min-w-0 max-w-md items-center">
+                <Input
+                  aria-label="Resume title"
+                  maxLength={80}
+                  className="h-9 w-full rounded-lg border-transparent bg-transparent px-2 font-display text-base font-bold text-foreground transition hover:bg-muted/50 focus-visible:border-border focus-visible:bg-card focus-visible:ring-1 focus-visible:ring-primary sm:text-lg"
+                  {...form.register("title")}
+                />
+              </div>
+              <span className="hidden sm:inline-flex">
                 <SaveIndicator status={status} onRetry={() => void saveNow()} />
               </span>
             </div>
 
             <div className="flex items-center gap-2">
+              <LanguageToggle compact />
+              <ThemeToggle compact />
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
                 disabled={isDownloadingPdf || isSavingAndExiting}
                 onClick={() => void handleDownloadPdf()}
-                aria-label="Download resume PDF"
+                aria-label={t.editor.exportPdf}
+                className="h-9 gap-1.5"
               >
                 {isDownloadingPdf ? (
                   <Spinner />
                 ) : (
-                  <Download data-icon="inline-start" />
+                  <Download className="size-4" />
                 )}
                 <span className="hidden sm:inline">
-                  {isDownloadingPdf ? "Downloading…" : "Download PDF"}
+                  {isDownloadingPdf ? t.editor.exporting : t.editor.exportPdf}
                 </span>
               </Button>
 
@@ -301,14 +329,15 @@ export function ResumeEditor({
                 disabled={isSavingAndExiting}
                 onClick={() => void handleManualSave()}
                 aria-label="Save and return to dashboard"
+                className="h-9 gap-1.5 shadow-xs"
               >
                 {isSavingAndExiting ? (
                   <Spinner />
                 ) : (
-                  <CloudUpload data-icon="inline-start" />
+                  <CloudUpload className="size-4" />
                 )}
                 <span className="hidden sm:inline">
-                  {isSavingAndExiting ? "Saving…" : "Save"}
+                  {isSavingAndExiting ? t.common.saving : t.common.save}
                 </span>
               </Button>
             </div>
@@ -327,11 +356,11 @@ export function ResumeEditor({
             >
               <ToggleGroupItem value="editor" size="sm">
                 <LayoutPanelLeft />
-                Edit
+                {t.editor.editForm}
               </ToggleGroupItem>
               <ToggleGroupItem value="preview" size="sm">
                 <Eye />
-                Preview
+                {t.editor.livePreview}
               </ToggleGroupItem>
             </ToggleGroup>
             <SaveIndicator status={status} onRetry={() => void saveNow()} />
@@ -339,13 +368,14 @@ export function ResumeEditor({
 
           <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,46%)]">
             <div className={mobileView === "editor" ? "block" : "hidden lg:block"}>
+              <CvTools />
               <SectionNav />
               <form
                 className="flex flex-col gap-6"
                 onSubmit={(event) => event.preventDefault()}
                 noValidate
               >
-                <PersonalSection action={<CvTools />} />
+                <PersonalSection />
                 <SummarySection />
                 <ExperienceSection />
                 <EducationSection />
@@ -364,8 +394,15 @@ export function ResumeEditor({
                   : "hidden lg:sticky lg:top-20 lg:block lg:max-h-[calc(100dvh-6rem)] lg:overflow-auto"
               }
             >
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-sm font-semibold text-muted-foreground">Live preview</h2>
+              <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold tracking-tight text-foreground">
+                    {t.editor.livePreview}
+                  </h2>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
+                    {isKhmer ? "ទំព័រ A4" : "A4 Document"}
+                  </span>
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Select
                     value={templateId}
@@ -376,7 +413,7 @@ export function ResumeEditor({
                       })
                     }
                   >
-                    <SelectTrigger size="sm" aria-label="Template" className="w-36">
+                    <SelectTrigger size="sm" aria-label="Template" className="h-8.5 w-40 rounded-lg border-border/80 bg-card text-foreground font-medium shadow-2xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -389,7 +426,7 @@ export function ResumeEditor({
                   </Select>
                 </div>
               </div>
-              <div className="rounded-2xl border border-border bg-neutral-100 p-3 sm:p-5">
+              <div className="rounded-2xl border border-border/80 bg-stone-100/90 dark:bg-muted/30 p-3 sm:p-5 shadow-xs">
                 <ResumePreview document={content} templateId={templateId} />
               </div>
             </aside>

@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   newCertificationEntry,
   type ResumeEditorFormValues,
@@ -16,6 +17,7 @@ type FormPath = FieldPath<ResumeEditorFormValues>;
 
 export function CertificationsSection() {
   const form = useFormContext<ResumeEditorFormValues>();
+  const { t, isKhmer } = useLanguage();
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "content.certifications",
@@ -24,8 +26,8 @@ export function CertificationsSection() {
   return (
     <SectionShell
       id="section-certifications"
-      title="Certifications"
-      description="Courses and credentials, newest first."
+      title={t.editor.sectionCertifications}
+      description={t.editor.certificationsDesc}
       action={
         <Button
           type="button"
@@ -34,12 +36,14 @@ export function CertificationsSection() {
           onClick={() => append(newCertificationEntry())}
         >
           <Plus data-icon="inline-start" />
-          Add certification
+          {t.editor.addCertification}
         </Button>
       }
     >
       {fields.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No certifications yet.</p>
+        <p className="text-sm text-muted-foreground">
+          {isKhmer ? "មិនទាន់មានវិញ្ញាបនបត្រនៅឡើយទេ។" : "No certifications yet."}
+        </p>
       ) : (
         <FieldGroup>
           {fields.map((field, index) => (
@@ -47,7 +51,7 @@ export function CertificationsSection() {
               <CardContent className="flex flex-col gap-5">
                 <div className="flex items-start justify-between gap-3">
                   <p className="text-sm font-semibold">
-                    {field.name?.trim() || `Certification ${index + 1}`}
+                    {field.name?.trim() || `${isKhmer ? "វិញ្ញាបនបត្រ" : "Certification"} ${index + 1}`}
                   </p>
                   <EntryControls
                     index={index}
@@ -62,25 +66,25 @@ export function CertificationsSection() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <TextField
                     name={`content.certifications.${index}.name` as FormPath}
-                    label="Name"
+                    label={t.editor.certName}
                     placeholder="AWS Certified Cloud Practitioner"
                     maxLength={160}
                   />
                   <TextField
                     name={`content.certifications.${index}.issuer` as FormPath}
-                    label="Issuer"
+                    label={t.editor.issuer}
                     placeholder="Amazon Web Services"
                     maxLength={160}
                   />
                   <TextField
                     name={`content.certifications.${index}.issueDate` as FormPath}
-                    label="Issued"
-                    placeholder="Mar 2025"
+                    label={t.editor.date}
+                    placeholder={isKhmer ? "មីនា ២០២៥" : "Mar 2025"}
                     maxLength={30}
                   />
                   <TextField
                     name={`content.certifications.${index}.credentialUrl` as FormPath}
-                    label="Credential link"
+                    label={isKhmer ? "តំណភ្ជាប់ (URL)" : "Credential link"}
                     placeholder="credly.com/badges/…"
                     inputMode="url"
                     maxLength={200}

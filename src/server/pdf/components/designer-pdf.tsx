@@ -79,19 +79,20 @@ const styles = StyleSheet.create({
     height: 96,
     overflow: "hidden",
     marginRight: 18,
-    backgroundColor: "#2563eb",
+    backgroundColor: "#0f172a",
   },
   photo: {
     width: "100%",
     height: "100%",
     objectFit: "cover",
+    objectPosition: "top",
   },
   initialsBox: {
     width: "100%",
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#2563eb",
+    backgroundColor: "#0f172a",
   },
   initialsText: {
     fontFamily: "Helvetica-Bold",
@@ -122,13 +123,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   leftColumn: {
-    width: "38%",
+    width: "36%",
     paddingRight: 14,
     borderRightWidth: 0.75,
     borderRightColor: "#d1d5db",
   },
   rightColumn: {
-    width: "62%",
+    width: "64%",
     paddingLeft: 16,
   },
 
@@ -293,7 +294,7 @@ export function DesignerPdf({ document }: TemplatePdfProps) {
   const confirmationText = hasText(document.summary)
     ? document.summary.trim()
     : hasText(personal.fullName)
-    ? `I am ${personal.fullName.trim()}. I would like to declare that all the information given in this Curriculum Vitae is completely correct. If there is any false information. I will take my responsibility for everything on my CV.`
+    ? `I am ${personal.fullName.trim()}. I would like to declare that all the information given in this Curriculum Vitae is completely correct. If there is any false information, I will take full responsibility for everything on my CV.`
     : "";
 
   return (

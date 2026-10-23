@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@react-pdf/renderer"],
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    cpus: 2,
+  },
   turbopack: {
     rules: {
       "*.css": {

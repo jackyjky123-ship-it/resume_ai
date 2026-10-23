@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
+import { useLanguage } from "@/lib/i18n/context";
 import { newSkillEntry, type ResumeEditorFormValues } from "@/lib/validations/resume";
 import { EntryControls, SectionShell, TextField } from "./form-fields";
 
@@ -12,6 +13,7 @@ type FormPath = FieldPath<ResumeEditorFormValues>;
 
 export function SkillsSection() {
   const form = useFormContext<ResumeEditorFormValues>();
+  const { t, isKhmer } = useLanguage();
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "content.skills",
@@ -20,24 +22,26 @@ export function SkillsSection() {
   return (
     <SectionShell
       id="section-skills"
-      title="Skills"
-      description="Tools and strengths the role actually asks for. Group related ideas in one line."
+      title={t.editor.sectionSkills}
+      description={t.editor.skillsDesc}
       action={
         <Button type="button" variant="outline" size="sm" onClick={() => append(newSkillEntry())}>
           <Plus data-icon="inline-start" />
-          Add skill
+          {t.editor.addSkill}
         </Button>
       }
     >
       {fields.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No skills yet.</p>
+        <p className="text-sm text-muted-foreground">
+          {isKhmer ? "មិនទាន់មានជំនាញនៅឡើយទេ។" : "No skills yet."}
+        </p>
       ) : (
         <FieldGroup>
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-end gap-2">
               <TextField
                 name={`content.skills.${index}.name` as FormPath}
-                label={`Skill ${index + 1}`}
+                label={`${isKhmer ? "ជំនាញ" : "Skill"} ${index + 1}`}
                 placeholder="TypeScript, React, accessibility"
                 maxLength={60}
               />

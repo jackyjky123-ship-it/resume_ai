@@ -11,6 +11,8 @@ import {
 
 import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
+import { LanguageToggle } from "@/components/language-toggle";
+import { ThemeToggle } from "@/components/dashboard/theme-toggle";
 
 export const metadata: Metadata = {
   title: "Resume Templates Gallery — Niseth Code",
@@ -127,7 +129,7 @@ export default function TemplatesPage() {
   return (
     <div className="min-h-dvh bg-background">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-40 border-b border-hairline bg-white/85 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-hairline bg-card/85 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-4">
             <Link
@@ -141,6 +143,8 @@ export default function TemplatesPage() {
             <Wordmark />
           </div>
           <div className="flex items-center gap-3">
+            <LanguageToggle compact />
+            <ThemeToggle compact />
             <Button asChild size="sm">
               <Link href="/dashboard">
                 Go to Dashboard
@@ -154,7 +158,7 @@ export default function TemplatesPage() {
       {/* Hero Section */}
       <main className="mx-auto w-full max-w-6xl px-6 py-14 sm:py-20">
         <div className="text-center">
-          <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-3.5 py-1 text-xs font-semibold text-graphite">
+          <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-card px-3.5 py-1 text-xs font-semibold text-graphite">
             <Sparkles className="size-3.5 text-primary" />
             5 Curated Templates · 100% Free
           </p>

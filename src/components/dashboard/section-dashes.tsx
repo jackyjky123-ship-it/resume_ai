@@ -23,14 +23,14 @@ export function SectionDashes({ filled }: { filled: SectionKey[] }) {
               key={section}
               title={`${section} — ${isFilled ? "filled" : "empty"}`}
               className={`h-[3px] flex-1 rounded-full ${
-                isFilled ? "bg-[#004643]" : "bg-[#004643]/15"
+                isFilled ? "bg-primary" : "bg-stone-200 dark:bg-muted"
               }`}
             />
           );
         })}
       </span>
       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-graphite tabular-nums">
-        {ready && <span aria-hidden className="size-1.5 rounded-full bg-[#004643]" />}
+        {ready && <span aria-hidden className="size-1.5 rounded-full bg-primary" />}
         {count}/{total}
       </span>
     </span>

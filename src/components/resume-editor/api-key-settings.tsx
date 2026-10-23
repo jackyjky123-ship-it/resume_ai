@@ -26,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useApiKey } from "@/lib/api-key-context";
+import { useLanguage } from "@/lib/i18n/context";
 import { isValidKeyFormat } from "@/lib/api-key-store";
 
 type ApiKeySettingsDialogProps = {
@@ -38,6 +39,7 @@ export function ApiKeySettingsDialog({
   onOpenChange,
 }: ApiKeySettingsDialogProps) {
   const { apiKey, setApiKey, clearApiKey, hasKey } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const [inputValue, setInputValue] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,13 +52,19 @@ export function ApiKeySettingsDialog({
   const handleSave = () => {
     const trimmed = inputValue.trim();
     if (!trimmed) {
-      setError("Please enter your Gemini API key.");
+      setError(
+        isKhmer
+          ? "សូមបញ្ចូល Gemini API key របស់អ្នក។"
+          : "Please enter your Gemini API key."
+      );
       return;
     }
 
     if (!isValidKeyFormat(trimmed)) {
       setError(
-        "That key format doesn't look like a standard Google AI Studio key (starts with 'AIza...'). Please verify and try again."
+        isKhmer
+          ? "ទម្រង់ Key មិនត្រឹមត្រូវតាមស្ដង់ដារ Google AI Studio ទេ (ត្រូវចាប់ផ្តើមដោយ 'AIza...')។"
+          : "That key format doesn't look like a standard Google AI Studio key (starts with 'AIza...'). Please verify and try again."
       );
       return;
     }
@@ -64,7 +72,11 @@ export function ApiKeySettingsDialog({
     setApiKey(trimmed);
     setInputValue("");
     setError(null);
-    toast.success("Gemini API key saved in your browser!");
+    toast.success(
+      isKhmer
+        ? "បានរក្សាទុក Gemini API key ក្នុងកម្មវិធីរុករករួចរាល់!"
+        : "Gemini API key saved in your browser!"
+    );
     onOpenChange(false);
   };
 
@@ -72,7 +84,11 @@ export function ApiKeySettingsDialog({
     clearApiKey();
     setInputValue("");
     setError(null);
-    toast.info("API key removed. AI features will use demo mock mode.");
+    toast.info(
+      isKhmer
+        ? "បានលុប API key។ មុខងារ AI នឹងដំណើរការក្នុងទម្រង់សាកល្បង។"
+        : "API key removed. AI features will use demo mock mode."
+    );
   };
 
   return (
@@ -84,9 +100,13 @@ export function ApiKeySettingsDialog({
               <KeyRound className="size-5" />
             </div>
             <div>
-              <DialogTitle className="text-lg">Gemini API Key (BYOK)</DialogTitle>
+              <DialogTitle className="text-lg">
+                {isKhmer ? "Gemini API Key (BYOK)" : "Gemini API Key (BYOK)"}
+              </DialogTitle>
               <DialogDescription className="text-xs">
-                Bring your own free Google AI Studio key to power all AI resume features.
+                {isKhmer
+                  ? "ភ្ជាប់ Google AI Studio key ឥតគិតថ្លៃរបស់អ្នក ដើម្បីដំណើរការមុខងារ AI ទាំងអស់។"
+                  : "Bring your own free Google AI Studio key to power all AI resume features."}
               </DialogDescription>
             </div>
           </div>
@@ -98,10 +118,10 @@ export function ApiKeySettingsDialog({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 font-medium text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="size-4 shrink-0" />
-                  <span>API Key Configured</span>
+                  <span>{isKhmer ? "បានកំណត់ API Key រួចរាល់" : "API Key Configured"}</span>
                 </div>
                 <Badge variant="outline" className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                  Active
+                  {isKhmer ? "សកម្ម" : "Active"}
                 </Badge>
               </div>
               <p className="mt-1 font-mono text-[11px] text-muted-foreground">
@@ -116,24 +136,28 @@ export function ApiKeySettingsDialog({
                   className="text-destructive hover:text-destructive"
                 >
                   <Trash2 className="size-3.5" />
-                  Remove Key
+                  {isKhmer ? "លុប Key" : "Remove Key"}
                 </Button>
               </div>
             </div>
           ) : (
             <Alert className="border-amber-500/30 bg-amber-500/5 py-2.5">
               <AlertTitle className="text-xs font-semibold text-amber-700 dark:text-amber-400">
-                Demo Mode Active
+                {isKhmer ? "ទម្រង់សាកល្បងសកម្ម" : "Demo Mode Active"}
               </AlertTitle>
               <AlertDescription className="text-[11px] text-amber-900/80 dark:text-amber-300/80">
-                Without a key, the editor uses local mock heuristics for suggestions and grammar checking. Add your key below to unlock real Gemini AI generation.
+                {isKhmer
+                  ? "បើគ្មាន Key ទេ ប្រព័ន្ធនឹងប្រើទម្រង់ AI សាកល្បងក្នុងស្រុក។ សូមបន្ថែម Key ខាងក្រោមដើម្បីប្រើប្រាស់ Gemini AI ពិតប្រាកដ។"
+                  : "Without a key, the editor uses local mock heuristics for suggestions and grammar checking. Add your key below to unlock real Gemini AI generation."}
               </AlertDescription>
             </Alert>
           )}
 
           <div className="space-y-2">
             <Label htmlFor="gemini-api-key" className="text-xs font-medium">
-              {hasKey ? "Replace API Key" : "Enter Gemini API Key"}
+              {hasKey
+                ? isKhmer ? "ផ្លាស់ប្តូរ API Key" : "Replace API Key"
+                : isKhmer ? "បញ្ចូល Gemini API Key" : "Enter Gemini API Key"}
             </Label>
             <div className="relative">
               <Input
@@ -163,7 +187,9 @@ export function ApiKeySettingsDialog({
 
           <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-foreground">How to get a free API key</span>
+              <span className="font-medium text-foreground">
+                {isKhmer ? "របៀបយក API key ឥតគិតថ្លៃ" : "How to get a free API key"}
+              </span>
               <a
                 href="https://aistudio.google.com/apikey"
                 target="_blank"
@@ -175,18 +201,34 @@ export function ApiKeySettingsDialog({
               </a>
             </div>
             <ol className="list-decimal list-inside space-y-1 text-[11px] text-muted-foreground">
-              <li>Open Google AI Studio and sign in with your Google account.</li>
-              <li>Click &ldquo;Create API key&rdquo; (free tier has generous daily limits).</li>
-              <li>Copy and paste your key above.</li>
+              <li>
+                {isKhmer
+                  ? "បើក Google AI Studio ហើយចូលដោយប្រើគណនី Google របស់អ្នក។"
+                  : "Open Google AI Studio and sign in with your Google account."}
+              </li>
+              <li>
+                {isKhmer
+                  ? "ចុច “Create API key” (កម្រិតឥតគិតថ្លៃមានការប្រើប្រាស់ច្រើនរៀងរាល់ថ្ងៃ)។"
+                  : "Click “Create API key” (free tier has generous daily limits)."}
+              </li>
+              <li>
+                {isKhmer
+                  ? "ចម្លង និងបិទភ្ជាប់ Key របស់អ្នកនៅខាងលើ។"
+                  : "Copy and paste your key above."}
+              </li>
             </ol>
           </div>
 
           <div className="flex items-start gap-2 rounded-md bg-muted/30 p-2.5 text-[11px] text-muted-foreground">
             <ShieldCheck className="size-4 shrink-0 text-primary mt-0.5" />
             <div>
-              <p className="font-medium text-foreground">Privacy Guaranteed</p>
+              <p className="font-medium text-foreground">
+                {isKhmer ? "ការធានាភាពឯកជន" : "Privacy Guaranteed"}
+              </p>
               <p>
-                Your API key is saved only in your browser&apos;s localStorage. It is sent transiently per AI request directly to Gemini and is never stored in any database or logged on our servers.
+                {isKhmer
+                  ? "API key របស់អ្នកត្រូវបានរក្សាទុកតែក្នុង localStorage នៃកម្មវិធីរុករកប៉ុណ្ណោះ។ វានឹងត្រូវបញ្ជូនដោយផ្ទាល់ទៅ Gemini ពេលស្នើសុំ AI ហើយមិនត្រូវបានរក្សាទុកក្នុងមូលដ្ឋានទិន្នន័យរបស់យើងឡើយ។"
+                  : "Your API key is saved only in your browser's localStorage. It is sent transiently per AI request directly to Gemini and is never stored in any database or logged on our servers."}
               </p>
             </div>
           </div>
@@ -198,14 +240,14 @@ export function ApiKeySettingsDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {t.common.cancel}
           </Button>
           <Button
             type="button"
             onClick={handleSave}
             disabled={!inputValue.trim()}
           >
-            Save Key
+            {isKhmer ? "រក្សាទុក Key" : "Save Key"}
           </Button>
         </DialogFooter>
       </DialogContent>

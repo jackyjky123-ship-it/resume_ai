@@ -19,6 +19,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { AiMode } from "@/lib/validations/ai";
 import type { ResumeBullet } from "@/lib/validations/resume";
 import { useApiKey } from "@/lib/api-key-context";
+import { useLanguage } from "@/lib/i18n/context";
 import { improveBulletAction } from "@/server/actions/cv.actions";
 
 type ImproveBulletDialogProps = {
@@ -39,6 +40,7 @@ export function ImproveBulletDialog({
   onApply,
 }: ImproveBulletDialogProps) {
   const { apiKey } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const eligibleBullets = bullets.filter((b) => b.text.trim().length >= 3);
   const [selectedId, setSelectedId] = useState<string>(
     () => eligibleBullets[0]?.id ?? ""
@@ -59,7 +61,11 @@ export function ImproveBulletDialog({
 
   async function handleImprove() {
     if (!currentSelected || !currentSelected.text.trim()) {
-      setError("Please select a bullet point to improve.");
+      setError(
+        isKhmer
+          ? "សូមជ្រើសរើសចំណុចការងារមួយដើម្បីកែលម្អ។"
+          : "Please select a bullet point to improve."
+      );
       return;
     }
 
@@ -87,7 +93,11 @@ export function ImproveBulletDialog({
         bulletId: currentSelected.id,
       });
     } catch {
-      setError("Could not connect to the AI service. Please try again.");
+      setError(
+        isKhmer
+          ? "មិនអាចទាក់ទងសេវាកម្ម AI បានទេ។ សូមព្យាយាមម្តងទៀត។"
+          : "Could not connect to the AI service. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -96,7 +106,11 @@ export function ImproveBulletDialog({
   function handleAccept() {
     if (!result) return;
     onApply(result.bulletId, result.improved);
-    toast.success("Bullet point updated. Autosave will save it.");
+    toast.success(
+      isKhmer
+        ? "បានកែលម្អចំណុចការងាររួចរាល់។ ប្រព័ន្ធនឹងរក្សាទុកដោយស្វ័យប្រវត្តិ។"
+        : "Bullet point updated. Autosave will save it."
+    );
     onOpenChange(false);
   }
 
@@ -105,7 +119,7 @@ export function ImproveBulletDialog({
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
-            Improve bullet with AI
+            {t.aiDialogs.bulletTitle}
             {result?.mode && (
               <Badge variant="secondary">
                 {result.mode === "gemini" ? "Gemini" : "Demo AI"}
@@ -113,13 +127,13 @@ export function ImproveBulletDialog({
             )}
           </DialogTitle>
           <DialogDescription>
-            Reframe your bullet to highlight action and results without inventing facts or metrics.
+            {t.aiDialogs.bulletDesc}
           </DialogDescription>
         </DialogHeader>
 
         {error && (
           <Alert variant="destructive">
-            <AlertTitle>Couldn&apos;t improve bullet</AlertTitle>
+            <AlertTitle>{isKhmer ? "មានបញ្ហាក្នុងការកែលម្អ" : "Couldn't improve bullet"}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -128,12 +142,14 @@ export function ImproveBulletDialog({
           <div className="flex flex-col gap-4">
             {eligibleBullets.length === 0 ? (
               <p className="py-4 text-center text-sm text-muted-foreground">
-                Write a bullet point in the editor first, then click improve.
+                {isKhmer
+                  ? "សូមសរសេរចំណុចការងារក្នុងផ្ទាំងកែសម្រួលជាមុនសិន រួចចុចកែលម្អ។"
+                  : "Write a bullet point in the editor first, then click improve."}
               </p>
             ) : (
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-medium text-muted-foreground">
-                  Select a bullet to improve:
+                  {isKhmer ? "ជ្រើសរើសចំណុចការងារដើម្បីកែលម្អ៖" : "Select a bullet to improve:"}
                 </label>
                 <div className="flex flex-col gap-2">
                   {eligibleBullets.map((bullet) => (
@@ -164,7 +180,7 @@ export function ImproveBulletDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={loading}
               >
-                Cancel
+                {t.common.cancel}
               </Button>
               <Button
                 type="button"
@@ -174,12 +190,12 @@ export function ImproveBulletDialog({
                 {loading ? (
                   <>
                     <Spinner />
-                    Improving…
+                    {isKhmer ? "កំពុងកែលម្អ…" : "Improving…"}
                   </>
                 ) : (
                   <>
                     <Sparkles />
-                    Improve bullet
+                    {t.aiDialogs.polishBtn}
                   </>
                 )}
               </Button>
@@ -190,13 +206,13 @@ export function ImproveBulletDialog({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-muted/40 p-3">
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Original
+                  {t.aiDialogs.current}
                 </p>
                 <p className="text-sm whitespace-pre-wrap">{result.original}</p>
               </div>
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">
-                  Improved
+                  {t.aiDialogs.suggested}
                 </p>
                 <p className="text-sm font-medium whitespace-pre-wrap text-foreground">
                   {result.improved}
@@ -206,7 +222,9 @@ export function ImproveBulletDialog({
 
             {result.explanation && (
               <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">Why:</span>{" "}
+                <span className="font-semibold text-foreground">
+                  {isKhmer ? "មូលហេតុ៖" : "Why:"}
+                </span>{" "}
                 {result.explanation}
               </p>
             )}
@@ -218,11 +236,11 @@ export function ImproveBulletDialog({
                 onClick={() => setResult(null)}
               >
                 <X />
-                Keep original
+                {t.aiDialogs.skip}
               </Button>
               <Button type="button" onClick={handleAccept}>
                 <Check />
-                Use improved bullet
+                {t.aiDialogs.applyBullet}
               </Button>
             </DialogFooter>
           </div>

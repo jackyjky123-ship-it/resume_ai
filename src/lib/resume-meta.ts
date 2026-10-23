@@ -13,34 +13,74 @@ export const TEMPLATE_IDS = [
 ] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
-export const TEMPLATES: { id: TemplateId; name: string; blurb: string }[] = [
-  { id: "classic", name: "Classic", blurb: "The layout hiring managers expect." },
-  { id: "modern", name: "Modern", blurb: "Calm typography with one quiet accent." },
-  { id: "compact", name: "Compact", blurb: "Fits a growing career, stays readable." },
+export const TEMPLATES: {
+  id: TemplateId;
+  name: string;
+  originalName: string;
+  blurb: string;
+  isRecommended?: boolean;
+  category: "single" | "two-column";
+  bestFor: string;
+}[] = [
+  {
+    id: "classic",
+    name: "Template 01",
+    originalName: "Classic",
+    blurb: "The timeless layout hiring managers expect. Clean and ATS-friendly.",
+    category: "single",
+    bestFor: "Barista, Retail, Administration & Entry-level",
+  },
+  {
+    id: "modern",
+    name: "Template 02",
+    originalName: "Modern",
+    blurb: "Calm typography with clean accents and modern aesthetic structure.",
+    category: "single",
+    bestFor: "General Customer Service, Sales & Hospitality",
+  },
+  {
+    id: "compact",
+    name: "Template 03",
+    originalName: "Compact",
+    blurb: "Fits a growing career with concise single-page density.",
+    category: "single",
+    bestFor: "Internships, Students & Career Switchers",
+  },
   {
     id: "professional",
-    name: "Professional",
+    name: "Template 04",
+    originalName: "Professional",
     blurb: "Executive layout with photo, subtle tones, and balanced structure.",
+    category: "single",
+    bestFor: "Corporate, Management & Academic Roles",
   },
   {
     id: "editorial",
-    name: "Editorial",
-    blurb: "Clean two-column layout with split header, portrait photo, and skill highlights box.",
+    name: "Template 05",
+    originalName: "Editorial",
+    blurb: "Clean two-column layout with split header, photo frame, and skill highlights.",
+    isRecommended: true,
+    category: "two-column",
+    bestFor: "Creative, Tech, Engineering & Most Popular",
   },
   {
     id: "designer",
-    name: "Designer",
-    blurb: "Two-column clean CV layout with photo banner, vertical divider, and declaration.",
+    name: "Template 06",
+    originalName: "Designer",
+    blurb: "Structured two-column layout with photo banner, vertical divider, and declaration.",
+    isRecommended: true,
+    category: "two-column",
+    bestFor: "Design, Marketing, Portfolio & Best for Students",
   },
 ];
 
 export const TEMPLATE_NAME: Record<TemplateId, string> = {
-  classic: "Classic",
-  modern: "Modern",
-  compact: "Compact",
-  professional: "Professional",
-  editorial: "Editorial",
-  designer: "Designer",
+  classic: "Template 01",
+  modern: "Template 02",
+  compact: "Template 03",
+  professional: "Template 04",
+  editorial: "Template 05",
+  designer: "Template 06",
 };
 
 export const RESUME_SECTIONS = [
@@ -71,10 +111,26 @@ export type DashboardResume = {
 
 export function formatRelativeTime(
   timestamp: string | number | Date,
-  reference = Date.now()
+  reference = Date.now(),
+  locale: "en" | "km" = "en"
 ) {
   const value = new Date(timestamp).getTime();
   const diffMinutes = Math.max(0, Math.round((reference - value) / 60_000));
+  if (locale === "km") {
+    if (diffMinutes < 1) return "ទើបតែឥឡូវ";
+    if (diffMinutes < 60) return `${diffMinutes} នាទីមុន`;
+    const diffHours = Math.round(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} ម៉ោងមុន`;
+    const diffDays = Math.round(diffHours / 24);
+    if (diffDays < 7) return `${diffDays} ថ្ងៃមុន`;
+    const diffWeeks = Math.round(diffDays / 7);
+    if (diffWeeks < 5) return `${diffWeeks} សប្តាហ៍មុន`;
+    return new Date(value).toLocaleDateString("km-KH", {
+      month: "short",
+      day: "numeric",
+    });
+  }
+
   if (diffMinutes < 1) return "just now";
   if (diffMinutes < 60) return `${diffMinutes}m ago`;
   const diffHours = Math.round(diffMinutes / 60);

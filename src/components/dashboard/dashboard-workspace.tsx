@@ -1,11 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  ArrowUpRight,
+  BarChart3,
+  CheckCircle2,
+  FileText,
+  LayoutTemplate,
+  Plus,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
-import { Wordmark } from "@/components/wordmark";
-import type { DashboardResume, TemplateId } from "@/lib/resume-meta";
+import { Button } from "@/components/ui/button";
+import { useApiKey } from "@/lib/api-key-context";
+import { useLanguage } from "@/lib/i18n/context";
+import {
+  TEMPLATE_NAME,
+  type DashboardResume,
+  type TemplateId,
+} from "@/lib/resume-meta";
+import type { StarterRole } from "@/lib/validations/resume";
 import {
   createResumeAction,
   deleteResumeAction,
@@ -13,11 +29,13 @@ import {
   renameResumeAction,
 } from "@/server/actions/resume.actions";
 import { EmptyState } from "./empty-state";
-import { ProfileHeader } from "./profile-header";
-import { NewResumeDialog, DeleteResumeDialog, RenameResumeDialog } from "./resume-dialogs";
+import {
+  NewResumeDialog,
+  DeleteResumeDialog,
+  RenameResumeDialog,
+} from "./resume-dialogs";
 import { ResumeCard } from "./resume-card";
 import { ResumeToolbar, type SortKey, type TemplateFilter } from "./resume-toolbar";
-import { SignOutButton } from "./sign-out-button";
 
 type DashboardUser = { name: string | null; email: string };
 
@@ -32,13 +50,6 @@ function friendlyName(user: DashboardUser) {
     .join(" ");
 }
 
-function initialsOf(displayName: string) {
-  const words = displayName.split(/\s+/).filter(Boolean);
-  if (words.length === 0) return "R";
-  const letters = words.slice(0, 2).map((word) => word.charAt(0));
-  return letters.join("").toUpperCase();
-}
-
 export function DashboardWorkspace({
   user,
   resumes: initialResumes,
@@ -47,6 +58,8 @@ export function DashboardWorkspace({
   resumes: DashboardResume[];
 }) {
   const router = useRouter();
+  const { hasKey } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const [resumes, setResumes] = useState<DashboardResume[]>(initialResumes);
   const [query, setQuery] = useState("");
   const [templateFilter, setTemplateFilter] = useState<TemplateFilter>("all");
@@ -58,7 +71,6 @@ export function DashboardWorkspace({
   const [dialogError, setDialogError] = useState<string | null>(null);
 
   const displayName = friendlyName(user);
-  const initials = initialsOf(displayName);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -90,6 +102,51 @@ export function DashboardWorkspace({
     return base;
   }, [resumes]);
 
+  // Analytics ("Static Use" metrics)
+  const topTemplateInfo = useMemo(() => {
+    if (resumes.length === 0) return { name: "Template 05", count: 0 };
+    let bestId: TemplateId = "editorial";
+    let max = -1;
+    for (const [id, count] of Object.entries(counts)) {
+      if (count > max) {
+        max = count;
+        bestId = id as TemplateId;
+      }
+    }
+    return { name: TEMPLATE_NAME[bestId], count: max };
+  }, [resumes, counts]);
+
+  const avgCompletion = useMemo(() => {
+    if (resumes.length === 0) return 0;
+    const filledTotal = resumes.reduce((acc, r) => acc + (r.filledSections?.length || 0), 0);
+    const maxSections = resumes.length * 5;
+    return Math.min(100, Math.round((filledTotal / maxSections) * 100));
+  }, [resumes]);
+
+  useEffect(() => {
+    function handleGlobalKeyDown(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "n") {
+        event.preventDefault();
+        openCreateDialog();
+        return;
+      }
+
+      if (
+        event.key === "/" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
+      ) {
+        event.preventDefault();
+        const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
+        searchInput?.focus();
+        return;
+      }
+    }
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
   function openCreateDialog() {
     setDialogError(null);
     setCreateOpen(true);
@@ -111,6 +168,26 @@ export function DashboardWorkspace({
     setTemplateFilter("all");
     setSortKey("edited");
     toast.success(`Created “${result.data.title}”.`);
+    router.push(`/resumes/${result.data.id}/edit`);
+  }
+
+  async function handleCreateWithStarter(
+    starterRole: StarterRole,
+    templateId: TemplateId,
+    title: string
+  ) {
+    setPending("create");
+    setDialogError(null);
+    const result = await createResumeAction({ title, templateId, starterRole });
+    setPending(null);
+
+    if (!result.ok) {
+      setDialogError(result.error);
+      toast.error(result.error);
+      return;
+    }
+
+    toast.success(`Created “${result.data.title}” with student starter bullets.`);
     router.push(`/resumes/${result.data.id}/edit`);
   }
 
@@ -169,36 +246,162 @@ export function DashboardWorkspace({
   }
 
   return (
-    <div suppressHydrationWarning className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-hairline bg-white/85 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-6">
-          <Link href="/" className="shrink-0" aria-label="Niseth Code home">
-            <Wordmark />
-          </Link>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="hidden max-w-[180px] truncate text-sm font-medium text-graphite sm:block">
-              {displayName}
+    <div suppressHydrationWarning className="flex-1 flex flex-col p-6 sm:p-8 lg:p-10 max-w-7xl mx-auto w-full space-y-8">
+      {/* Welcome Header & Action */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-hairline pb-6">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+              {t.dashboard.title}
+            </h1>
+            <span className="font-mono text-[11px] font-medium text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 px-2 py-0.5 rounded-md">
+              v1.0 • open-source
             </span>
-            <span className="ig-ring grid size-9 shrink-0 place-items-center rounded-full p-[2px]">
-              <span className="grid size-full place-items-center rounded-full bg-white p-[1.5px]">
-                <span className="ig-avatar grid size-full place-items-center rounded-full text-[11px] font-bold text-white">
-                  {initials}
-                </span>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t.dashboard.welcomeUser.replace("{name}", displayName)}. {t.dashboard.subtitle}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            aria-label="New resume"
+            onClick={openCreateDialog}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold shadow-xs cursor-pointer gap-2 h-9 px-3.5 rounded-lg active:scale-95 transition-all"
+          >
+            <Plus className="size-3.5" strokeWidth={2.5} />
+            <span>{t.dashboard.newResume}</span>
+            <span className="sr-only">New resume</span>
+            <kbd className="hidden sm:inline-block font-mono text-[10px] text-primary-foreground/80 bg-primary-foreground/15 px-1.5 py-0.5 rounded ml-1">
+              ⌘N
+            </kbd>
+          </Button>
+        </div>
+      </div>
+
+      {/* "See Static Use" — Usage Statistics Section */}
+      <section aria-label="Usage Analytics" className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <BarChart3 className="size-3.5 text-primary" />
+            {isKhmer ? "ស្ថិតិនៃការប្រើប្រាស់" : "Usage Statistics"}
+          </h2>
+          <span className="font-mono text-[11px] text-muted-foreground">telemetry.live</span>
+        </div>
+
+        <div className="rounded-xl border border-hairline bg-card shadow-2xs divide-y divide-hairline sm:divide-y-0 sm:divide-x sm:grid sm:grid-cols-4 overflow-hidden">
+          {/* Metric 1: Total Documents */}
+          <div className="p-4 sm:p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-medium">{isKhmer ? "ឯកសារសរុប" : "Total Documents"}</span>
+              <FileText className="size-3.5 text-primary" />
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-2xl font-bold text-foreground">
+                {String(resumes.length).padStart(2, "0")}
               </span>
-            </span>
-            <SignOutButton />
+              <span className="font-mono text-[11px] text-muted-foreground">{isKhmer ? "ឯកសារ" : "files"}</span>
+            </div>
+            <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+              {resumes.length === 1 ? (isKhmer ? "១ សេចក្តីព្រាងសកម្ម" : "1 active draft") : `${resumes.length} ${isKhmer ? "សេចក្តីព្រាង" : "autosaved drafts"}`}
+            </p>
+          </div>
+
+          {/* Metric 2: Primary Template */}
+          <div className="p-4 sm:p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-medium">{isKhmer ? "គំរូចម្បង" : "Primary Style"}</span>
+              <LayoutTemplate className="size-3.5 text-primary" />
+            </div>
+            <div className="mt-3">
+              <span className="font-display text-base font-bold text-foreground">
+                {topTemplateInfo.name}
+              </span>
+            </div>
+            <div className="mt-1">
+              <Link
+                href="/dashboard/templates"
+                className="font-mono text-[11px] text-primary hover:underline inline-flex items-center gap-1 font-medium"
+              >
+                {isKhmer ? "ស្វែងរកគំរូទាំងអស់" : "browse gallery"} <ArrowUpRight className="size-3" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Metric 3: Content Completeness */}
+          <div className="p-4 sm:p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-medium">{isKhmer ? "ភាពពេញលេញមធ្យម" : "Avg. Completion"}</span>
+              <CheckCircle2 className="size-3.5 text-primary" />
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-2xl font-bold text-foreground">
+                {avgCompletion}%
+              </span>
+              <span className="font-mono text-[11px] text-muted-foreground">{isKhmer ? "ការរួចរាល់" : "readiness"}</span>
+            </div>
+            <div className="mt-2 flex items-center gap-1">
+              {[0, 1, 2, 3, 4].map((step) => {
+                const active = avgCompletion >= (step + 1) * 20;
+                return (
+                  <span
+                    key={step}
+                    className={`h-1 flex-1 rounded-full ${
+                      active ? "bg-primary" : "bg-hairline"
+                    }`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Metric 4: AI Copilot */}
+          <div className="p-4 sm:p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-medium">{isKhmer ? "ម៉ាស៊ីន AI" : "AI Engine"}</span>
+              <Sparkles className="size-3.5 text-primary" />
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <span
+                className={`size-2 rounded-full ${
+                  hasKey ? "bg-emerald-500 animate-pulse" : "bg-amber-400"
+                }`}
+              />
+              <span className="font-mono text-xs font-bold text-foreground">
+                {hasKey ? "Gemini 2.5 Flash" : isKhmer ? "AI សាកល្បង" : "Local Mock"}
+              </span>
+            </div>
+            <div className="mt-1">
+              <Link
+                href="/dashboard/api"
+                className="font-mono text-[11px] text-primary hover:underline inline-flex items-center gap-1 font-medium"
+              >
+                {hasKey
+                  ? isKhmer
+                    ? "បានភ្ជាប់ (BYOK) →"
+                    : "connected (BYOK) →"
+                  : isKhmer
+                    ? "ភ្ជាប់ API key →"
+                    : "connect API key →"}
+              </Link>
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-20 pt-8 sm:pt-10">
-        <ProfileHeader
-          displayName={displayName}
-          email={user.email}
-          initials={initials}
-          resumeCount={resumes.length}
-          onCreate={openCreateDialog}
-        />
+      {/* "See All Data" — Resumes Table/Grid */}
+      <section aria-label="Your resumes" className="space-y-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-display text-xl font-bold text-foreground">
+              {t.dashboard.resumesTitle}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {resumes.length} {isKhmer ? "ឯកសារក្នុងគណនីរបស់អ្នក" : resumes.length === 1 ? "document indexed in database" : "documents indexed in database"}
+            </p>
+          </div>
+        </div>
 
         <ResumeToolbar
           query={query}
@@ -211,7 +414,7 @@ export function DashboardWorkspace({
           totalCount={resumes.length}
         />
 
-        <section aria-label="Your resumes" className="mt-6">
+        <div className="mt-4">
           {visible.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((resume) => (
@@ -241,16 +444,20 @@ export function DashboardWorkspace({
                 setTemplateFilter("all");
               }}
               onCreate={openCreateDialog}
+              onSelectStarter={handleCreateWithStarter}
+              isCreating={pending === "create"}
             />
           )}
-        </section>
+        </div>
+      </section>
 
-        <p className="mt-10 flex items-center justify-center gap-2 text-center text-xs text-graphite">
-          <span aria-hidden className="ig-line size-1.5 shrink-0 rounded-full" />
-          Private to your account — every edit autosaves as you go.
-        </p>
-      </main>
+      <footer className="pt-6 border-t border-hairline text-center text-xs text-muted-foreground">
+        {isKhmer
+          ? "រក្សាភាពឯកជនក្នុងគណនីរបស់អ្នក — រាល់ការកែសម្រួលត្រូវបានរក្សាទុកដោយស្វ័យប្រវត្តិកំឡុងពេលវាយបញ្ចូល។"
+          : "Private to your account — every edit autosaves automatically as you type."}
+      </footer>
 
+      {/* Dialogs */}
       <NewResumeDialog
         key={createOpen ? "create-open" : "create-closed"}
         open={createOpen}

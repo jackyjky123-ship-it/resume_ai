@@ -4,8 +4,13 @@ export function hasText(value: string | null | undefined): boolean {
   return Boolean(value && value.trim().length > 0);
 }
 
-export function dateRange(start: string, end: string, current = false): string {
-  const endLabel = current ? "Present" : end.trim();
+export function dateRange(
+  start: string,
+  end: string,
+  current = false,
+  locale: "en" | "km" = "en"
+): string {
+  const endLabel = current ? (locale === "km" ? "បច្ចុប្បន្ន" : "Present") : end.trim();
   return [start.trim(), endLabel].filter(Boolean).join(" – ");
 }
 

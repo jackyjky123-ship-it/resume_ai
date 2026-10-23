@@ -1,5 +1,6 @@
 import React from "react";
 import type { ResumeDocument } from "@/lib/validations/resume";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   contactItems,
   dateRange,
@@ -9,13 +10,14 @@ import {
 
 function CompactHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-1.5 border-b border-neutral-300 pb-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-800">
+    <h3 data-page-break="heading" className="mb-1.5 border-b border-neutral-300 pb-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-800">
       {children}
     </h3>
   );
 }
 
 export function CompactPreview({ document }: { document: ResumeDocument }) {
+  const { isKhmer } = useLanguage();
   const contacts = contactItems(document);
   const experience = document.experience.filter(
     (entry) =>
@@ -42,10 +44,10 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
   return (
     <div className="flex flex-col gap-3 text-neutral-800">
       {/* Header */}
-      <header className="border-b-2 border-neutral-900 pb-2">
+      <header data-page-break="item" className="border-b-2 border-neutral-900 pb-2">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
           <h1 className="font-display text-[24px] font-bold leading-tight tracking-tight text-neutral-950">
-            {document.personal.fullName.trim() || "Your name"}
+            {document.personal.fullName.trim() || (isKhmer ? "ឈ្មោះរបស់អ្នក" : "Your name")}
           </h1>
           {hasText(document.personal.roleApplied) && (
             <span className="text-[12px] font-semibold uppercase tracking-wider text-neutral-600">
@@ -57,10 +59,10 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
       {/* 2-Column Body */}
       <div className="flex gap-5">
-        {/* Left Sidebar (32%) */}
-        <aside className="flex w-[32%] shrink-0 flex-col gap-4 border-r border-neutral-200 pr-3.5">
+        {/* Left Sidebar (33%) */}
+        <aside className="flex w-[33%] shrink-0 flex-col gap-4 border-r border-neutral-200 pr-4">
           {hasText(document.personal.photoUrl) && (
-            <div className="size-20 overflow-hidden rounded-xl border border-neutral-300 shadow-sm">
+            <div data-page-break="item" className="size-20 overflow-hidden rounded-xl border border-neutral-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={document.personal.photoUrl}
@@ -71,10 +73,10 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
           )}
           {contacts.length > 0 && (
             <section>
-              <CompactHeading>Contact</CompactHeading>
+              <CompactHeading>{isKhmer ? "ទំនាក់ទំនង" : "Contact"}</CompactHeading>
               <div className="flex flex-col gap-1 text-[11px] text-neutral-600">
                 {contacts.map((c, idx) => (
-                  <span key={idx} className="break-all">
+                  <span key={idx} data-page-break="item" className="break-words [overflow-wrap:anywhere] leading-snug">
                     {c.url ? (
                       <a
                         href={c.url}
@@ -95,10 +97,10 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
           {skills.length > 0 && (
             <section>
-              <CompactHeading>Skills</CompactHeading>
+              <CompactHeading>{isKhmer ? "ជំនាញ" : "Skills"}</CompactHeading>
               <ul className="flex flex-col gap-1 text-[11px] text-neutral-700">
                 {skills.map((s) => (
-                  <li key={s.id} className="flex items-center gap-1.5">
+                  <li key={s.id} data-page-break="item" className="flex items-center gap-1.5">
                     <span className="text-[10px] text-neutral-400">•</span>
                     <span>{s.name.trim()}</span>
                   </li>
@@ -109,20 +111,20 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
           {education.length > 0 && (
             <section>
-              <CompactHeading>Education</CompactHeading>
+              <CompactHeading>{isKhmer ? "ការអប់រំ" : "Education"}</CompactHeading>
               <div className="flex flex-col gap-2">
                 {education.map((entry) => (
-                  <div key={entry.id} className="text-[11px]">
+                  <div key={entry.id} data-page-break="item" className="text-[11px]">
                     <p className="font-semibold text-neutral-900">
                       {[entry.degree.trim(), entry.field.trim()]
                         .filter(Boolean)
-                        .join(", ") || "Degree"}
+                        .join(", ") || (isKhmer ? "សញ្ញាបត្រ" : "Degree")}
                     </p>
                     {hasText(entry.school) && (
                       <p className="text-neutral-600">{entry.school.trim()}</p>
                     )}
                     <p className="text-[10px] text-neutral-400">
-                      {dateRange(entry.startDate, entry.endDate)}
+                      {dateRange(entry.startDate, entry.endDate, false, isKhmer ? "km" : "en")}
                     </p>
                   </div>
                 ))}
@@ -132,12 +134,12 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
           {certifications.length > 0 && (
             <section>
-              <CompactHeading>Certifications</CompactHeading>
+              <CompactHeading>{isKhmer ? "វិញ្ញាបនបត្រ" : "Certifications"}</CompactHeading>
               <div className="flex flex-col gap-1.5">
                 {certifications.map((entry) => (
-                  <div key={entry.id} className="text-[11px]">
+                  <div key={entry.id} data-page-break="item" className="text-[11px]">
                     <p className="font-semibold text-neutral-900">
-                      {entry.name.trim() || "Certification"}
+                      {entry.name.trim() || (isKhmer ? "វិញ្ញាបនបត្រ" : "Certification")}
                     </p>
                     {hasText(entry.issuer) && (
                       <p className="text-neutral-600">{entry.issuer.trim()}</p>
@@ -153,10 +155,10 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
           {languages.length > 0 && (
             <section>
-              <CompactHeading>Languages</CompactHeading>
+              <CompactHeading>{isKhmer ? "ភាសា" : "Languages"}</CompactHeading>
               <ul className="flex flex-col gap-1 text-[11px] text-neutral-700">
                 {languages.map((l) => (
-                  <li key={l.id} className="flex items-center gap-1.5">
+                  <li key={l.id} data-page-break="item" className="flex items-center gap-1.5">
                     <span className="text-[10px] text-neutral-400">•</span>
                     <span>{languageLabel(l.name, l.proficiency)}</span>
                   </li>
@@ -169,8 +171,8 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
         {/* Right Main Column (68%) */}
         <main className="flex flex-1 flex-col gap-4">
           {hasText(document.summary) && (
-            <section>
-              <CompactHeading>Summary</CompactHeading>
+            <section data-page-break="item">
+              <CompactHeading>{isKhmer ? "សេចក្តីសង្ខេប" : "Summary"}</CompactHeading>
               <p className="whitespace-pre-line text-[12px] leading-relaxed text-neutral-700">
                 {document.summary.trim()}
               </p>
@@ -179,15 +181,15 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
           {experience.length > 0 && (
             <section>
-              <CompactHeading>Experience</CompactHeading>
+              <CompactHeading>{isKhmer ? "បទពិសោធន៍ការងារ" : "Experience"}</CompactHeading>
               <div className="flex flex-col gap-3">
                 {experience.map((entry) => {
                   const bullets = entry.bullets.filter((b) => hasText(b.text));
                   return (
-                    <div key={entry.id}>
+                    <div key={entry.id} data-page-break="item">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-2">
                         <p className="text-[12px] font-semibold text-neutral-900">
-                          {entry.role.trim() || "Role"}
+                          {entry.role.trim() || (isKhmer ? "មុខតំណែង" : "Role")}
                           {hasText(entry.company) && (
                             <span className="font-normal text-neutral-600">
                               {" "}
@@ -196,7 +198,7 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
                           )}
                         </p>
                         <p className="text-[11px] text-neutral-500">
-                          {dateRange(entry.startDate, entry.endDate, entry.current)}
+                          {dateRange(entry.startDate, entry.endDate, entry.current, isKhmer ? "km" : "en")}
                         </p>
                       </div>
                       {hasText(entry.location) && (
@@ -220,14 +222,14 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
 
           {projects.length > 0 && (
             <section>
-              <CompactHeading>Projects</CompactHeading>
+              <CompactHeading>{isKhmer ? "គម្រោងការងារ" : "Projects"}</CompactHeading>
               <div className="flex flex-col gap-2.5">
                 {projects.map((entry) => {
                   const bullets = entry.bullets.filter((b) => hasText(b.text));
                   return (
-                    <div key={entry.id}>
+                    <div key={entry.id} data-page-break="item">
                       <p className="text-[12px] font-semibold text-neutral-900">
-                        {entry.name.trim() || "Project"}
+                        {entry.name.trim() || (isKhmer ? "គម្រោង" : "Project")}
                         {hasText(entry.url) && (
                           <span className="font-normal text-neutral-500">
                             {" "}
