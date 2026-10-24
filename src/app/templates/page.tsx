@@ -123,6 +123,23 @@ const TEMPLATE_GALLERY = [
     columns: "2 Columns (Split with Divider)",
     accent: "Royal Blue & Charcoal",
   },
+  {
+    id: "navy",
+    name: "Navy",
+    tagline: "Contrasting navy sidebar with circular portrait, personal bio, and capsule section banners.",
+    category: "IT & Academic",
+    badge: "Trending",
+    color: "border-sky-300 bg-slate-900/10",
+    features: [
+      "Signature full-height dark navy sidebar with cyan avatar ring",
+      "Rounded capsule pill banners for high-impact section headings",
+      "Two-column technical skills grid for programming and web tools",
+      "Dedicated personal information and verified references section",
+    ],
+    recommendedFor: "Students, IT graduates, web developers, and ASEAN standard applications.",
+    columns: "2 Columns (Navy Sidebar & Capsule Banners)",
+    accent: "Deep Navy & Sky Blue",
+  },
 ];
 
 export default function TemplatesPage() {

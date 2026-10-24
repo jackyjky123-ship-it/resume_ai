@@ -198,6 +198,39 @@ function DesignerSheet() {
   );
 }
 
+function NavySheet() {
+  return (
+    <span className="flex w-full h-full">
+      {/* Left Column: Navy */}
+      <span className="flex w-[38%] shrink-0 flex-col items-center gap-[5px] bg-[#1E2532] p-2">
+        <span className="size-5 shrink-0 rounded-full border border-[#00A3E0] bg-[#00A3E0] my-0.5" />
+        <Bar w="60%" tone="white" />
+        <Bar w="85%" tone="white-faint" />
+        <Bar w="75%" tone="white-faint" />
+        <Bar w="60%" tone="white" />
+        <Bar w="90%" tone="white-faint" />
+        <Bar w="70%" tone="white-faint" />
+      </span>
+
+      {/* Right Column: Warm Off-White */}
+      <span className="flex flex-1 flex-col gap-[5px] bg-[#FAF9F6] p-2.5">
+        <Bar w="75%" tone="ink" thick />
+        <Bar w="50%" tone="line" />
+
+        {/* Capsule Pill Banner */}
+        <span className="my-0.5 block h-[5px] w-[95%] rounded-full bg-[#1E2532]" />
+        <Bar w="92%" />
+        <Bar w="85%" />
+
+        {/* Second Capsule Pill Banner */}
+        <span className="my-0.5 block h-[5px] w-[95%] rounded-full bg-[#1E2532]" />
+        <Bar w="90%" />
+        <Bar w="80%" />
+      </span>
+    </span>
+  );
+}
+
 /** Crop of the top of a resume page — fills whatever container clips it. */
 export function TemplateSheet({ templateId }: { templateId: TemplateId }) {
   if (templateId === "modern") return <ModernSheet />;
@@ -205,6 +238,7 @@ export function TemplateSheet({ templateId }: { templateId: TemplateId }) {
   if (templateId === "professional") return <ProfessionalSheet />;
   if (templateId === "editorial") return <EditorialSheet />;
   if (templateId === "designer") return <DesignerSheet />;
+  if (templateId === "navy") return <NavySheet />;
   return <ClassicSheet />;
 }
 

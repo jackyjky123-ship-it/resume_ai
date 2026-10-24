@@ -1,10 +1,13 @@
 import "server-only";
 
 import { CV_IMPORT_MAX_TEXT } from "@/lib/cv-files";
+import { cleanHumanizedText } from "@/lib/humanizer";
 
 export function sanitizeErrorMessage(message: string): string {
-  // Redact potential Gemini or Google Cloud API keys (AIza...)
-  return message.replace(/AIza[0-9A-Za-z-_]{20,}/g, "[REDACTED_API_KEY]");
+  // Redact potential Gemini or Google Cloud API keys (AIza... or AQ....)
+  return message
+    .replace(/AIza[0-9A-Za-z-_]{20,}/g, "[REDACTED_API_KEY]")
+    .replace(/AQ[\.\-_0-9A-Za-z]{20,}/g, "[REDACTED_API_KEY]");
 }
 import {
   generateMockSuggestions,
@@ -59,9 +62,29 @@ function documentCorpus(document: ResumeDocument) {
     .toLowerCase();
 }
 
+const BANNED_SKILL_SLOP = new Set([
+  "communication",
+  "teamwork",
+  "problem solving",
+  "problem-solving",
+  "critical thinking",
+  "time management",
+  "multitasking",
+  "multi-tasking",
+  "hardworking",
+  "hard working",
+  "work ethic",
+  "leadership",
+  "adaptability",
+  "attention to detail",
+  "synergy",
+  "self-starter",
+  "fast learner",
+]);
+
 function isGroundedSkill(name: string, corpus: string) {
   const normalized = name.trim().toLowerCase();
-  if (!normalized) return false;
+  if (!normalized || BANNED_SKILL_SLOP.has(normalized)) return false;
   const pattern = new RegExp(
     `(^|[^a-z0-9])${escapeRegExp(normalized)}([^a-z0-9]|$)`,
     "i"
@@ -107,6 +130,9 @@ function enforceGroundedResult(
             originalBullets: project.bullets
               .map((bullet) => bullet.text.trim())
               .filter(Boolean),
+            suggestedBullets: suggestion.suggestedBullets.map((bullet) =>
+              cleanHumanizedText(bullet)
+            ),
           },
         ];
       })
@@ -129,9 +155,16 @@ function enforceGroundedResult(
       })
     : [];
 
+  const summary = requested.has("summary") && result.summary
+    ? {
+        ...result.summary,
+        suggested: cleanHumanizedText(result.summary.suggested),
+      }
+    : null;
+
   return generationResultSchema.parse({
     ...result,
-    summary: requested.has("summary") ? result.summary : null,
+    summary,
     skills,
     projectHighlights,
     languages,
@@ -237,11 +270,15 @@ export async function improveBullet(
   if (keyToUse) {
     const { improveBulletWithGemini } = await import("./gemini.provider");
     const result = await improveBulletWithGemini(input, keyToUse);
-    return { ...result, mode };
+    return {
+      ...result,
+      improvedBullet: cleanHumanizedText(result.improvedBullet),
+      mode,
+    };
   }
 
   // Deterministic local fallback
-  const cleaned = input.bullet.trim();
+  const cleaned = cleanHumanizedText(input.bullet);
   const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
   const trailingPeriod = capitalized.endsWith(".") ? capitalized : `${capitalized}.`;
   return {
@@ -261,11 +298,15 @@ export async function fixGrammar(
   if (keyToUse) {
     const { fixGrammarWithGemini } = await import("./gemini.provider");
     const result = await fixGrammarWithGemini(input, keyToUse);
-    return { ...result, mode };
+    return {
+      ...result,
+      correctedText: cleanHumanizedText(result.correctedText),
+      mode,
+    };
   }
 
   // Deterministic local fallback
-  const cleaned = input.text.trim();
+  const cleaned = cleanHumanizedText(input.text);
   return {
     correctedText: cleaned,
     explanation: "Demo mode: preserved text structure.",

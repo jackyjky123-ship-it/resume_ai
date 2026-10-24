@@ -4,9 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { toast } from "sonner";
 import type { AiMode } from "@/lib/validations/ai";
 import {
   getStoredApiKey,
@@ -14,6 +16,7 @@ import {
   removeStoredApiKey,
   setStoredApiKey,
   subscribeToApiKeyStore,
+  triggerApiKeyModal,
 } from "./api-key-store";
 
 type ApiKeyContextValue = {
@@ -23,6 +26,10 @@ type ApiKeyContextValue = {
   clearApiKey: () => void;
   isValidFormat: boolean;
   hasKey: boolean;
+  isKeyDialogOpen: boolean;
+  setKeyDialogOpen: (open: boolean) => void;
+  openKeySettings: () => void;
+  promptApiKey: (featureName?: string) => void;
 };
 
 const ApiKeyContext = createContext<ApiKeyContextValue | null>(null);
@@ -32,6 +39,8 @@ function getServerSnapshot(): null {
 }
 
 export function ApiKeyProvider({ children }: { children: ReactNode }) {
+  const [isKeyDialogOpen, setKeyDialogOpen] = useState(false);
+
   const apiKey = useSyncExternalStore(
     subscribeToApiKeyStore,
     getStoredApiKey,
@@ -44,6 +53,28 @@ export function ApiKeyProvider({ children }: { children: ReactNode }) {
 
   const clearApiKey = useCallback(() => {
     removeStoredApiKey();
+  }, []);
+
+  const openKeySettings = useCallback(() => {
+    setKeyDialogOpen(true);
+  }, []);
+
+  const promptApiKey = useCallback((featureName?: string) => {
+    const featurePrefix = featureName ? `${featureName}: ` : "";
+    toast.warning(
+      `${featurePrefix}Gemini API key is required to use AI features. Please add your key to proceed.`,
+      {
+        action: {
+          label: "Add API Key",
+          onClick: () => {
+            setKeyDialogOpen(true);
+            triggerApiKeyModal();
+          },
+        },
+      }
+    );
+    setKeyDialogOpen(true);
+    triggerApiKeyModal(featureName);
   }, []);
 
   const hasKey = Boolean(apiKey && apiKey.length > 0);
@@ -60,6 +91,10 @@ export function ApiKeyProvider({ children }: { children: ReactNode }) {
         clearApiKey,
         isValidFormat,
         hasKey,
+        isKeyDialogOpen,
+        setKeyDialogOpen,
+        openKeySettings,
+        promptApiKey,
       }}
     >
       {children}
@@ -72,5 +107,25 @@ export function useApiKey(): ApiKeyContextValue {
   if (!ctx) {
     throw new Error("useApiKey must be used within an ApiKeyProvider");
   }
-  return ctx;
+  return {
+    ...ctx,
+    isKeyDialogOpen: ctx.isKeyDialogOpen ?? false,
+    setKeyDialogOpen: ctx.setKeyDialogOpen ?? (() => {}),
+    openKeySettings:
+      ctx.openKeySettings ??
+      (() => {
+        triggerApiKeyModal();
+        ctx.setKeyDialogOpen?.(true);
+      }),
+    promptApiKey:
+      ctx.promptApiKey ??
+      ((featureName?: string) => {
+        const featurePrefix = featureName ? `${featureName}: ` : "";
+        toast.warning(
+          `${featurePrefix}Gemini API key is required to use AI features. Please add your key to proceed.`
+        );
+        triggerApiKeyModal(featureName);
+        ctx.setKeyDialogOpen?.(true);
+      }),
+  };
 }

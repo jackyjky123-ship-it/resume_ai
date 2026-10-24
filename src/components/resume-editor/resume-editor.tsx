@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -38,18 +38,20 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-meta";
-import { ApiKeyProvider } from "@/lib/api-key-context";
+import { ApiKeyProvider, useApiKey } from "@/lib/api-key-context";
 import {
   resumeEditorSchema,
   type ResumeEditorFormValues,
 } from "@/lib/validations/resume";
 import type { ResumeDetail } from "@/server/services/resume.service";
 import { ResumePreview } from "@/components/resume-preview/resume-preview";
+import { ApiKeySettingsDialog } from "./api-key-settings";
 import { CertificationsSection } from "./certifications-section";
 import { CvTools } from "./cv-tools";
 import { EducationSection } from "./education-section";
 import { ExperienceSection } from "./experience-section";
 import { LanguagesSection } from "./languages-section";
+import { ReferencesSection } from "./references-section";
 import { PersonalSection, SummarySection } from "./personal-section";
 import { ProjectsSection } from "./projects-section";
 import { SkillsSection } from "./skills-section";
@@ -117,6 +119,7 @@ function SectionNav() {
     { id: "section-projects", label: t.editor.sectionProjects },
     { id: "section-certifications", label: t.editor.sectionCertifications },
     { id: "section-languages", label: t.editor.sectionLanguages },
+    { id: "section-references", label: t.editor.sectionReferences },
   ];
 
   function scrollTo(id: string) {
@@ -139,6 +142,23 @@ function SectionNav() {
         </button>
       ))}
     </nav>
+  );
+}
+
+function GlobalApiKeyModal() {
+  const { isKeyDialogOpen, setKeyDialogOpen } = useApiKey();
+
+  useEffect(() => {
+    const handleOpen = () => setKeyDialogOpen(true);
+    window.addEventListener("resumeai:open-key-modal", handleOpen);
+    return () => window.removeEventListener("resumeai:open-key-modal", handleOpen);
+  }, [setKeyDialogOpen]);
+
+  return (
+    <ApiKeySettingsDialog
+      open={isKeyDialogOpen}
+      onOpenChange={setKeyDialogOpen}
+    />
   );
 }
 
@@ -383,6 +403,7 @@ export function ResumeEditor({
                 <ProjectsSection />
                 <CertificationsSection />
                 <LanguagesSection />
+                <ReferencesSection />
               </form>
             </div>
 
@@ -434,6 +455,7 @@ export function ResumeEditor({
         </div>
       </div>
       </FormProvider>
+      <GlobalApiKeyModal />
     </ApiKeyProvider>
   );
 }

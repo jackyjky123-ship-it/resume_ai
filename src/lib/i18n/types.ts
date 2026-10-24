@@ -351,12 +351,14 @@ export interface Translations {
     sectionProjects: string;
     sectionCertifications: string;
     sectionLanguages: string;
+    sectionReferences: string;
     addExperience: string;
     addEducation: string;
     addSkill: string;
     addProject: string;
     addCertification: string;
     addLanguage: string;
+    addReference: string;
     addBullet: string;
     fullName: string;
     roleApplied: string;
@@ -366,6 +368,11 @@ export interface Translations {
     website: string;
     linkedin: string;
     github: string;
+    gender: string;
+    nationality: string;
+    dateOfBirth: string;
+    placeOfBirth: string;
+    strengths: string;
     profilePhoto: string;
     uploadPhoto: string;
     removePhoto: string;
@@ -386,6 +393,9 @@ export interface Translations {
     certName: string;
     issuer: string;
     date: string;
+    refName: string;
+    refPosition: string;
+    refWorkplace: string;
     languageName: string;
     proficiencyNative: string;
     proficiencyFluent: string;
@@ -399,6 +409,7 @@ export interface Translations {
     projectsDesc: string;
     certificationsDesc: string;
     languagesDesc: string;
+    referencesDesc: string;
   };
   cvTools: {
     aiCopilot: string;

@@ -162,6 +162,24 @@ const DesignerThumb = () => (
   </div>
 );
 
+const NavyThumb = () => (
+  <div className="flex h-full w-[138px] rounded-md overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
+    <div className="flex w-[38%] flex-col items-center gap-1 bg-[#1E2532] p-1.5">
+      <div className="size-3 rounded-full bg-[#00A3E0] mt-0.5" />
+      <div className="h-[2px] w-[70%] bg-white/80 rounded-full" />
+      <div className="h-[2px] w-[90%] bg-white/40 rounded-full" />
+      <div className="h-[2px] w-[75%] bg-white/40 rounded-full" />
+    </div>
+    <div className="flex flex-1 flex-col gap-1 bg-[#FAF9F6] p-1.5">
+      <div className="h-[3px] w-[75%] bg-neutral-800 rounded-full" />
+      <div className="h-[3px] w-[90%] bg-[#1E2532] rounded-full my-0.5" />
+      <div className="h-[2px] w-[85%] bg-neutral-400 rounded-full" />
+      <div className="h-[3px] w-[90%] bg-[#1E2532] rounded-full my-0.5" />
+      <div className="h-[2px] w-[80%] bg-neutral-400 rounded-full" />
+    </div>
+  </div>
+);
+
 const TEMPLATE_THUMBS = [
   <ClassicThumb key="classic" />,
   <ModernThumb key="modern" />,
@@ -169,6 +187,7 @@ const TEMPLATE_THUMBS = [
   <ProfessionalThumb key="professional" />,
   <EditorialThumb key="editorial" />,
   <DesignerThumb key="designer" />,
+  <NavyThumb key="navy" />,
 ];
 
 export default function Home() {
@@ -452,9 +471,9 @@ export default function Home() {
                     </div>
                     <div className="text-xs text-neutral-600 dark:text-[#F0EDE5]/60">
                       <span className="font-semibold text-neutral-900 dark:text-white block">
-                        6 ATS-Engineered Designs
+                        7 ATS-Engineered Designs
                       </span>
-                      <span>Classic · Modern · Compact · Professional · Editorial · Designer</span>
+                      <span>Classic · Modern · Compact · Professional · Editorial · Designer · Navy</span>
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Sparkles, X } from "lucide-react";
+import { Check, KeyRound, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -39,7 +39,7 @@ export function ImproveBulletDialog({
   company = "",
   onApply,
 }: ImproveBulletDialogProps) {
-  const { apiKey } = useApiKey();
+  const { apiKey, hasKey, openKeySettings, promptApiKey } = useApiKey();
   const { t, isKhmer } = useLanguage();
   const eligibleBullets = bullets.filter((b) => b.text.trim().length >= 3);
   const [selectedId, setSelectedId] = useState<string>(
@@ -60,6 +60,11 @@ export function ImproveBulletDialog({
     eligibleBullets[0];
 
   async function handleImprove() {
+    if (!hasKey) {
+      promptApiKey?.(isKhmer ? "ការកែលម្អចំណុចការងារ" : "Bullet improvement");
+      return;
+    }
+
     if (!currentSelected || !currentSelected.text.trim()) {
       setError(
         isKhmer
@@ -140,6 +145,33 @@ export function ImproveBulletDialog({
 
         {!result ? (
           <div className="flex flex-col gap-4">
+            {!hasKey && (
+              <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+                <KeyRound className="size-4 text-amber-600 dark:text-amber-400" />
+                <AlertTitle className="font-semibold text-amber-800 dark:text-amber-300">
+                  {isKhmer ? "តម្រូវឱ្យមាន Gemini API Key" : "Gemini API Key Required"}
+                </AlertTitle>
+                <AlertDescription className="mt-1 flex flex-col gap-2.5 text-xs">
+                  <span>
+                    {isKhmer
+                      ? "ដើម្បីកែលម្អចំណុចការងារជាមួយ Gemini AI អ្នកត្រូវបញ្ចូល API Key ឥតគិតថ្លៃរបស់អ្នកជាមុនសិន។"
+                      : "To polish bullet points with Gemini AI, you must configure your free Google AI Studio API key."}
+                  </span>
+                  <div>
+                    <Button
+                      type="button"
+                      size="xs"
+                      onClick={() => openKeySettings?.()}
+                      className="gap-1.5 font-medium shadow-xs"
+                    >
+                      <KeyRound className="size-3" />
+                      {isKhmer ? "បញ្ចូល API Key ឥឡូវនេះ" : "Add API Key Now"}
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
             {eligibleBullets.length === 0 ? (
               <p className="py-4 text-center text-sm text-muted-foreground">
                 {isKhmer
@@ -184,13 +216,24 @@ export function ImproveBulletDialog({
               </Button>
               <Button
                 type="button"
-                onClick={() => void handleImprove()}
+                onClick={() => {
+                  if (!hasKey) {
+                    promptApiKey?.(isKhmer ? "ការកែលម្អចំណុចការងារ" : "Bullet improvement");
+                    return;
+                  }
+                  void handleImprove();
+                }}
                 disabled={loading || eligibleBullets.length === 0}
               >
                 {loading ? (
                   <>
                     <Spinner />
                     {isKhmer ? "កំពុងកែលម្អ…" : "Improving…"}
+                  </>
+                ) : !hasKey ? (
+                  <>
+                    <KeyRound />
+                    {isKhmer ? "តម្រូវឱ្យមាន API Key" : "API Key Required"}
                   </>
                 ) : (
                   <>

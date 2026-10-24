@@ -49,6 +49,13 @@ function formatAiErrorMessage(error: unknown, fallback: string): string {
     ) {
       return "Your Gemini API quota limit was reached. Please wait a moment or check your Google AI Studio account.";
     }
+    if (
+      msg.includes("not found") ||
+      msg.includes("no longer available") ||
+      msg.includes("is not supported")
+    ) {
+      return "The requested Gemini AI model is currently unavailable for your API key. Please check Google AI Studio.";
+    }
   }
   return fallback;
 }

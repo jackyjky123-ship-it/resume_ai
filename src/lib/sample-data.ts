@@ -21,6 +21,11 @@ export function createSampleResumeDocument(): ResumeDocument {
       github: "https://github.com/alexrivera",
       telegram: "t.me/alexrivera_dev",
       photoUrl: "",
+      gender: "",
+      nationality: "American",
+      dateOfBirth: "",
+      placeOfBirth: "",
+      strengths: "Distributed Systems, Zero-Trust Architecture, Kubernetes Control Planes",
     },
     summary:
       "Principal Cloud Systems Architect with 10+ years designing high-throughput distributed systems, zero-trust infrastructure, and Kubernetes multi-cloud control planes across AWS and GCP. Proven track record leading infrastructure reliability engineering teams and achieving 99.995% service uptime at global scale.",
@@ -165,5 +170,6 @@ export function createSampleResumeDocument(): ResumeDocument {
       { id: createResumeId(), name: "Spanish", proficiency: "Professional Working" },
       { id: createResumeId(), name: "German", proficiency: "Elementary" },
     ],
+    references: [],
   };
 }

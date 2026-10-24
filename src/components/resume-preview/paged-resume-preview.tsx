@@ -258,7 +258,12 @@ export function PagedResumePreview({
           zIndex: -1,
         }}
       >
-        <article className="flex w-[794px] flex-col bg-white px-10 py-12 text-[13px] leading-[1.55]">
+        <article
+          className={cn(
+            "flex w-[794px] flex-col text-[13px] leading-[1.55]",
+            templateId === "navy" ? "bg-[#FAF9F6] p-0" : "bg-white px-10 py-12"
+          )}
+        >
           <ResumeBody document={document} templateId={templateId} />
         </article>
       </div>
@@ -411,7 +416,12 @@ export function PagedResumePreview({
                           transform: `translateY(-${page.startY}px)`,
                         }}
                       >
-                        <article className="flex w-[794px] flex-col bg-white px-10 py-12 text-[13px] leading-[1.55]">
+                        <article
+                          className={cn(
+                            "flex w-[794px] flex-col text-[13px] leading-[1.55]",
+                            templateId === "navy" ? "bg-[#FAF9F6] p-0" : "bg-white px-10 py-12"
+                          )}
+                        >
                           <ResumeBody
                             document={document}
                             templateId={templateId}

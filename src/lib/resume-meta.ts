@@ -10,6 +10,7 @@ export const TEMPLATE_IDS = [
   "professional",
   "editorial",
   "designer",
+  "navy",
 ] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
@@ -72,6 +73,15 @@ export const TEMPLATES: {
     category: "two-column",
     bestFor: "Design, Marketing, Portfolio & Best for Students",
   },
+  {
+    id: "navy",
+    name: "Template 07",
+    originalName: "Navy",
+    blurb: "Contrasting navy sidebar with circular portrait, personal bio, and rounded capsule section banners.",
+    isRecommended: true,
+    category: "two-column",
+    bestFor: "IT, Students, ASEAN Standard & Entry-to-Mid Roles",
+  },
 ];
 
 export const TEMPLATE_NAME: Record<TemplateId, string> = {
@@ -81,6 +91,7 @@ export const TEMPLATE_NAME: Record<TemplateId, string> = {
   professional: "Template 04",
   editorial: "Template 05",
   designer: "Template 06",
+  navy: "Template 07",
 };
 
 export const RESUME_SECTIONS = [

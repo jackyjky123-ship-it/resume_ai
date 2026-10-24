@@ -7,6 +7,7 @@ import { CompactPdf } from "./components/compact-pdf";
 import { ProfessionalPdf } from "./components/professional-pdf";
 import { EditorialPdf } from "./components/editorial-pdf";
 import { DesignerPdf } from "./components/designer-pdf";
+import { NavyPdf } from "./components/navy-pdf";
 
 export function ResumePdfDocument({ document, templateId }: ResumePdfProps) {
   const authorName = document.personal.fullName.trim() || "Niseth Code";
@@ -25,11 +26,13 @@ export function ResumePdfDocument({ document, templateId }: ResumePdfProps) {
       {templateId === "professional" && <ProfessionalPdf document={document} />}
       {templateId === "editorial" && <EditorialPdf document={document} />}
       {templateId === "designer" && <DesignerPdf document={document} />}
+      {templateId === "navy" && <NavyPdf document={document} />}
       {templateId !== "modern" &&
         templateId !== "compact" &&
         templateId !== "professional" &&
         templateId !== "editorial" &&
-        templateId !== "designer" && <ClassicPdf document={document} />}
+        templateId !== "designer" &&
+        templateId !== "navy" && <ClassicPdf document={document} />}
     </Document>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Sparkles, X } from "lucide-react";
+import { Check, KeyRound, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -36,7 +36,7 @@ export function FixGrammarDialog({
   label = "Professional summary",
   onApply,
 }: FixGrammarDialogProps) {
-  const { apiKey } = useApiKey();
+  const { apiKey, hasKey, openKeySettings, promptApiKey } = useApiKey();
   const { t, isKhmer } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +48,11 @@ export function FixGrammarDialog({
   } | null>(null);
 
   async function handleFix() {
+    if (!hasKey) {
+      promptApiKey?.(isKhmer ? "ការត្រួតពិនិត្យវេយ្យាករណ៍" : "Grammar proofreading");
+      return;
+    }
+
     if (!text.trim() || text.trim().length < 3) {
       setError(
         isKhmer
@@ -125,6 +130,33 @@ export function FixGrammarDialog({
 
         {!result ? (
           <div className="flex flex-col gap-4">
+            {!hasKey && (
+              <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+                <KeyRound className="size-4 text-amber-600 dark:text-amber-400" />
+                <AlertTitle className="font-semibold text-amber-800 dark:text-amber-300">
+                  {isKhmer ? "តម្រូវឱ្យមាន Gemini API Key" : "Gemini API Key Required"}
+                </AlertTitle>
+                <AlertDescription className="mt-1 flex flex-col gap-2.5 text-xs">
+                  <span>
+                    {isKhmer
+                      ? "ដើម្បីពិនិត្យ និងកែវេយ្យាករណ៍ជាមួយ Gemini AI អ្នកត្រូវបញ្ចូល API Key ឥតគិតថ្លៃរបស់អ្នកជាមុនសិន។"
+                      : "To proofread text with Gemini AI, you must configure your free Google AI Studio API key."}
+                  </span>
+                  <div>
+                    <Button
+                      type="button"
+                      size="xs"
+                      onClick={() => openKeySettings?.()}
+                      className="gap-1.5 font-medium shadow-xs"
+                    >
+                      <KeyRound className="size-3" />
+                      {isKhmer ? "បញ្ចូល API Key ឥឡូវនេះ" : "Add API Key Now"}
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="rounded-lg border border-border bg-muted/30 p-3">
               <p className="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 {isKhmer ? "អត្ថបទបច្ចុប្បន្ន៖" : "Current text:"}
@@ -145,13 +177,24 @@ export function FixGrammarDialog({
               </Button>
               <Button
                 type="button"
-                onClick={() => void handleFix()}
+                onClick={() => {
+                  if (!hasKey) {
+                    promptApiKey?.(isKhmer ? "ការត្រួតពិនិត្យវេយ្យាករណ៍" : "Grammar proofreading");
+                    return;
+                  }
+                  void handleFix();
+                }}
                 disabled={loading || text.trim().length < 3}
               >
                 {loading ? (
                   <>
                     <Spinner />
                     {t.aiDialogs.improving}
+                  </>
+                ) : !hasKey ? (
+                  <>
+                    <KeyRound />
+                    {isKhmer ? "តម្រូវឱ្យមាន API Key" : "API Key Required"}
                   </>
                 ) : (
                   <>

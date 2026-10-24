@@ -16,7 +16,6 @@ import { useApiKey } from "@/lib/api-key-context";
 import { useLanguage } from "@/lib/i18n/context";
 import type { CvImportResult } from "@/lib/validations/ai";
 import type { ResumeEditorFormValues } from "@/lib/validations/resume";
-import { ApiKeySettingsDialog } from "./api-key-settings";
 import { ImportCvDialog } from "./import-cv-dialog";
 import { GenerateCvDialog } from "./generate-cv-dialog";
 
@@ -26,9 +25,8 @@ export function CvTools() {
   const { t, isKhmer } = useLanguage();
   const [importOpen, setImportOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
-  const [keySettingsOpen, setKeySettingsOpen] = useState(false);
 
-  const { aiMode, hasKey } = useApiKey();
+  const { aiMode, hasKey, openKeySettings, promptApiKey } = useApiKey();
 
   function handleLoadSample() {
     const current = form.getValues("content");
@@ -86,83 +84,84 @@ export function CvTools() {
 
   return (
     <>
-      <div className="mb-6 rounded-2xl border border-border/80 bg-gradient-to-r from-card via-muted/40 to-card p-3.5 shadow-xs sm:p-4.5">
-        <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
-          {/* Assistant Info & Key Status */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
-              <Sparkles className="size-3.5 text-primary" aria-hidden />
-              <span>{t.cvTools.aiCopilot}</span>
+      <div className="mb-6 rounded-2xl border border-border/80 bg-gradient-to-r from-card via-muted/30 to-card p-3.5 shadow-xs sm:p-4">
+        {/* Assistant Header & API Key Status */}
+        <div className="flex items-center justify-between gap-3 border-b border-border/50 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <Sparkles className="size-3.5" aria-hidden />
             </div>
-            <span aria-hidden className="hidden text-muted-foreground/40 sm:inline">
-              ·
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">
+              {t.cvTools.aiCopilot}
             </span>
-            <button
-              type="button"
-              onClick={() => setKeySettingsOpen(true)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium transition cursor-pointer ${
-                hasKey
-                  ? "border-emerald-300 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/60"
-                  : "border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 hover:bg-amber-100/80 dark:hover:bg-amber-900/60"
-              }`}
-              title="Click to configure your Gemini API Key"
-            >
-              {hasKey ? (
-                <>
-                  <CheckCircle2 className="size-3 text-emerald-600" />
-                  <span>{isKhmer ? "Gemini សកម្ម" : "Gemini Active"}</span>
-                </>
-              ) : (
-                <>
-                  <KeyRound className="size-3 text-amber-600" />
-                  <span>{isKhmer ? "សាកល្បង AI · បន្ថែម Key" : "Demo AI · Add Key"}</span>
-                </>
-              )}
-            </button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleLoadSample}
-              title="Populate resume with sample data"
-              className="h-8 gap-1.5 text-xs font-medium"
-            >
-              <FileText className="size-3.5" />
-              <span>{isKhmer ? "ទិន្នន័យគំរូ" : "Sample Data"}</span>
-            </Button>
+          <button
+            type="button"
+            onClick={() => openKeySettings?.()}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition cursor-pointer ${
+              hasKey
+                ? "border-emerald-300 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/60"
+                : "border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 hover:bg-amber-100/80 dark:hover:bg-amber-900/60"
+            }`}
+            title={isKhmer ? "ចុចដើម្បីកំណត់រចនាសម្ព័ន្ធ Gemini API Key" : "Click to configure your Gemini API Key"}
+          >
+            {hasKey ? (
+              <>
+                <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+                <span>{isKhmer ? "Gemini សកម្ម" : "Gemini Active"}</span>
+              </>
+            ) : (
+              <>
+                <KeyRound className="size-3 text-amber-600 dark:text-amber-400" />
+                <span>{isKhmer ? "ត្រូវការ API Key" : "API Key Required"}</span>
+              </>
+            )}
+          </button>
+        </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setImportOpen(true)}
-              className="h-8 gap-1.5 text-xs font-medium"
-            >
-              <Upload className="size-3.5" />
-              <span>{t.cvTools.importCv}</span>
-            </Button>
+        {/* Action Buttons Toolbar */}
+        <div className="flex flex-wrap items-center gap-2 pt-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleLoadSample}
+            title={isKhmer ? "បញ្ចូលទិន្នន័យគំរូ" : "Populate resume with sample data"}
+            className="h-8 gap-1.5 text-xs font-medium"
+          >
+            <FileText className="size-3.5 text-muted-foreground" />
+            <span>{isKhmer ? "ទិន្នន័យគំរូ" : "Sample Data"}</span>
+          </Button>
 
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => setGenerateOpen(true)}
-              className="h-8 gap-1.5 text-xs font-semibold shadow-xs"
-            >
-              <Sparkles className="size-3.5" />
-              <span>{t.cvTools.generateCv}</span>
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setImportOpen(true)}
+            className="h-8 gap-1.5 text-xs font-medium"
+          >
+            <Upload className="size-3.5 text-muted-foreground" />
+            <span>{t.cvTools.importCv}</span>
+          </Button>
+
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => {
+              if (!hasKey) {
+                promptApiKey?.(isKhmer ? "ការបង្កើតគំនិតយោបល់ AI" : "AI CV generation");
+                return;
+              }
+              setGenerateOpen(true);
+            }}
+            className="h-8 gap-1.5 text-xs font-semibold shadow-xs"
+          >
+            <Sparkles className="size-3.5" />
+            <span>{t.cvTools.generateCv}</span>
+          </Button>
         </div>
       </div>
-
-      <ApiKeySettingsDialog
-        open={keySettingsOpen}
-        onOpenChange={setKeySettingsOpen}
-      />
 
       {importOpen && (
         <ImportCvDialog

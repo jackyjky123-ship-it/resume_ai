@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 import { resizeImageToDataUrl } from "@/lib/image-utils";
+import { useApiKey } from "@/lib/api-key-context";
 import { useLanguage } from "@/lib/i18n/context";
 import type { ResumeEditorFormValues } from "@/lib/validations/resume";
 import { FixGrammarDialog } from "./fix-grammar-dialog";
@@ -235,6 +236,46 @@ export function PersonalSection({ action }: { action?: React.ReactNode } = {}) {
             placeholder={isKhmer ? "@គណនី ឬ t.me/គណនី" : "@yourusername or t.me/yourusername"}
             maxLength={120}
           />
+          <TextField
+            name="content.personal.gender"
+            label={t.editor.gender}
+            placeholder={isKhmer ? "ស្រី / ប្រុស" : "Female / Male"}
+            maxLength={40}
+          />
+          <TextField
+            name="content.personal.nationality"
+            label={t.editor.nationality}
+            placeholder={isKhmer ? "ខ្មែរ" : "Cambodian"}
+            maxLength={60}
+          />
+          <TextField
+            name="content.personal.dateOfBirth"
+            label={t.editor.dateOfBirth}
+            placeholder={isKhmer ? "២៦-កុម្ភៈ-២០០៦" : "26-February-2006"}
+            maxLength={60}
+          />
+          <TextField
+            name="content.personal.placeOfBirth"
+            label={t.editor.placeOfBirth}
+            placeholder={
+              isKhmer
+                ? "ភូមិអន្លង់ស្តៅ ឃុំកា ស្រុកមោងឫស្សី ខេត្តបាត់ដំបង"
+                : "Anlong Sdav Village, Battambang Province"
+            }
+            maxLength={200}
+          />
+          <div className="sm:col-span-2">
+            <TextField
+              name="content.personal.strengths"
+              label={t.editor.strengths}
+              placeholder={
+                isKhmer
+                  ? "រៀនឆាប់ចេះ, មានការទទួលខុសត្រូវ, សហការក្រុមបានល្អ (បំបែកដោយសញ្ញាក្បៀស)"
+                  : "Fast learner, Responsible and hardworking, Good teamwork skills (comma-separated)"
+              }
+              maxLength={500}
+            />
+          </div>
         </div>
       </FieldGroup>
     </SectionShell>
@@ -243,7 +284,8 @@ export function PersonalSection({ action }: { action?: React.ReactNode } = {}) {
 
 export function SummarySection() {
   const form = useFormContext<ResumeEditorFormValues>();
-  const { t } = useLanguage();
+  const { hasKey, promptApiKey } = useApiKey();
+  const { t, isKhmer } = useLanguage();
   const [grammarOpen, setGrammarOpen] = useState(false);
   const summary = form.watch("content.summary") ?? "";
   const hasContent = summary.trim().length >= 5;
@@ -259,7 +301,13 @@ export function SummarySection() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setGrammarOpen(true)}
+            onClick={() => {
+              if (!hasKey) {
+                promptApiKey?.(isKhmer ? "ការត្រួតពិនិត្យវេយ្យាករណ៍" : "Fix Grammar");
+                return;
+              }
+              setGrammarOpen(true);
+            }}
           >
             <Sparkles className="size-3.5" />
             {t.cvTools.fixGrammar}

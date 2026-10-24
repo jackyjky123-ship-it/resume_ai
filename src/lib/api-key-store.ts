@@ -57,11 +57,33 @@ export function removeStoredApiKey(): void {
   }
 }
 
+export function triggerApiKeyModal(featureName?: string): void {
+  if (typeof window === "undefined") return;
+  const featurePrefix = featureName ? `${featureName}: ` : "";
+  window.dispatchEvent(
+    new CustomEvent("resumeai:open-key-modal", {
+      detail: {
+        message: `${featurePrefix}Gemini API key is required to use AI features. Please add your key to proceed.`,
+      },
+    })
+  );
+}
+
 /**
  * Basic format validation for Google AI Studio / Gemini API keys.
- * Google AI Studio keys start with 'AIza' followed by base64url characters, typically 39 chars total.
+ * Supports:
+ * - Legacy Google AI Studio / Cloud keys: starts with 'AIza' (e.g. AIzaSy...)
+ * - New Google AI Studio Auth keys: starts with 'AQ.' (e.g. AQ.Ab8RN...)
  */
 export function isValidKeyFormat(key: string): boolean {
   const trimmed = key.trim();
-  return /^AIza[0-9A-Za-z-_]{30,60}$/.test(trimmed);
+  // Legacy format: AIza followed by 30-65 base64url characters
+  if (/^AIza[0-9A-Za-z-_]{30,65}$/.test(trimmed)) {
+    return true;
+  }
+  // New Google AI Studio format: AQ. (or AQ) followed by base64url characters
+  if (/^AQ[\.\-_0-9A-Za-z]{20,85}$/.test(trimmed)) {
+    return true;
+  }
+  return false;
 }

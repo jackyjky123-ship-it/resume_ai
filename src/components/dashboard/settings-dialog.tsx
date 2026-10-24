@@ -212,7 +212,7 @@ export function SettingsDialog({
                   <Input
                     id="settings-api-key-input"
                     type={showKey ? "text" : "password"}
-                    placeholder="AIzaSy..."
+                    placeholder="AQ.Ab... or AIzaSy..."
                     value={inputKey}
                     onChange={(e) => setInputKey(e.target.value)}
                     className="font-mono text-xs pr-10 bg-background"

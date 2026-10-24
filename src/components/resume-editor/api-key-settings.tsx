@@ -63,8 +63,8 @@ export function ApiKeySettingsDialog({
     if (!isValidKeyFormat(trimmed)) {
       setError(
         isKhmer
-          ? "ទម្រង់ Key មិនត្រឹមត្រូវតាមស្ដង់ដារ Google AI Studio ទេ (ត្រូវចាប់ផ្តើមដោយ 'AIza...')។"
-          : "That key format doesn't look like a standard Google AI Studio key (starts with 'AIza...'). Please verify and try again."
+          ? "ទម្រង់ Key មិនត្រឹមត្រូវតាមស្ដង់ដារ Google AI Studio ទេ (ត្រូវចាប់ផ្តើមដោយ 'AQ...' ឬ 'AIza...')។"
+          : "That key format doesn't look like a standard Google AI Studio key (starts with 'AQ...' or 'AIza...'). Please verify and try again."
       );
       return;
     }
@@ -163,7 +163,7 @@ export function ApiKeySettingsDialog({
               <Input
                 id="gemini-api-key"
                 type={showKey ? "text" : "password"}
-                placeholder="AIzaSy..."
+                placeholder="AQ.Ab... ឬ AIzaSy..."
                 value={inputValue}
                 onChange={(e) => {
                   setInputValue(e.target.value);

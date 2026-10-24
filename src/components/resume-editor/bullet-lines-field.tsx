@@ -12,6 +12,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { useApiKey } from "@/lib/api-key-context";
 import { useLanguage } from "@/lib/i18n/context";
 import {
   newBullet,
@@ -45,6 +46,7 @@ export function BulletLinesField({
   company = "",
 }: BulletLinesFieldProps) {
   const form = useFormContext<ResumeEditorFormValues>();
+  const { hasKey, promptApiKey } = useApiKey();
   const { t, isKhmer } = useLanguage();
   const id = useId();
   const [improveOpen, setImproveOpen] = useState(false);
@@ -68,7 +70,13 @@ export function BulletLinesField({
             type="button"
             variant="ghost"
             size="xs"
-            onClick={() => setImproveOpen(true)}
+            onClick={() => {
+              if (!hasKey) {
+                promptApiKey?.(isKhmer ? "ការកែលម្អចំណុចការងារ" : "Bullet improvement");
+                return;
+              }
+              setImproveOpen(true);
+            }}
             className="h-6 gap-1 px-1.5 text-xs text-muted-foreground hover:text-foreground"
           >
             <Sparkles className="size-3" />

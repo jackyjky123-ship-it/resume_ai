@@ -45,6 +45,10 @@ export function withFreshIds(document: ResumeDocument): ResumeDocument {
       ...entry,
       id: createResumeId(),
     })),
+    references: (document.references ?? []).map((entry) => ({
+      ...entry,
+      id: createResumeId(),
+    })),
   };
 }
 
@@ -63,6 +67,11 @@ function mergePersonal(
     github: current.github.trim() ? current.github : imported.github,
     telegram: current.telegram.trim() ? current.telegram : imported.telegram,
     photoUrl: current.photoUrl.trim() ? current.photoUrl : imported.photoUrl,
+    gender: current.gender?.trim() ? current.gender : (imported.gender ?? ""),
+    nationality: current.nationality?.trim() ? current.nationality : (imported.nationality ?? ""),
+    dateOfBirth: current.dateOfBirth?.trim() ? current.dateOfBirth : (imported.dateOfBirth ?? ""),
+    placeOfBirth: current.placeOfBirth?.trim() ? current.placeOfBirth : (imported.placeOfBirth ?? ""),
+    strengths: current.strengths?.trim() ? current.strengths : (imported.strengths ?? ""),
   };
 }
 
@@ -125,6 +134,10 @@ export function mergeResumeDocuments(
       20
     ),
     languages: mergeLanguages(current.languages, fresh.languages),
+    references: [
+      ...(current.references ?? []),
+      ...(fresh.references ?? []),
+    ].slice(0, 10),
   };
 }
 

@@ -30,6 +30,11 @@ export const personalInfoSchema = z.object({
   github: mediumText,
   telegram: mediumText.default(""),
   photoUrl: z.string().max(2_000_000).default(""),
+  gender: z.string().max(40).optional().default(""),
+  nationality: z.string().max(60).optional().default(""),
+  dateOfBirth: z.string().max(60).optional().default(""),
+  placeOfBirth: z.string().max(200).optional().default(""),
+  strengths: z.string().max(500).optional().default(""),
 });
 
 export const experienceEntrySchema = z.object({
@@ -87,6 +92,15 @@ export const languageEntrySchema = z.object({
   proficiency: z.string().max(40),
 });
 
+export const referenceEntrySchema = z.object({
+  id: idSchema,
+  name: z.string().max(120),
+  position: z.string().max(120).default(""),
+  workplace: z.string().max(160).default(""),
+  email: z.string().max(120).default(""),
+  phone: z.string().max(40).default(""),
+});
+
 export const resumeDocumentSchema = z.object({
   version: z.literal(1).default(1),
   personal: personalInfoSchema,
@@ -97,6 +111,7 @@ export const resumeDocumentSchema = z.object({
   projects: z.array(projectEntrySchema).max(20).default([]),
   certifications: z.array(certificationEntrySchema).max(20).default([]),
   languages: z.array(languageEntrySchema).max(15).default([]),
+  references: z.array(referenceEntrySchema).max(10).optional().default([]),
 });
 
 export const resumeTemplateSchema = z.enum(TEMPLATE_IDS);
@@ -147,6 +162,7 @@ export type SkillEntry = z.infer<typeof skillEntrySchema>;
 export type ProjectEntry = z.infer<typeof projectEntrySchema>;
 export type CertificationEntry = z.infer<typeof certificationEntrySchema>;
 export type LanguageEntry = z.infer<typeof languageEntrySchema>;
+export type ReferenceEntry = z.infer<typeof referenceEntrySchema>;
 export type ResumeBullet = { id: string; text: string };
 
 /**
@@ -177,6 +193,11 @@ export function emptyResumeDocument(): ResumeDocument {
       github: "",
       telegram: "",
       photoUrl: "",
+      gender: "",
+      nationality: "",
+      dateOfBirth: "",
+      placeOfBirth: "",
+      strengths: "",
     },
     summary: "",
     experience: [],
@@ -185,6 +206,7 @@ export function emptyResumeDocument(): ResumeDocument {
     projects: [],
     certifications: [],
     languages: [],
+    references: [],
   };
 }
 
@@ -395,6 +417,17 @@ export function newCertificationEntry(): CertificationEntry {
 
 export function newLanguageEntry(): LanguageEntry {
   return { id: newId(), name: "", proficiency: "" };
+}
+
+export function newReferenceEntry(): ReferenceEntry {
+  return {
+    id: newId(),
+    name: "",
+    position: "",
+    workplace: "",
+    email: "",
+    phone: "",
+  };
 }
 
 export function newBullet(): ResumeBullet {

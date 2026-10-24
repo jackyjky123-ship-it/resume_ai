@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import {
   Check,
   CheckCircle2,
+  KeyRound,
   RotateCcw,
   Sparkles,
   X,
@@ -95,7 +96,8 @@ export function GenerateCvDialog({
   onOpenChange,
   aiMode: propAiMode,
 }: GenerateCvDialogProps) {
-  const { apiKey, aiMode: contextAiMode } = useApiKey();
+  const { apiKey, aiMode: contextAiMode, hasKey, openKeySettings, promptApiKey } =
+    useApiKey();
   const { t, isKhmer } = useLanguage();
   const effectiveMode = propAiMode ?? contextAiMode;
   const sectionCopy = getSectionCopy(isKhmer);
@@ -141,6 +143,10 @@ export function GenerateCvDialog({
 
   async function generate() {
     if (generating) return;
+    if (!hasKey) {
+      promptApiKey?.(isKhmer ? "ការបង្កើតគំនិតយោបល់ AI" : "AI CV generation");
+      return;
+    }
     const input = {
       apiKey: apiKey ?? undefined,
       targetRole: targetRole.trim(),
@@ -304,7 +310,32 @@ export function GenerateCvDialog({
 
         {phase === "setup" ? (
           <>
-            {mode === "mock" && (
+            {!hasKey ? (
+              <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+                <KeyRound className="size-4 text-amber-600 dark:text-amber-400" />
+                <AlertTitle className="font-semibold text-amber-800 dark:text-amber-300">
+                  {isKhmer ? "តម្រូវឱ្យមាន Gemini API Key" : "Gemini API Key Required"}
+                </AlertTitle>
+                <AlertDescription className="mt-1 flex flex-col gap-2.5 text-xs">
+                  <span>
+                    {isKhmer
+                      ? "ដើម្បីបង្កើតគំនិតយោបល់ប្រវត្តិរូបជាមួយ Gemini AI អ្នកត្រូវបញ្ចូល API Key ឥតគិតថ្លៃរបស់អ្នកជាមុនសិន។"
+                      : "To generate AI resume suggestions, you must configure your free Google AI Studio API key."}
+                  </span>
+                  <div>
+                    <Button
+                      type="button"
+                      size="xs"
+                      onClick={() => openKeySettings?.()}
+                      className="gap-1.5 font-medium shadow-xs"
+                    >
+                      <KeyRound className="size-3" />
+                      {isKhmer ? "បញ្ចូល API Key ឥឡូវនេះ" : "Add API Key Now"}
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ) : mode === "mock" ? (
               <Alert>
                 <AlertTitle>{isKhmer ? "ទម្រង់សាកល្បង" : "Demo mode"}</AlertTitle>
                 <AlertDescription>
@@ -313,7 +344,7 @@ export function GenerateCvDialog({
                     : "No Gemini API key configured. Suggestions are generated locally using mock heuristics. Add your free Google AI Studio key via the “API Key” button in the editor toolbar to use Gemini."}
                 </AlertDescription>
               </Alert>
-            )}
+            ) : null}
 
             {error && (
               <Alert variant="destructive">
@@ -389,13 +420,24 @@ export function GenerateCvDialog({
               </Button>
               <Button
                 type="button"
-                onClick={() => void generate()}
+                onClick={() => {
+                  if (!hasKey) {
+                    promptApiKey?.(isKhmer ? "ការបង្កើតគំនិតយោបល់ AI" : "AI CV generation");
+                    return;
+                  }
+                  void generate();
+                }}
                 disabled={generating || selected.length === 0}
               >
                 {generating ? (
                   <>
                     <Spinner />
                     {t.aiDialogs.generatingBtn}
+                  </>
+                ) : !hasKey ? (
+                  <>
+                    <KeyRound />
+                    {isKhmer ? "តម្រូវឱ្យមាន API Key" : "API Key Required"}
                   </>
                 ) : (
                   <>

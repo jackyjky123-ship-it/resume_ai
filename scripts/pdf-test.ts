@@ -83,6 +83,11 @@ function samplePopulatedResume(): ResumeDocument {
     github: "https://github.com/alexrivera",
     telegram: "",
     photoUrl: "",
+    gender: "",
+    nationality: "",
+    dateOfBirth: "",
+    placeOfBirth: "",
+    strengths: "",
   };
   doc.summary =
     "Cloud & Distributed Systems Architect with 8+ years designing fault-tolerant microservices, resilient event pipelines, and high-throughput data platforms. Proven track record driving 99.999% availability and optimizing latency by 45%.";
@@ -231,6 +236,12 @@ async function testUnitPdfGeneration() {
   assert(Buffer.isBuffer(designerBuffer), "Designer PDF renders to Buffer");
   assert(designerBuffer.length > 2000, `Designer PDF buffer is non-empty (${designerBuffer.length} bytes)`);
   assert(designerBuffer.subarray(0, 5).toString("ascii") === "%PDF-", "Designer PDF has valid %PDF- magic bytes");
+
+  // Render Navy template
+  const navyBuffer = await renderResumePdf(doc, "navy");
+  assert(Buffer.isBuffer(navyBuffer), "Navy PDF renders to Buffer");
+  assert(navyBuffer.length > 2000, `Navy PDF buffer is non-empty (${navyBuffer.length} bytes)`);
+  assert(navyBuffer.subarray(0, 5).toString("ascii") === "%PDF-", "Navy PDF has valid %PDF- magic bytes");
 
   // Render empty resume document (must not crash)
   const emptyDoc = emptyResumeDocument();

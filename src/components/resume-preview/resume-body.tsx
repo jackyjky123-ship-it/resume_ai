@@ -9,6 +9,7 @@ import { CompactPreview } from "./compact-preview";
 import { ProfessionalPreview } from "./professional-preview";
 import { EditorialPreview } from "./editorial-preview";
 import { DesignerPreview } from "./designer-preview";
+import { NavyPreview } from "./navy-preview";
 
 export function ResumeBody({
   document,
@@ -60,6 +61,10 @@ export function ResumeBody({
 
   if (templateId === "designer") {
     return <DesignerPreview document={document} />;
+  }
+
+  if (templateId === "navy") {
+    return <NavyPreview document={document} />;
   }
 
   if (isBlank) {

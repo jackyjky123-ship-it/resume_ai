@@ -199,6 +199,11 @@ function parseHeader(lines: string[], fullText: string) {
     github: clip(github, 200),
     telegram: clip(telegram, 200),
     photoUrl: "",
+    gender: "",
+    nationality: "",
+    dateOfBirth: "",
+    placeOfBirth: "",
+    strengths: "",
   };
 }
 
@@ -831,26 +836,46 @@ export function generateMockSuggestions({
     const name = document.personal.fullName.trim();
     const parts: string[] = [];
 
-    if (name && role) {
-      parts.push(
-        `${name} is ${articleFor(role)} ${role}${company ? ` at ${company}` : ""}.`
+    const isServiceRole =
+      /cashier|barista|service|retail|waiter|waitress|clerk|receptionist|crew|customer/i.test(
+        targetRole
       );
-    } else if (name) {
-      parts.push(`${name} is targeting ${targetRole} roles.`);
-    } else if (role) {
+
+    if (isServiceRole) {
+      if (name) {
+        parts.push(
+          `${name} is a friendly, dependable, and approachable professional dedicated to delivering welcoming service as ${articleFor(targetRole)} ${targetRole}.`
+        );
+      } else {
+        parts.push(
+          `Friendly, dependable, and approachable professional dedicated to delivering welcoming service as ${articleFor(targetRole)} ${targetRole}.`
+        );
+      }
       parts.push(
-        `Professional with experience as ${articleFor(role)} ${role}${company ? ` at ${company}` : ""}.`
+        "Brings strong communication skills, punctuality, and attentive focus to collaborative, fast-paced team environments."
       );
     } else {
-      parts.push(`Professional targeting ${targetRole} roles.`);
-    }
+      if (name && role) {
+        parts.push(
+          `${name} is ${articleFor(role)} ${role}${company ? ` at ${company}` : ""}.`
+        );
+      } else if (name) {
+        parts.push(`${name} is targeting ${targetRole} roles.`);
+      } else if (role) {
+        parts.push(
+          `Professional with experience as ${articleFor(role)} ${role}${company ? ` at ${company}` : ""}.`
+        );
+      } else {
+        parts.push(`Professional targeting ${targetRole} roles.`);
+      }
 
-    if (strengths.length > 0) {
-      parts.push(`Core strengths include ${joinEnglish(strengths)}.`);
-    }
+      if (strengths.length > 0) {
+        parts.push(`Core strengths include ${joinEnglish(strengths)}.`);
+      }
 
-    if (role && role.toLowerCase() !== targetRole.toLowerCase()) {
-      parts.push(`Now seeking ${targetRole} opportunities.`);
+      if (role && role.toLowerCase() !== targetRole.toLowerCase()) {
+        parts.push(`Now seeking ${targetRole} opportunities.`);
+      }
     }
 
     summary = {
