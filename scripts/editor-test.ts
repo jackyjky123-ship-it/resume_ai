@@ -1,8 +1,9 @@
 // Phase 4 editor smoke test — needs the app running on :3000 (npm start).
 // Run with:  npx tsx scripts/editor-test.ts
 // Covers: ResumeDocument schema guards, persistence + ownership at the Prisma
-// layer, and the protected editor route (own resume renders, cross-user and
-// anonymous access do not). Cleans up its test users afterwards.
+// layer, the protected editor route (own resume renders, cross-user and
+// anonymous access do not), and the PDF export route (owner download, cross-user
+// 404, anonymous 401). Cleans up its test users afterwards.
 /* eslint-disable no-console */
 import { config as loadEnv } from "dotenv";
 
@@ -17,6 +18,7 @@ import {
   newExperienceEntry,
   newLanguageEntry,
   newProjectEntry,
+  newReferenceEntry,
   newSkillEntry,
   parseResumeDocument,
   resumeDocumentSchema,
@@ -119,6 +121,17 @@ async function main() {
     `filledSectionsOf reports ${sections.join(",")}`
   );
 
+  // Added after the section computation check so the PDF route covers references.
+  doc.references = [
+    {
+      ...newReferenceEntry(),
+      name: "Dara Sok",
+      position: "Engineering Manager",
+      workplace: "Ridgeview Code Lab",
+      email: "dara@example.com",
+    },
+  ];
+
   console.log("\nPersistence + ownership");
   const stamp = Date.now();
   const email = `phase4-${stamp}@example.com`;
@@ -210,6 +223,37 @@ async function main() {
     anonEditor.status >= 300 && anonEditor.status < 400,
     `anonymous editor access redirects (status ${anonEditor.status})`
   );
+
+  console.log("\nPDF export route");
+  const ownPdf = await fetch(`${BASE}/api/resumes/${resume.id}/pdf`, {
+    headers: { cookie: jar.header },
+  });
+  const ownPdfBytes = Buffer.from(await ownPdf.arrayBuffer());
+  assert(ownPdf.ok, `own PDF export succeeds (${ownPdf.status})`);
+  assert(
+    ownPdf.headers.get("content-type")?.startsWith("application/pdf") ?? false,
+    `PDF response has the PDF content type (${ownPdf.headers.get("content-type")})`
+  );
+  assert(
+    ownPdfBytes.subarray(0, 5).toString("latin1") === "%PDF-",
+    "PDF response begins with the %PDF- signature"
+  );
+  assert(
+    ownPdf.headers.get("content-disposition")?.includes("attachment") ?? false,
+    "PDF response is a download attachment"
+  );
+  assert(
+    ownPdfBytes.length > 1_000,
+    `PDF response is non-trivial (${ownPdfBytes.length} bytes)`
+  );
+
+  const crossPdf = await fetch(`${BASE}/api/resumes/${otherResume.id}/pdf`, {
+    headers: { cookie: jar.header },
+  });
+  assert(crossPdf.status === 404, `cross-user PDF export returns 404 (status ${crossPdf.status})`);
+
+  const anonPdf = await fetch(`${BASE}/api/resumes/${resume.id}/pdf`, { redirect: "manual" });
+  assert(anonPdf.status === 401, `anonymous PDF export returns 401 (status ${anonPdf.status})`);
 
   console.log("\nCleanup");
   console.log("  (test rows are removed in the finally block)");

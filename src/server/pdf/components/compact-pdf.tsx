@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: "row",
     gap: 16,
+    flexGrow: 1,
   },
   sidebar: {
     width: "32%",
@@ -192,6 +193,14 @@ export function CompactPdf({ document }: TemplatePdfProps) {
     (c) => hasText(c.name) || hasText(c.issuer)
   );
   const languages = document.languages.filter((l) => hasText(l.name));
+  const references = (document.references ?? []).filter(
+    (r) =>
+      hasText(r.name) ||
+      hasText(r.position) ||
+      hasText(r.workplace) ||
+      hasText(r.email) ||
+      hasText(r.phone)
+  );
 
   return (
     <Page size="A4" style={styles.page}>
@@ -296,9 +305,32 @@ export function CompactPdf({ document }: TemplatePdfProps) {
               ))}
             </View>
           )}
+          {/* References in sidebar */}
+          {references.length > 0 && (
+            <View style={styles.sideSection}>
+              <Text style={styles.sideHeading}>References</Text>
+              {references.map((entry) => (
+                <View key={entry.id} style={styles.sideItem} wrap={false}>
+                  <Text style={styles.sideItemTitle}>
+                    {[entry.name.trim(), entry.position.trim()]
+                      .filter(Boolean)
+                      .join(" — ")}
+                  </Text>
+                  {[entry.workplace, entry.email, entry.phone]
+                    .filter(hasText)
+                    .length > 0 && (
+                    <Text style={styles.sideItemSubtitle}>
+                      {[entry.workplace, entry.email, entry.phone]
+                        .filter(hasText)
+                        .map((value) => value.trim())
+                        .join(" · ")}
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
         </View>
-
-        {/* Right Main Column (68%) */}
         <View style={styles.main}>
           {/* Summary */}
           {hasText(document.summary) && (
@@ -320,7 +352,10 @@ export function CompactPdf({ document }: TemplatePdfProps) {
                       <Text style={styles.entryTitle}>
                         {entry.role.trim() || "Role"}
                         {hasText(entry.company) && (
-                          <Text style={styles.entrySubtitle}> · {entry.company.trim()}</Text>
+                          <Text style={styles.entrySubtitle}>
+                            {"\u00A0· "}
+                            {entry.company.trim()}
+                          </Text>
                         )}
                       </Text>
                       <Text style={styles.entryDate}>
@@ -358,7 +393,10 @@ export function CompactPdf({ document }: TemplatePdfProps) {
                       <Text style={styles.entryTitle}>
                         {entry.name.trim() || "Project"}
                         {hasText(entry.url) && (
-                          <Text style={styles.entrySubtitle}> — {entry.url.trim()}</Text>
+                          <Text style={styles.entrySubtitle}>
+                            {"\u00A0— "}
+                            {entry.url.trim()}
+                          </Text>
                         )}
                       </Text>
                     </View>

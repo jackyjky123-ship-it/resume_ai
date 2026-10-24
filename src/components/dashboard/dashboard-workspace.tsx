@@ -370,7 +370,7 @@ export function DashboardWorkspace({
                 }`}
               />
               <span className="font-mono text-xs font-bold text-foreground">
-                {hasKey ? "Gemini 2.5 Flash" : isKhmer ? "AI សាកល្បង" : "Local Mock"}
+                {hasKey ? "Gemini Flash" : isKhmer ? "AI សាកល្បង" : "Local Mock"}
               </span>
             </div>
             <div className="mt-1">

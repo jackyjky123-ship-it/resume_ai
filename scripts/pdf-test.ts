@@ -30,6 +30,7 @@ import {
   newProjectEntry,
   newCertificationEntry,
   newLanguageEntry,
+  newReferenceEntry,
   type ResumeDocument,
 } from "../src/lib/validations/resume";
 
@@ -163,6 +164,14 @@ function samplePopulatedResume(): ResumeDocument {
   l2.name = "Spanish";
   l2.proficiency = "Fluent";
   doc.languages = [l1, l2];
+
+  const r1 = newReferenceEntry();
+  r1.name = "Morgan Lee";
+  r1.position = "Director of Platform Engineering";
+  r1.workplace = "Stripe / Infrastructure";
+  r1.email = "morgan.lee@example.com";
+  r1.phone = "206-555-0142";
+  doc.references = [r1];
 
   return doc;
 }

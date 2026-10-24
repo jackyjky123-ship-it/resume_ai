@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
 
 export function NavyPdf({ document }: TemplatePdfProps) {
   const { personal } = document;
-  const fullName = personal.fullName.trim() || "Reth Sreyroth";
+  const fullName = personal.fullName.trim() || "Your Name";
   const initials = getInitials(personal.fullName);
   const hasPhoto = hasText(personal.photoUrl);
 
@@ -250,7 +250,8 @@ export function NavyPdf({ document }: TemplatePdfProps) {
       hasText(entry.name) ||
       hasText(entry.position) ||
       hasText(entry.workplace) ||
-      hasText(entry.email)
+      hasText(entry.email) ||
+      hasText(entry.phone)
   );
   const certifications = document.certifications.filter(
     (entry) => hasText(entry.name) || hasText(entry.issuer)
@@ -278,11 +279,7 @@ export function NavyPdf({ document }: TemplatePdfProps) {
         .split(/[\n,;]+/)
         .map((s) => s.trim())
         .filter(Boolean)
-    : [
-        "Fast learner",
-        "Responsible and hardworking",
-        "Good teamwork skills",
-      ];
+    : [];
 
   const half = Math.ceil(skills.length / 2);
   const skillsCol1 = skills.slice(0, half);
@@ -530,7 +527,6 @@ export function NavyPdf({ document }: TemplatePdfProps) {
             </View>
             <View style={styles.skillsGrid}>
               <View style={styles.skillsCol}>
-                <Text style={styles.skillsColTitle}>Programming Languages</Text>
                 {skillsCol1.map((skill) => (
                   <View key={skill.id} style={styles.mainBulletRow}>
                     <Text style={styles.mainBulletDot}>•</Text>
@@ -541,7 +537,6 @@ export function NavyPdf({ document }: TemplatePdfProps) {
 
               {skillsCol2.length > 0 && (
                 <View style={styles.skillsCol}>
-                  <Text style={styles.skillsColTitle}>Web Development</Text>
                   {skillsCol2.map((skill) => (
                     <View key={skill.id} style={styles.mainBulletRow}>
                       <Text style={styles.mainBulletDot}>•</Text>
@@ -616,57 +611,62 @@ export function NavyPdf({ document }: TemplatePdfProps) {
           </View>
         )}
 
-        {/* REFERENCES SECTION */}
-        {(references.length > 0 || certifications.length > 0) && (
+        {/* CERTIFICATIONS SECTION */}
+        {certifications.length > 0 && (
           <View style={styles.mainSection}>
             <View style={styles.pillBanner}>
-              <Text style={styles.pillText}>
-                {references.length > 0 ? "REFERENCES" : "CERTIFICATIONS"}
-              </Text>
+              <Text style={styles.pillText}>CERTIFICATIONS</Text>
             </View>
+            {certifications.map((cert) => (
+              <View key={cert.id} style={styles.mainBulletRow}>
+                <Text style={styles.mainBulletDot}>•</Text>
+                <Text style={styles.mainBulletText}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    {cert.name.trim()}
+                  </Text>
+                  {hasText(cert.issuer) && ` — ${cert.issuer.trim()}`}
+                  {hasText(cert.issueDate) && ` (${cert.issueDate.trim()})`}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
 
-            {references.length > 0
-              ? references.map((ref) => (
-                  <View key={ref.id} style={{ marginBottom: 5 }}>
-                    <Text style={styles.itemTitle}>{ref.name.trim()}</Text>
-                    {hasText(ref.position) && (
-                      <Text style={styles.bodyText}>
-                        <Text style={{ fontFamily: "Helvetica-Bold" }}>Position : </Text>
-                        {ref.position.trim()}
-                      </Text>
-                    )}
-                    {hasText(ref.workplace) && (
-                      <Text style={styles.bodyText}>
-                        <Text style={{ fontFamily: "Helvetica-Bold" }}>Workplace : </Text>
-                        {ref.workplace.trim()}
-                      </Text>
-                    )}
-                    {hasText(ref.email) && (
-                      <Text style={styles.bodyText}>
-                        <Text style={{ fontFamily: "Helvetica-Bold" }}>Email : </Text>
-                        {ref.email.trim()}
-                      </Text>
-                    )}
-                    {hasText(ref.phone) && (
-                      <Text style={styles.bodyText}>
-                        <Text style={{ fontFamily: "Helvetica-Bold" }}>Phone : </Text>
-                        {ref.phone.trim()}
-                      </Text>
-                    )}
-                  </View>
-                ))
-              : certifications.map((cert) => (
-                  <View key={cert.id} style={styles.mainBulletRow}>
-                    <Text style={styles.mainBulletDot}>•</Text>
-                    <Text style={styles.mainBulletText}>
-                      <Text style={{ fontFamily: "Helvetica-Bold" }}>
-                        {cert.name.trim()}
-                      </Text>
-                      {hasText(cert.issuer) && ` — ${cert.issuer.trim()}`}
-                      {hasText(cert.issueDate) && ` (${cert.issueDate.trim()})`}
-                    </Text>
-                  </View>
-                ))}
+        {/* REFERENCES SECTION */}
+        {references.length > 0 && (
+          <View style={styles.mainSection}>
+            <View style={styles.pillBanner}>
+              <Text style={styles.pillText}>REFERENCES</Text>
+            </View>
+            {references.map((ref) => (
+              <View key={ref.id} style={{ marginBottom: 5 }}>
+                <Text style={styles.itemTitle}>{ref.name.trim()}</Text>
+                {hasText(ref.position) && (
+                  <Text style={styles.bodyText}>
+                    <Text style={{ fontFamily: "Helvetica-Bold" }}>Position : </Text>
+                    {ref.position.trim()}
+                  </Text>
+                )}
+                {hasText(ref.workplace) && (
+                  <Text style={styles.bodyText}>
+                    <Text style={{ fontFamily: "Helvetica-Bold" }}>Workplace : </Text>
+                    {ref.workplace.trim()}
+                  </Text>
+                )}
+                {hasText(ref.email) && (
+                  <Text style={styles.bodyText}>
+                    <Text style={{ fontFamily: "Helvetica-Bold" }}>Email : </Text>
+                    {ref.email.trim()}
+                  </Text>
+                )}
+                {hasText(ref.phone) && (
+                  <Text style={styles.bodyText}>
+                    <Text style={{ fontFamily: "Helvetica-Bold" }}>Phone : </Text>
+                    {ref.phone.trim()}
+                  </Text>
+                )}
+              </View>
+            ))}
           </View>
         )}
       </View>

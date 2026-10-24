@@ -496,7 +496,7 @@ export default function Home() {
                   </div>
                   <p className="mt-2 text-sm text-neutral-600 dark:text-[#F0EDE5]/75 leading-relaxed">
                     {t.landing.timelineSteps[1]?.desc ??
-                      "Grounded Gemini 2.5 suggestions that sharpen bullet points without hallucinating unearned accomplishments."}
+                      "Grounded Gemini suggestions that sharpen bullet points without hallucinating unearned accomplishments."}
                   </p>
                   <div className="mt-4 flex items-center gap-3">
                     <div className="size-16 sm:size-20 rounded-xl border border-neutral-200 bg-[#003633] p-2 flex flex-col justify-center items-center shadow-md shrink-0">
@@ -505,7 +505,7 @@ export default function Home() {
                     </div>
                     <div className="text-xs text-neutral-600 dark:text-[#F0EDE5]/60">
                       <span className="font-semibold text-neutral-900 dark:text-white block">
-                        Google Gemini 2.5 Flash
+                        Google Gemini
                       </span>
                       <span>3x Impact Score · Side-by-side diff review</span>
                     </div>
@@ -574,7 +574,7 @@ export default function Home() {
                 </h3>
                 <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-neutral-600 dark:text-[#F0EDE5]/75">
                   {t.landing.features[0]?.body ??
-                    "Grounded Gemini 2.5 recommendations that respect your real career without fabricating accomplishments."}
+                    "Grounded Gemini recommendations that respect your real career without fabricating accomplishments."}
                 </p>
               </div>
               <p className="mt-6 font-mono text-[11px] font-semibold text-[#004643] dark:text-[#dda15e]">

@@ -18,6 +18,8 @@ const PAGE_WIDTH = 794;
 const PAGE_HEIGHT = 1123;
 const TOP_MARGIN_SUBSEQUENT = 48;
 const BOTTOM_MARGIN = 48;
+const COMPACT_DIVIDER_LEFT = 40 + (PAGE_WIDTH - 80) * 0.33;
+const DESIGNER_DIVIDER_LEFT = 40 + (PAGE_WIDTH - 80) * 0.36;
 
 export interface PageSlice {
   pageNumber: number;
@@ -261,7 +263,7 @@ export function PagedResumePreview({
         <article
           className={cn(
             "flex w-[794px] flex-col text-[13px] leading-[1.55]",
-            templateId === "navy" ? "bg-[#FAF9F6] p-0" : "bg-white px-10 py-12"
+            templateId === "navy" ? "bg-transparent p-0" : "bg-white px-10 py-12"
           )}
         >
           <ResumeBody document={document} templateId={templateId} />
@@ -398,7 +400,16 @@ export function PagedResumePreview({
                   {/* A4 Canvas Sheet */}
                   <div
                     className="relative w-[794px] h-[1123px] overflow-hidden rounded-xs bg-white shadow-[0_12px_40px_-16px_rgba(0,0,0,0.18),0_0_0_1px_rgba(0,0,0,0.06)]"
-                    style={{ width: PAGE_WIDTH, height: PAGE_HEIGHT }}
+                    style={{
+                      width: PAGE_WIDTH,
+                      height: PAGE_HEIGHT,
+                      ...(templateId === "navy"
+                        ? {
+                            background:
+                              "linear-gradient(to right, #1E2532 0%, #1E2532 36%, #FAF9F6 36%, #FAF9F6 100%)",
+                          }
+                        : {}),
+                    }}
                   >
                     {/* Viewport Slice with precise overflow clipping */}
                     <div
@@ -419,7 +430,7 @@ export function PagedResumePreview({
                         <article
                           className={cn(
                             "flex w-[794px] flex-col text-[13px] leading-[1.55]",
-                            templateId === "navy" ? "bg-[#FAF9F6] p-0" : "bg-white px-10 py-12"
+                            templateId === "navy" ? "bg-transparent p-0" : "bg-white px-10 py-12"
                           )}
                         >
                           <ResumeBody
@@ -429,6 +440,23 @@ export function PagedResumePreview({
                         </article>
                       </div>
                     </div>
+
+                    {/* Column rule continuation for pages after the first */}
+                    {!isFirstPage &&
+                      (templateId === "compact" || templateId === "designer") && (
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute bottom-12 top-12 w-px"
+                          style={{
+                            left:
+                              templateId === "compact"
+                                ? COMPACT_DIVIDER_LEFT
+                                : DESIGNER_DIVIDER_LEFT,
+                            backgroundColor:
+                              templateId === "compact" ? "#e5e5e5" : "#d4d4d4",
+                          }}
+                        />
+                      )}
                   </div>
 
                   {/* Canva Inter-Page Divider (Rendered between pages) */}

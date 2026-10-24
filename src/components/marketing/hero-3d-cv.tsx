@@ -147,7 +147,7 @@ export function Hero3dCv({
             }}
           >
             <Sparkles size={12} className="text-[#dda15e]" />
-            <span>Gemini 2.5 · Grounded</span>
+            <span>Gemini · Grounded</span>
           </div>
 
           {/* Floating 3D Badge 3: Vector PDF Export (Bottom-Right) */}

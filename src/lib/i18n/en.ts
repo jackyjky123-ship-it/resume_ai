@@ -67,6 +67,8 @@ export const en: Translations = {
     keyRemovedToast: "API key removed. Running in demo mode.",
     keySavedToast: "Gemini API key saved to browser storage.",
     enterKeyError: "Please enter an API key to test.",
+    invalidKeyError:
+      "That key format doesn’t look like a Google AI Studio key (starts with “AQ…” or “AIza…”). Please verify and try again.",
     testPassed:
       "Connected successfully to Google Gemini ({model}). Ready to generate CVs!",
     testPassedToast: "Connection test passed!",
@@ -76,7 +78,7 @@ export const en: Translations = {
     stepsKicker: "Step-by-step Setup (Takes ~60 seconds)",
     step1Title: "Open Google AI Studio",
     step1Desc:
-      "Google AI Studio provides free Gemini 2.5 Flash access. Click the link below and sign in with any standard Google account.",
+      "Google AI Studio provides free Gemini Flash access. Click the link below and sign in with any standard Google account.",
     step1Button: "Open AI Studio",
     step2Title: "Create an API Key",
     step2Desc:
@@ -96,7 +98,7 @@ export const en: Translations = {
     faqTitle: "Frequently Asked Questions",
     faq1Q: "Is Google AI Studio really free?",
     faq1A:
-      "Yes. Google provides free tier quotas (up to 15 requests per minute) for Gemini 2.5 Flash without entering any credit card information.",
+      "Yes. Google provides free tier quotas (up to 15 requests per minute) for Gemini Flash without entering any credit card information.",
     faq2Q: "Where is my key stored?",
     faq2A:
       "Your key is saved only in your device’s browser storage (localStorage). We never save or log your API key on our servers or databases.",
@@ -281,7 +283,7 @@ export const en: Translations = {
         step: "Step 02",
         title: "Refine With AI Career Copilot",
         desc: "Our non-hallucinatory AI analyzes your bullet points, suggesting punchy action verbs and measurable results. You accept what fits, reject what doesn't.",
-        tag: "Google Gemini 2.5 Flash",
+        tag: "Google Gemini",
         metric: "3x Impact Score",
       },
       {

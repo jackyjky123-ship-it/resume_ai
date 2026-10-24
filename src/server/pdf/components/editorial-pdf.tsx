@@ -36,25 +36,19 @@ const styles = StyleSheet.create({
   nameContainer: {
     marginBottom: 8,
   },
-  nameRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "baseline",
-  },
-  nameFirst: {
+  nameText: {
     fontFamily: "Helvetica-Bold",
     fontSize: 20,
+    lineHeight: 1.2,
     color: "#0f172a",
-    marginRight: 5,
   },
   nameLast: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 20,
     color: ACCENT_COLOR,
   },
   roleApplied: {
     fontFamily: "Helvetica-Bold",
     fontSize: 8,
+    lineHeight: 1.2,
     color: "#64748b",
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -321,6 +315,14 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
     (c) => hasText(c.name) || hasText(c.issuer)
   );
   const languages = document.languages.filter((l) => hasText(l.name));
+  const references = (document.references ?? []).filter(
+    (r) =>
+      hasText(r.name) ||
+      hasText(r.position) ||
+      hasText(r.workplace) ||
+      hasText(r.email) ||
+      hasText(r.phone)
+  );
 
   // Split skills into two columns for the highlight box
   const half = Math.ceil(skills.length / 2);
@@ -490,10 +492,12 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
         <View style={styles.main}>
           {/* Two-tone Name & Role */}
           <View style={styles.nameContainer}>
-            <View style={styles.nameRow}>
-              <Text style={styles.nameFirst}>{first}</Text>
-              {last ? <Text style={styles.nameLast}>{last}</Text> : null}
-            </View>
+            <Text style={styles.nameText}>
+              {first}
+              {last ? (
+                <Text style={styles.nameLast}> {last}</Text>
+              ) : null}
+            </Text>
             {hasText(document.personal.roleApplied) && (
               <Text style={styles.roleApplied}>
                 {document.personal.roleApplied.trim()}
@@ -624,6 +628,31 @@ export function EditorialPdf({ document }: TemplatePdfProps) {
                   {hasText(entry.issuer) ? `: ${entry.issuer.trim()}` : ""}
                   {hasText(entry.issueDate) ? ` - ${entry.issueDate.trim()}` : ""}
                 </Text>
+              ))}
+            </View>
+          )}
+          {/* References Section */}
+          {references.length > 0 && (
+            <View style={{ marginBottom: 8 }}>
+              <Text style={styles.mainHeading}>References</Text>
+              {references.map((entry) => (
+                <View key={entry.id} style={styles.entry} wrap={false}>
+                  <Text style={styles.eduDegree}>
+                    {[entry.name.trim(), entry.position.trim()]
+                      .filter(Boolean)
+                      .join(" — ")}
+                  </Text>
+                  {[entry.workplace, entry.email, entry.phone]
+                    .filter(hasText)
+                    .length > 0 && (
+                    <Text style={styles.eduDetails}>
+                      {[entry.workplace, entry.email, entry.phone]
+                        .filter(hasText)
+                        .map((value) => value.trim())
+                        .join("  ·  ")}
+                    </Text>
+                  )}
+                </View>
               ))}
             </View>
           )}

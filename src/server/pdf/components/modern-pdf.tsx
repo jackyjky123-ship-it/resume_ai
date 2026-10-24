@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   fullName: {
     fontFamily: "Helvetica-Bold",
     fontSize: 23,
+    lineHeight: 1.15,
     color: "#0f172a",
     letterSpacing: -0.3,
     marginBottom: 2,
@@ -64,6 +65,7 @@ const styles = StyleSheet.create({
   roleApplied: {
     fontFamily: "Helvetica-Bold",
     fontSize: 10,
+    lineHeight: 1.3,
     color: ACCENT_COLOR,
     marginBottom: 4,
   },
@@ -195,6 +197,14 @@ export function ModernPdf({ document }: TemplatePdfProps) {
     (c) => hasText(c.name) || hasText(c.issuer)
   );
   const languages = document.languages.filter((l) => hasText(l.name));
+  const references = (document.references ?? []).filter(
+    (r) =>
+      hasText(r.name) ||
+      hasText(r.position) ||
+      hasText(r.workplace) ||
+      hasText(r.email) ||
+      hasText(r.phone)
+  );
 
   return (
     <Page size="A4" style={styles.page}>
@@ -261,7 +271,10 @@ export function ModernPdf({ document }: TemplatePdfProps) {
                   <Text style={styles.entryRole}>
                     {entry.role.trim() || "Role"}
                     {hasText(entry.company) && (
-                      <Text style={styles.entryCompany}> · {entry.company.trim()}</Text>
+                      <Text style={styles.entryCompany}>
+                        {"\u00A0· "}
+                        {entry.company.trim()}
+                      </Text>
                     )}
                   </Text>
                   <Text style={styles.entryDate}>
@@ -301,7 +314,10 @@ export function ModernPdf({ document }: TemplatePdfProps) {
                   {[entry.degree.trim(), entry.field.trim()].filter(Boolean).join(", ") ||
                     "Degree"}
                   {hasText(entry.school) && (
-                    <Text style={styles.entryCompany}> · {entry.school.trim()}</Text>
+                    <Text style={styles.entryCompany}>
+                      {"\u00A0· "}
+                      {entry.school.trim()}
+                    </Text>
                   )}
                 </Text>
                 <Text style={styles.entryDate}>
@@ -348,7 +364,10 @@ export function ModernPdf({ document }: TemplatePdfProps) {
                   <Text style={styles.entryRole}>
                     {entry.name.trim() || "Project"}
                     {hasText(entry.url) && (
-                      <Text style={styles.entryCompany}> — {entry.url.trim()}</Text>
+                      <Text style={styles.entryCompany}>
+                        {"\u00A0— "}
+                        {entry.url.trim()}
+                      </Text>
                     )}
                   </Text>
                 </View>
@@ -383,7 +402,10 @@ export function ModernPdf({ document }: TemplatePdfProps) {
               <Text style={styles.entryRole}>
                 {entry.name.trim() || "Certification"}
                 {hasText(entry.issuer) && (
-                  <Text style={styles.entryCompany}> · {entry.issuer.trim()}</Text>
+                  <Text style={styles.entryCompany}>
+                    {"\u00A0· "}
+                    {entry.issuer.trim()}
+                  </Text>
                 )}
               </Text>
               <Text style={styles.entryDate}>{entry.issueDate.trim()}</Text>
@@ -405,6 +427,34 @@ export function ModernPdf({ document }: TemplatePdfProps) {
               .filter(Boolean)
               .join("  ·  ")}
           </Text>
+        </View>
+      )}
+      {/* References */}
+      {references.length > 0 && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeadingRow}>
+            <View style={styles.sectionAccentBar} />
+            <Text style={styles.sectionHeading}>References</Text>
+          </View>
+          {references.map((entry) => (
+            <View key={entry.id} style={styles.entry} wrap={false}>
+              <Text style={styles.entryRole}>
+                {[entry.name.trim(), entry.position.trim()]
+                  .filter(Boolean)
+                  .join(" — ")}
+              </Text>
+              {[entry.workplace, entry.email, entry.phone]
+                .filter(hasText)
+                .length > 0 && (
+                <Text style={styles.entryLocation}>
+                  {[entry.workplace, entry.email, entry.phone]
+                    .filter(hasText)
+                    .map((value) => value.trim())
+                    .join("  ·  ")}
+                </Text>
+              )}
+            </View>
+          ))}
         </View>
       )}
     </Page>

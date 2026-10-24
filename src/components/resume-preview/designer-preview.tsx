@@ -46,6 +46,14 @@ export function DesignerPreview({ document }: { document: ResumeDocument }) {
       entry.bullets.some((b) => hasText(b.text))
   );
   const languages = document.languages.filter((entry) => hasText(entry.name));
+  const references = (document.references ?? []).filter(
+    (entry) =>
+      hasText(entry.name) ||
+      hasText(entry.position) ||
+      hasText(entry.workplace) ||
+      hasText(entry.email) ||
+      hasText(entry.phone)
+  );
 
   const hasAnyContact =
     hasText(personal.phone) ||
@@ -65,7 +73,7 @@ export function DesignerPreview({ document }: { document: ResumeDocument }) {
     : "";
 
   return (
-    <div className="font-sans text-neutral-800">
+    <div className="flex min-h-[1027px] flex-col font-sans text-neutral-800">
       {/* Top Header */}
       <header data-page-break="item" className="mb-5 flex items-center border-b border-neutral-300 pb-5">
         {/* Profile Photo */}
@@ -98,7 +106,7 @@ export function DesignerPreview({ document }: { document: ResumeDocument }) {
       </header>
 
       {/* Main Body with Vertical Divider */}
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Left Column (36%) */}
         <aside className="w-[36%] shrink-0 border-r border-neutral-300 pr-5 flex flex-col gap-4">
           {/* Contact Section */}
@@ -311,6 +319,34 @@ export function DesignerPreview({ document }: { document: ResumeDocument }) {
                   );
                 })}
               </ul>
+            </section>
+          )}
+
+          {/* References Section */}
+          {references.length > 0 && (
+            <section>
+              <SectionHeading>{isKhmer ? "អ្នកយោង" : "R E F E R E N C E S :"}</SectionHeading>
+              <div className="flex flex-col gap-2 text-[11px] leading-snug">
+                {references.map((entry) => (
+                  <div key={entry.id} data-page-break="item">
+                    <p className="font-bold text-neutral-900">
+                      {[entry.name.trim(), entry.position.trim()]
+                        .filter(Boolean)
+                        .join(" — ")}
+                    </p>
+                    {[entry.workplace, entry.email, entry.phone]
+                      .filter(hasText)
+                      .length > 0 && (
+                      <p className="text-neutral-600">
+                        {[entry.workplace, entry.email, entry.phone]
+                          .filter(hasText)
+                          .map((value) => value.trim())
+                          .join(" | ")}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </section>
           )}
 

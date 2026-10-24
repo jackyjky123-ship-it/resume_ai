@@ -40,9 +40,17 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
     (entry) => hasText(entry.name) || hasText(entry.issuer)
   );
   const languages = document.languages.filter((entry) => hasText(entry.name));
+  const references = (document.references ?? []).filter(
+    (entry) =>
+      hasText(entry.name) ||
+      hasText(entry.position) ||
+      hasText(entry.workplace) ||
+      hasText(entry.email) ||
+      hasText(entry.phone)
+  );
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex min-h-[1027px] flex-col gap-5">
       <header data-page-break="item" className="text-center">
         {hasText(document.personal.photoUrl) && (
           <div className="mx-auto mb-3 size-20 overflow-hidden rounded-full border-2 border-neutral-200 shadow-sm">
@@ -236,6 +244,33 @@ export function ClassicPreview({ document }: { document: ResumeDocument }) {
               .filter(Boolean)
               .join("  ·  ")}
           </p>
+        </section>
+      )}
+
+      {references.length > 0 && (
+        <section>
+          <SectionHeading>{isKhmer ? "អ្នកយោង" : "References"}</SectionHeading>
+          <ul className="flex flex-col gap-2">
+            {references.map((entry) => (
+              <li key={entry.id} data-page-break="item">
+                <p className="font-semibold text-neutral-900">
+                  {[entry.name.trim(), entry.position.trim()]
+                    .filter(Boolean)
+                    .join(" — ")}
+                </p>
+                {[entry.workplace, entry.email, entry.phone]
+                  .filter(hasText)
+                  .length > 0 && (
+                  <p className="text-[12px] text-neutral-600">
+                    {[entry.workplace, entry.email, entry.phone]
+                      .filter(hasText)
+                      .map((value) => value.trim())
+                      .join("  ·  ")}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </div>

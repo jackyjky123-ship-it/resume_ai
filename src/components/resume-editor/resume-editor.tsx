@@ -225,7 +225,8 @@ export function ResumeEditor({
     try {
       setIsDownloadingPdf(true);
       // Ensure any pending changes are saved before downloading
-      await saveNow();
+      const saved = await saveNow();
+      if (!saved) return;
 
       const response = await fetch(`/api/resumes/${resume.id}/pdf`);
       if (!response.ok) {

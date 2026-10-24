@@ -33,9 +33,11 @@ export function useResumeAutosave(
   const [status, setStatus] = useState<SaveStatus>("saved");
 
   const dirtyRef = useRef(false);
-  const inFlightRef = useRef(false);
-  const queuedRef = useRef(false);
   const timerRef = useRef<number | null>(null);
+  // Saves are serialized through this chain so a queued edit can never race an
+  // in-flight request and a caller awaiting saveNow() knows the latest snapshot
+  // was persisted.
+  const saveChainRef = useRef<Promise<boolean>>(Promise.resolve(true));
 
   const snapshot = useCallback(() => {
     const parsed = resumeEditorSchema.safeParse(form.getValues());
@@ -44,12 +46,7 @@ export function useResumeAutosave(
 
   const performSaveRef = useRef<() => Promise<boolean>>(async () => false);
 
-  const performSave = useCallback(async (): Promise<boolean> => {
-    if (inFlightRef.current) {
-      queuedRef.current = true;
-      return true;
-    }
-
+  const runSave = useCallback(async (): Promise<boolean> => {
     const parsed = resumeEditorSchema.safeParse(form.getValues());
     if (!parsed.success) {
       await form.trigger();
@@ -58,7 +55,6 @@ export function useResumeAutosave(
     }
 
     const savedSnapshot = JSON.stringify(parsed.data);
-    inFlightRef.current = true;
     setStatus("saving");
 
     let result: Awaited<ReturnType<typeof saveResumeAction>>;
@@ -66,12 +62,9 @@ export function useResumeAutosave(
       result = await saveResumeAction({ resumeId, ...parsed.data });
     } catch {
       // Network/server failures must not leave the editor stuck on "Saving…".
-      inFlightRef.current = false;
       setStatus("error");
       return false;
     }
-
-    inFlightRef.current = false;
 
     if (!result.ok) {
       setStatus("error");
@@ -86,13 +79,15 @@ export function useResumeAutosave(
       setStatus("dirty");
     }
 
-    if (queuedRef.current) {
-      queuedRef.current = false;
-      void performSaveRef.current();
-    }
-
     return true;
   }, [form, resumeId, snapshot]);
+
+  const performSave = useCallback((): Promise<boolean> => {
+    const next = saveChainRef.current.then(runSave, runSave);
+    // Keep the chain healthy even if a save throws unexpectedly.
+    saveChainRef.current = next.catch(() => false);
+    return next;
+  }, [runSave]);
 
   useEffect(() => {
     performSaveRef.current = performSave;
@@ -134,11 +129,25 @@ export function useResumeAutosave(
       timerRef.current = null;
     }
 
-    const result = await performSaveRef.current();
-    if (!result) {
+    let saved = await performSaveRef.current();
+    if (!saved) {
       toast.error("Couldn’t save your changes. Check the highlighted fields and try again.");
+      return false;
     }
-    return result;
+
+    // Edits that landed while the request was in flight mark the form dirty
+    // again. Persist those too (bounded) so callers can navigate away safely.
+    for (let attempt = 0; attempt < 2 && dirtyRef.current; attempt += 1) {
+      saved = await performSaveRef.current();
+      if (!saved) break;
+    }
+
+    if (!saved || dirtyRef.current) {
+      toast.error("Couldn’t save your changes. Check the highlighted fields and try again.");
+      return false;
+    }
+
+    return true;
   }, []);
 
   return {

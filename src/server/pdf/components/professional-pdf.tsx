@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   fullName: {
     fontFamily: "Helvetica-Bold",
     fontSize: 21,
+    lineHeight: 1.15,
     color: "#0f172a",
     letterSpacing: -0.3,
     marginBottom: 2,
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
   roleApplied: {
     fontFamily: "Helvetica-Bold",
     fontSize: 10,
+    lineHeight: 1.3,
     color: ACCENT_COLOR,
     marginBottom: 3,
     letterSpacing: 0.3,
@@ -214,6 +216,14 @@ export function ProfessionalPdf({ document }: TemplatePdfProps) {
     (c) => hasText(c.name) || hasText(c.issuer)
   );
   const languages = document.languages.filter((l) => hasText(l.name));
+  const references = (document.references ?? []).filter(
+    (r) =>
+      hasText(r.name) ||
+      hasText(r.position) ||
+      hasText(r.workplace) ||
+      hasText(r.email) ||
+      hasText(r.phone)
+  );
 
   const hasPhoto = hasText(document.personal.photoUrl);
   const initials = getInitials(document.personal.fullName);
@@ -283,7 +293,10 @@ export function ProfessionalPdf({ document }: TemplatePdfProps) {
                 <View style={{ flexDirection: "row", alignItems: "baseline", flex: 1 }}>
                   <Text style={styles.roleText}>{entry.role.trim() || "Role"}</Text>
                   {hasText(entry.company) && (
-                    <Text style={styles.companyText}> at {entry.company.trim()}</Text>
+                    <Text style={styles.companyText}>
+                      {"\u00A0at "}
+                      {entry.company.trim()}
+                    </Text>
                   )}
                 </View>
                 <Text style={styles.dateLocationText}>
@@ -322,7 +335,10 @@ export function ProfessionalPdf({ document }: TemplatePdfProps) {
                       "Degree"}
                   </Text>
                   {hasText(entry.school) && (
-                    <Text style={styles.companyText}> — {entry.school.trim()}</Text>
+                    <Text style={styles.companyText}>
+                      {"\u00A0— "}
+                      {entry.school.trim()}
+                    </Text>
                   )}
                 </View>
                 <Text style={styles.dateLocationText}>
@@ -406,7 +422,10 @@ export function ProfessionalPdf({ document }: TemplatePdfProps) {
               <View style={{ flexDirection: "row", alignItems: "baseline", flex: 1 }}>
                 <Text style={styles.roleText}>{cert.name.trim()}</Text>
                 {hasText(cert.issuer) && (
-                  <Text style={styles.companyText}> · {cert.issuer.trim()}</Text>
+                  <Text style={styles.companyText}>
+                    {"\u00A0· "}
+                    {cert.issuer.trim()}
+                  </Text>
                 )}
               </View>
               {hasText(cert.issueDate) && (
@@ -426,6 +445,33 @@ export function ProfessionalPdf({ document }: TemplatePdfProps) {
               .map((l) => languageLabel(l.name, l.proficiency))
               .join("   ·   ")}
           </Text>
+        </View>
+      )}
+      {/* References */}
+      {references.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionHeading}>References</Text>
+          {references.map((entry) => (
+            <View key={entry.id} style={styles.entryBlock} wrap={false}>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <Text style={styles.roleText}>
+                  {[entry.name.trim(), entry.position.trim()]
+                    .filter(Boolean)
+                    .join(" — ")}
+                </Text>
+              </View>
+              {[entry.workplace, entry.email, entry.phone]
+                .filter(hasText)
+                .length > 0 && (
+                <Text style={styles.paragraph}>
+                  {[entry.workplace, entry.email, entry.phone]
+                    .filter(hasText)
+                    .map((value) => value.trim())
+                    .join("  ·  ")}
+                </Text>
+              )}
+            </View>
+          ))}
         </View>
       )}
     </Page>

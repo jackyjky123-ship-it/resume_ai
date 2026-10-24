@@ -43,9 +43,17 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
     (entry) => hasText(entry.name) || hasText(entry.issuer)
   );
   const languages = document.languages.filter((entry) => hasText(entry.name));
+  const references = (document.references ?? []).filter(
+    (entry) =>
+      hasText(entry.name) ||
+      hasText(entry.position) ||
+      hasText(entry.workplace) ||
+      hasText(entry.email) ||
+      hasText(entry.phone)
+  );
 
   return (
-    <div className="flex flex-col gap-5 text-slate-800">
+    <div className="flex min-h-[1027px] flex-col gap-5 text-slate-800">
       {/* Modern Header with Brand Accent Line */}
       <header data-page-break="item" className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4 text-left">
         <div className="min-w-0 flex-1">
@@ -261,6 +269,33 @@ export function ModernPreview({ document }: { document: ResumeDocument }) {
               .filter(Boolean)
               .join("  ·  ")}
           </p>
+        </section>
+      )}
+
+      {references.length > 0 && (
+        <section>
+          <SectionHeading>{isKhmer ? "អ្នកយោង" : "References"}</SectionHeading>
+          <ul className="flex flex-col gap-2.5">
+            {references.map((entry) => (
+              <li key={entry.id} data-page-break="item">
+                <p className="font-semibold text-slate-900">
+                  {[entry.name.trim(), entry.position.trim()]
+                    .filter(Boolean)
+                    .join(" — ")}
+                </p>
+                {[entry.workplace, entry.email, entry.phone]
+                  .filter(hasText)
+                  .length > 0 && (
+                  <p className="text-[12px] text-slate-500">
+                    {[entry.workplace, entry.email, entry.phone]
+                      .filter(hasText)
+                      .map((value) => value.trim())
+                      .join("  ·  ")}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </div>

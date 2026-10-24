@@ -6,7 +6,12 @@
 // 4. Sample data generator validity
 // 5. Template metadata and relative time formatting
 // 6. Filename sanitization & PDF utilities
+// 7. PDF photo sanitization (SSRF guards)
+// 8. Resume preview rendering across every template
 /* eslint-disable no-console */
+
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 // Bypass Next.js 'server-only' guard for standalone test scripts
 try {
@@ -28,6 +33,7 @@ import {
   newProjectEntry,
   newCertificationEntry,
   newLanguageEntry,
+  newReferenceEntry,
   newBullet,
   parseResumeDocument,
   resumeDocumentSchema,
@@ -44,9 +50,12 @@ import {
   TEMPLATES,
   TEMPLATE_NAME,
   formatRelativeTime,
+  type TemplateId,
 } from "../src/lib/resume-meta";
 import { filledSectionsOf } from "../src/lib/resume-content";
 import { createSampleResumeDocument } from "../src/lib/sample-data";
+import { LanguageProvider } from "../src/lib/i18n/context";
+import { ResumeBody } from "../src/components/resume-preview/resume-body";
 
 function assert(condition: unknown, label: string): asserts condition {
   if (!condition) {
@@ -257,6 +266,124 @@ function testSampleDataIntegrity() {
   assert(doc1.skills[0].id !== doc2.skills[0].id, "skill IDs are unique across calls");
 }
 
+async function testPdfPhotoSanitization() {
+  console.log("\n8. PDF Photo Sanitization (SSRF guards)");
+
+  // Dynamic import so the 'server-only' cache bypass above is active first.
+  const { resolveSafePhotoDataUrl } = await import("../src/server/pdf/photo");
+
+  assert((await resolveSafePhotoDataUrl("")) === "", "empty photo stays empty");
+
+  const jpeg = "data:image/jpeg;base64,/9j/";
+  assert((await resolveSafePhotoDataUrl(jpeg)) === jpeg, "valid JPEG data URL is preserved");
+
+  assert(
+    (await resolveSafePhotoDataUrl("data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=")) === "",
+    "SVG data URLs are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("data:image/png;base64,/9j/")) === "",
+    "mismatched declared image type is rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("http://example.com/photo.jpg")) === "",
+    "non-HTTPS remote photos are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("ftp://example.com/photo.jpg")) === "",
+    "non-HTTP schemes are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://localhost/photo.jpg")) === "",
+    "localhost remote photos are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://127.0.0.1/photo.jpg")) === "",
+    "loopback IP photos are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://169.254.169.254/latest/meta-data")) === "",
+    "link-local metadata IPs are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://[::1]/photo.jpg")) === "",
+    "IPv6 loopback photos are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://[::127.0.0.1]/photo.jpg")) === "",
+    "IPv4-compatible IPv6 loopback photos are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://[::c0a8:101]/photo.jpg")) === "",
+    "IPv4-compatible private IPv6 photos are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://[2001:db8::1]/photo.jpg")) === "",
+    "IPv6 documentation addresses are rejected"
+  );
+  assert(
+    (await resolveSafePhotoDataUrl("https://[2002:7f00:1::1]/photo.jpg")) === "",
+    "6to4 addresses that embed IPv4 are rejected"
+  );
+}
+
+function renderPreview(document: ResumeDocument, templateId: TemplateId) {
+  return renderToStaticMarkup(
+    React.createElement(
+      LanguageProvider,
+      null,
+      React.createElement(ResumeBody, { document, templateId })
+    )
+  );
+}
+
+function testPreviewRendering() {
+  console.log("\n9. Resume Preview Rendering");
+
+  const doc = emptyResumeDocument();
+  doc.personal.fullName = "Preview Tester";
+  doc.references = [
+    {
+      ...newReferenceEntry(),
+      name: "Dara Sok",
+      position: "Engineering Manager",
+      workplace: "Ridgeview Code Lab",
+    },
+  ];
+
+  for (const templateId of TEMPLATE_IDS) {
+    const html = renderPreview(doc, templateId);
+    assert(html.includes("Preview Tester"), `${templateId} preview renders personal details`);
+    assert(html.includes("Dara Sok"), `${templateId} preview renders references`);
+  }
+
+  const phoneOnly = emptyResumeDocument();
+  phoneOnly.references = [{ ...newReferenceEntry(), phone: "555-0100" }];
+  for (const templateId of TEMPLATE_IDS) {
+    const html = renderPreview(phoneOnly, templateId);
+    assert(html.includes("555-0100"), `${templateId} preview renders phone-only references`);
+  }
+
+  const blankHtml = renderPreview(emptyResumeDocument(), "classic");
+  assert(
+    blankHtml.includes("Your preview starts here."),
+    "blank drafts show the empty-state message"
+  );
+  assert(!blankHtml.includes("Dara Sok"), "blank drafts never render reference data");
+
+  const strengthsOnly = emptyResumeDocument();
+  strengthsOnly.personal.strengths = "Fast learner, Calm under pressure";
+  const navyHtml = renderPreview(strengthsOnly, "navy");
+  assert(
+    navyHtml.includes("Fast learner"),
+    "navy preview renders strengths-only drafts instead of the empty state"
+  );
+  assert(
+    !navyHtml.includes("Your preview starts here."),
+    "strengths-only drafts are not treated as blank"
+  );
+}
+
 async function main() {
   console.log("=== Phase 7 Unit Test Suite ===");
   testResumeDocumentSchema();
@@ -266,6 +393,8 @@ async function main() {
   await testFormattingHelpers();
   testAiSchemas();
   testSampleDataIntegrity();
+  await testPdfPhotoSanitization();
+  testPreviewRendering();
   console.log("\nPASS: All Phase 7 unit tests passed successfully!\n");
 }
 

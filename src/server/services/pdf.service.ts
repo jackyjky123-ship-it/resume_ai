@@ -4,6 +4,7 @@ import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import type { ResumeDocument } from "@/lib/validations/resume";
 import type { TemplateId } from "@/lib/resume-meta";
 import { ResumePdfDocument } from "../pdf/pdf-document";
+import { sanitizeResumePhotoForPdf } from "../pdf/photo";
 
 /**
  * Generates an ASCII/URL-safe download filename for a resume PDF.
@@ -26,8 +27,9 @@ export async function renderResumePdf(
   document: ResumeDocument,
   templateId: TemplateId
 ): Promise<Buffer> {
+  const safeDocument = await sanitizeResumePhotoForPdf(document);
   const element = React.createElement(ResumePdfDocument, {
-    document,
+    document: safeDocument,
     templateId,
   });
 

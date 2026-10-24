@@ -81,6 +81,14 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
     (entry) => hasText(entry.name) || hasText(entry.issuer)
   );
   const languages = document.languages.filter((entry) => hasText(entry.name));
+  const references = (document.references ?? []).filter(
+    (entry) =>
+      hasText(entry.name) ||
+      hasText(entry.position) ||
+      hasText(entry.workplace) ||
+      hasText(entry.email) ||
+      hasText(entry.phone)
+  );
 
   const hasAnyContact =
     hasText(document.personal.location) ||
@@ -92,7 +100,7 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
     hasText(document.personal.telegram);
 
   return (
-    <div className="flex gap-7 text-slate-800">
+    <div className="flex min-h-[1027px] gap-7 text-slate-800">
       {/* Left Sidebar (36% width) */}
       <aside className="flex w-[36%] shrink-0 flex-col gap-5">
 
@@ -111,9 +119,9 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
         </div>
 
         {/* Contact Section */}
-        <section>
-          <SidebarHeading>{isKhmer ? "ទំនាក់ទំនង" : "Contact"}</SidebarHeading>
-          {hasAnyContact ? (
+        {hasAnyContact && (
+          <section>
+            <SidebarHeading>{isKhmer ? "ទំនាក់ទំនង" : "Contact"}</SidebarHeading>
             <div className="flex flex-col gap-2.5 text-[11.5px]">
               {hasText(document.personal.location) && (
                 <div data-page-break="item">
@@ -221,38 +229,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                 </div>
               )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-2.5 text-[11.5px] text-slate-600">
-              <div data-page-break="item">
-                <span className="block font-bold text-slate-950">Address:</span>
-                <span className="text-slate-500 leading-snug">
-                  177 Great Portland Street, London WSW 6PQ
-                </span>
-              </div>
-              <div data-page-break="item">
-                <span className="block font-bold text-slate-950">Phone:</span>
-                <span className="text-slate-500 leading-snug">+44 (0)20 7666 8555</span>
-              </div>
-              <div data-page-break="item">
-                <span className="block font-bold text-slate-950">Email:</span>
-                <span className="text-slate-500 leading-snug">christoper.m@gmail.com</span>
-              </div>
-              <div data-page-break="item">
-                <span className="block font-bold text-slate-950">LinkedIn:</span>
-                <span className="text-slate-500 leading-snug">linkedin.com/christopher.morgan</span>
-              </div>
-              <div data-page-break="item">
-                <span className="block font-bold text-slate-950">Telegram:</span>
-                <span className="text-slate-500 leading-snug">t.me/christopher.morgan</span>
-              </div>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Languages Section */}
-        <section>
-          <SidebarHeading>{isKhmer ? "ភាសា" : "Languages"}</SidebarHeading>
-          {languages.length > 0 ? (
+        {languages.length > 0 && (
+          <section>
+            <SidebarHeading>{isKhmer ? "ភាសា" : "Languages"}</SidebarHeading>
             <div className="flex flex-col gap-1 text-[11.5px] font-medium text-slate-800">
               {languages.map((l) => (
                 <div key={l.id} data-page-break="item">
@@ -261,14 +244,8 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="flex flex-col gap-1 text-[11.5px] font-medium text-slate-600">
-              <div data-page-break="item">Spanish – C2</div>
-              <div data-page-break="item">Chinese – A1</div>
-              <div data-page-break="item">German – A2</div>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Projects / Additional Sidebar Section */}
         {projects.length > 0 && (
@@ -324,41 +301,30 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
           <h1 className="font-display text-[28px] font-black leading-tight tracking-tight text-slate-950 sm:text-[34px]">
             {document.personal.fullName.trim() || (isKhmer ? "ឈ្មោះរបស់អ្នក" : "Your Name")}
           </h1>
-          {hasText(document.personal.roleApplied) ? (
+          {hasText(document.personal.roleApplied) && (
             <p className="mt-1 text-[12px] font-bold uppercase tracking-wider text-slate-600">
               {document.personal.roleApplied.trim()}
-            </p>
-          ) : (
-            <p className="mt-1 text-[12px] font-semibold uppercase tracking-wider text-slate-400">
-              Web Developer
             </p>
           )}
         </div>
 
         {/* Summary Section */}
-        <section data-page-break="item">
-          <MainHeading>{isKhmer ? "សេចក្តីសង្ខេប" : "Summary"}</MainHeading>
-          {hasText(document.summary) ? (
+        {hasText(document.summary) && (
+          <section data-page-break="item">
+            <MainHeading>{isKhmer ? "សេចក្តីសង្ខេប" : "Summary"}</MainHeading>
             <p className="whitespace-pre-line text-[11.5px] leading-relaxed text-slate-700">
               {document.summary.trim()}
             </p>
-          ) : (
-            <p className="whitespace-pre-line text-[11.5px] leading-relaxed text-slate-600">
-              Senior Web Developer specializing in front and back-end development.
-              Experienced with all stages of the development cycle for dynamic web projects.
-              Well-versed in numerous programming languages including HTML5, PHP OOP, JavaScript, CSS, and MySQL.
-              Strong background in project management and customer relations.
-            </p>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Skill Highlights Section (Dashed border box with 2-column bullets) */}
-        <section>
-          <h3 data-page-break="heading" className="mb-2 font-display text-[15px] font-bold tracking-tight text-slate-950">
-            {isKhmer ? "ជំនាញលេចធ្លោ" : "Skill Highlights"}
-          </h3>
-          <div data-page-break="item" className="rounded-md border border-dashed border-slate-400/80 bg-slate-50/50 p-3.5">
-            {skills.length > 0 ? (
+        {skills.length > 0 && (
+          <section>
+            <h3 data-page-break="heading" className="mb-2 font-display text-[15px] font-bold tracking-tight text-slate-950">
+              {isKhmer ? "ជំនាញលេចធ្លោ" : "Skill Highlights"}
+            </h3>
+            <div data-page-break="item" className="rounded-md border border-dashed border-slate-400/80 bg-slate-50/50 p-3.5">
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11.5px] text-slate-800">
                 {skills.map((skill) => (
                   <div key={skill.id} className="flex items-start gap-2 min-w-0">
@@ -367,41 +333,14 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[11.5px] text-slate-700">
-                <div className="flex items-start gap-2">
-                  <span className="font-bold text-slate-950 select-none">•</span>
-                  <span className="font-medium">Project management</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-bold text-slate-950 select-none">•</span>
-                  <span className="font-medium">Creative design</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-bold text-slate-950 select-none">•</span>
-                  <span className="font-medium">Strong decision maker</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-bold text-slate-950 select-none">•</span>
-                  <span className="font-medium">Innovative</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-bold text-slate-950 select-none">•</span>
-                  <span className="font-medium">Complex problem solver</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-bold text-slate-950 select-none">•</span>
-                  <span className="font-medium">Service-focused</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
 
         {/* Experience Section */}
-        <section>
+        {experience.length > 0 && (
+          <section>
           <MainHeading>{isKhmer ? "បទពិសោធន៍ការងារ" : "Experience"}</MainHeading>
-          {experience.length > 0 ? (
             <div className="flex flex-col gap-4">
               {experience.map((entry) => {
                 const bullets = entry.bullets.filter((b) => hasText(b.text));
@@ -445,30 +384,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                 );
               })}
             </div>
-          ) : (
-            <div className="flex flex-col">
-              <div className="text-[12.5px] font-bold text-slate-950">
-                <span>Web Developer</span>
-                <span className="font-normal text-slate-700"> - 09/2020 to 05/2026</span>
-              </div>
-              <div className="mt-0.5 text-[11.5px] font-semibold text-slate-800">
-                Luna Web Design, New York
-              </div>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[11px] leading-relaxed text-slate-700 marker:text-slate-900">
-                <li>Cooperate with designers to create clean interfaces and intuitive interactions.</li>
-                <li>Develop project concepts and maintain optimal workflow.</li>
-                <li>Work with senior developers to manage large, complex design projects for corporate clients.</li>
-                <li>Complete detailed programming and development tasks for front and back-end web applications.</li>
-                <li>Carry out quality assurance tests to discover errors and optimize usability.</li>
-              </ul>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Education Section */}
-        <section>
-          <MainHeading>{isKhmer ? "ការអប់រំ" : "Education"}</MainHeading>
-          {education.length > 0 ? (
+        {education.length > 0 && (
+          <section>
+            <MainHeading>{isKhmer ? "ការអប់រំ" : "Education"}</MainHeading>
             <div className="flex flex-col gap-3">
               {education.map((entry) => {
                 const dates = dateRange(entry.startDate, entry.endDate, false, isKhmer ? "km" : "en");
@@ -507,24 +429,13 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                 );
               })}
             </div>
-          ) : (
-            <div className="flex flex-col text-[12px]">
-              <div className="text-slate-950">
-                <span className="font-medium">Bachelor of Science: </span>
-                <span className="font-bold">Computer Information Systems</span>
-                <span className="font-normal text-slate-600"> - 2014</span>
-              </div>
-              <div className="mt-0.5 text-[11.5px] font-semibold text-slate-800">
-                Columbia University, NY
-              </div>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Certifications Section */}
-        <section>
-          <MainHeading>{isKhmer ? "វិញ្ញាបនបត្រ" : "Certifications"}</MainHeading>
-          {certifications.length > 0 ? (
+        {certifications.length > 0 && (
+          <section>
+            <MainHeading>{isKhmer ? "វិញ្ញាបនបត្រ" : "Certifications"}</MainHeading>
             <div className="flex flex-col gap-2">
               {certifications.map((entry) => (
                 <div
@@ -547,19 +458,41 @@ export function EditorialPreview({ document }: { document: ResumeDocument }) {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="flex flex-col gap-1.5 text-[11.5px] leading-snug text-slate-800">
-              <div>
-                <span>PHP Framework (certificate): </span>
-                <span className="font-bold text-slate-950">Zend, CodeIgniter</span>
-              </div>
-              <div>
-                <span>Programming Languages: </span>
-                <span className="font-bold text-slate-950">JavaScript, SQL, MySQL</span>
-              </div>
+          </section>
+        )}
+
+        {/* References Section */}
+        {references.length > 0 && (
+          <section>
+            <MainHeading>{isKhmer ? "អ្នកយោង" : "References"}</MainHeading>
+            <div className="flex flex-col gap-2">
+              {references.map((entry) => (
+                <div
+                  key={entry.id}
+                  data-page-break="item"
+                  className="text-[11.5px] leading-snug text-slate-800"
+                >
+                  <span className="font-bold text-slate-950">
+                    {[entry.name.trim(), entry.position.trim()]
+                      .filter(Boolean)
+                      .join(" — ")}
+                  </span>
+                  {[entry.workplace, entry.email, entry.phone]
+                    .filter(hasText)
+                    .length > 0 && (
+                    <span className="text-slate-700">
+                      {": "}
+                      {[entry.workplace, entry.email, entry.phone]
+                        .filter(hasText)
+                        .map((value) => value.trim())
+                        .join(" · ")}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
       </main>
     </div>
   );

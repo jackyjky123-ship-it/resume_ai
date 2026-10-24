@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
   // Body Layout
   body: {
     flexDirection: "row",
+    flexGrow: 1,
   },
   leftColumn: {
     width: "36%",
@@ -289,6 +290,14 @@ export function DesignerPdf({ document }: TemplatePdfProps) {
       p.bullets.some((b) => hasText(b.text))
   );
   const languages = document.languages.filter((l) => hasText(l.name));
+  const references = (document.references ?? []).filter(
+    (r) =>
+      hasText(r.name) ||
+      hasText(r.position) ||
+      hasText(r.workplace) ||
+      hasText(r.email) ||
+      hasText(r.phone)
+  );
 
   // Determine confirmation text
   const confirmationText = hasText(document.summary)
@@ -575,6 +584,32 @@ export function DesignerPdf({ document }: TemplatePdfProps) {
                   </View>
                 );
               })}
+            </View>
+          )}
+
+          {/* References Section */}
+          {references.length > 0 && (
+            <View style={styles.mainSection}>
+              <Text style={styles.sectionHeading}>R E F E R E N C E S :</Text>
+              {references.map((entry) => (
+                <View key={entry.id} style={{ marginBottom: 6 }} wrap={false}>
+                  <Text style={styles.expRoleTitle}>
+                    {[entry.name.trim(), entry.position.trim()]
+                      .filter(Boolean)
+                      .join(" — ")}
+                  </Text>
+                  {[entry.workplace, entry.email, entry.phone]
+                    .filter(hasText)
+                    .length > 0 && (
+                    <Text style={styles.confirmationParagraph}>
+                      {[entry.workplace, entry.email, entry.phone]
+                        .filter(hasText)
+                        .map((value) => value.trim())
+                        .join(" | ")}
+                    </Text>
+                  )}
+                </View>
+              ))}
             </View>
           )}
 

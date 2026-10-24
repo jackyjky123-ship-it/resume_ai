@@ -41,31 +41,33 @@ export function ResumeBody({
     (entry) => hasText(entry.name) || hasText(entry.issuer)
   );
   const languages = document.languages.filter((entry) => hasText(entry.name));
+  const references = (document.references ?? []).filter(
+    (entry) =>
+      hasText(entry.name) ||
+      hasText(entry.position) ||
+      hasText(entry.workplace) ||
+      hasText(entry.email) ||
+      hasText(entry.phone)
+  );
 
   const isBlank =
     !hasText(document.personal.fullName) &&
     !hasText(document.personal.roleApplied) &&
     !hasText(document.personal.photoUrl) &&
     contact.length === 0 &&
+    !hasText(document.personal.gender) &&
+    !hasText(document.personal.nationality) &&
+    !hasText(document.personal.dateOfBirth) &&
+    !hasText(document.personal.placeOfBirth) &&
+    !hasText(document.personal.strengths) &&
     !hasText(document.summary) &&
     experience.length === 0 &&
     education.length === 0 &&
     skills.length === 0 &&
     projects.length === 0 &&
     certifications.length === 0 &&
-    languages.length === 0;
-
-  if (templateId === "editorial") {
-    return <EditorialPreview document={document} />;
-  }
-
-  if (templateId === "designer") {
-    return <DesignerPreview document={document} />;
-  }
-
-  if (templateId === "navy") {
-    return <NavyPreview document={document} />;
-  }
+    languages.length === 0 &&
+    references.length === 0;
 
   if (isBlank) {
     return (
@@ -82,6 +84,18 @@ export function ResumeBody({
         </p>
       </div>
     );
+  }
+
+  if (templateId === "editorial") {
+    return <EditorialPreview document={document} />;
+  }
+
+  if (templateId === "designer") {
+    return <DesignerPreview document={document} />;
+  }
+
+  if (templateId === "navy") {
+    return <NavyPreview document={document} />;
   }
 
   return (

@@ -40,9 +40,17 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
     (entry) => hasText(entry.name) || hasText(entry.issuer)
   );
   const languages = document.languages.filter((entry) => hasText(entry.name));
+  const references = (document.references ?? []).filter(
+    (entry) =>
+      hasText(entry.name) ||
+      hasText(entry.position) ||
+      hasText(entry.workplace) ||
+      hasText(entry.email) ||
+      hasText(entry.phone)
+  );
 
   return (
-    <div className="flex flex-col gap-3 text-neutral-800">
+    <div className="flex min-h-[1027px] flex-col gap-3 text-neutral-800">
       {/* Header */}
       <header data-page-break="item" className="border-b-2 border-neutral-900 pb-2">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
@@ -58,7 +66,7 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
       </header>
 
       {/* 2-Column Body */}
-      <div className="flex gap-5">
+      <div className="flex flex-1 gap-5">
         {/* Left Sidebar (33%) */}
         <aside className="flex w-[33%] shrink-0 flex-col gap-4 border-r border-neutral-200 pr-4">
           {hasText(document.personal.photoUrl) && (
@@ -164,6 +172,33 @@ export function CompactPreview({ document }: { document: ResumeDocument }) {
                   </li>
                 ))}
               </ul>
+            </section>
+          )}
+
+          {references.length > 0 && (
+            <section>
+              <CompactHeading>{isKhmer ? "អ្នកយោង" : "References"}</CompactHeading>
+              <div className="flex flex-col gap-2 text-[11px]">
+                {references.map((entry) => (
+                  <div key={entry.id} data-page-break="item">
+                    <p className="font-semibold text-neutral-900">
+                      {[entry.name.trim(), entry.position.trim()]
+                        .filter(Boolean)
+                        .join(" — ")}
+                    </p>
+                    {[entry.workplace, entry.email, entry.phone]
+                      .filter(hasText)
+                      .length > 0 && (
+                      <p className="break-words text-[10px] text-neutral-500">
+                        {[entry.workplace, entry.email, entry.phone]
+                          .filter(hasText)
+                          .map((value) => value.trim())
+                          .join(" · ")}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </section>
           )}
         </aside>

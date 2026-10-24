@@ -206,7 +206,7 @@ export function AppleShowcase() {
             {/* Badge 2: AI Sparkle */}
             <div className="flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white/90 px-3 py-1 font-semibold text-neutral-800 shadow-sm backdrop-blur-md dark:border-white/[0.1] dark:bg-[#1c1c1e]/90 dark:text-neutral-200">
               <Sparkles size={12} className="text-amber-500" />
-              <span>{isKhmer ? "កែសម្រួលជាមួយ AI" : "Gemini 2.5 Polish"}</span>
+              <span>{isKhmer ? "កែសម្រួលជាមួយ AI" : "Gemini Polish"}</span>
             </div>
 
             {/* Badge 3: PDF */}

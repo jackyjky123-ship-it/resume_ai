@@ -40,7 +40,7 @@ export function NavyPreview({ document }: { document: ResumeDocument }) {
   const { isKhmer } = useLanguage();
   const { personal } = document;
   const fullName =
-    personal.fullName.trim() || (isKhmer ? "រ៉េត ស្រីរ័ត្ន" : "Reth Sreyroth");
+    personal.fullName.trim() || (isKhmer ? "ឈ្មោះរបស់អ្នក" : "Your name");
   const initials = getInitials(personal.fullName);
   const hasPhoto = hasText(personal.photoUrl);
 
@@ -67,7 +67,8 @@ export function NavyPreview({ document }: { document: ResumeDocument }) {
       hasText(entry.name) ||
       hasText(entry.position) ||
       hasText(entry.workplace) ||
-      hasText(entry.email)
+      hasText(entry.email) ||
+      hasText(entry.phone)
   );
   const certifications = document.certifications.filter(
     (entry) => hasText(entry.name) || hasText(entry.issuer)
@@ -89,18 +90,14 @@ export function NavyPreview({ document }: { document: ResumeDocument }) {
     hasText(personal.placeOfBirth) ||
     hasText(personal.location);
 
-  // Strengths list: parsed from personal.strengths or fallback to standard student strengths
+  // Strengths list: only show strengths the user actually entered.
   const rawStrengths = personal.strengths?.trim();
   const strengthsList = rawStrengths
     ? rawStrengths
         .split(/[\n,;]+/)
         .map((s) => s.trim())
         .filter(Boolean)
-    : [
-        isKhmer ? "រៀនឆាប់ចេះ និងស្រាវជ្រាវលឿន" : "Fast learner",
-        isKhmer ? "មានការទទួលខុសត្រូវ និងឧស្សាហ៍ព្យាយាម" : "Responsible and hardworking",
-        isKhmer ? "សហការក្រុមបានល្អ" : "Good teamwork skills",
-      ];
+    : [];
 
   // Split skills into two columns for the 2-column layout matching the reference
   const half = Math.ceil(skills.length / 2);
@@ -108,7 +105,7 @@ export function NavyPreview({ document }: { document: ResumeDocument }) {
   const skillsCol2 = skills.slice(half);
 
   return (
-    <div className="flex min-h-full font-sans text-neutral-800">
+    <div className="flex min-h-[1123px] font-sans text-neutral-800">
       {/* ============================================================== */}
       {/* LEFT SIDEBAR: Solid Dark Navy (#1E2532)                        */}
       {/* ============================================================== */}
@@ -382,35 +379,25 @@ export function NavyPreview({ document }: { document: ResumeDocument }) {
             <PillBanner>{isKhmer ? "ជំនាញបច្ចេកទេស" : "TECHNICAL SKILLS"}</PillBanner>
             <div className="grid grid-cols-2 gap-4 text-[11.5px] text-neutral-800">
               {/* Column 1 */}
-              <div>
-                <h4 className="font-bold text-[#1E2532] text-[11.5px] mb-1.5">
-                  {isKhmer ? "ភាសាសរសេរកូដ" : "Programming Languages"}
-                </h4>
+              <ul className="flex flex-col gap-1">
+                {skillsCol1.map((skill) => (
+                  <li key={skill.id} className="flex items-center gap-2">
+                    <span className="font-bold text-[#1E2532] select-none">•</span>
+                    <span>{skill.name.trim()}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Column 2 */}
+              {skillsCol2.length > 0 && (
                 <ul className="flex flex-col gap-1">
-                  {skillsCol1.map((skill) => (
+                  {skillsCol2.map((skill) => (
                     <li key={skill.id} className="flex items-center gap-2">
                       <span className="font-bold text-[#1E2532] select-none">•</span>
                       <span>{skill.name.trim()}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-
-              {/* Column 2 */}
-              {skillsCol2.length > 0 && (
-                <div>
-                  <h4 className="font-bold text-[#1E2532] text-[11.5px] mb-1.5">
-                    {isKhmer ? "ការអភិវឌ្ឍន៍គេហទំព័រ" : "Web Development"}
-                  </h4>
-                  <ul className="flex flex-col gap-1">
-                    {skillsCol2.map((skill) => (
-                      <li key={skill.id} className="flex items-center gap-2">
-                        <span className="font-bold text-[#1E2532] select-none">•</span>
-                        <span>{skill.name.trim()}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               )}
             </div>
           </section>
@@ -500,78 +487,73 @@ export function NavyPreview({ document }: { document: ResumeDocument }) {
           </section>
         )}
 
-        {/* REFERENCES SECTION */}
-        {(references.length > 0 || certifications.length > 0) && (
+        {/* CERTIFICATIONS SECTION */}
+        {certifications.length > 0 && (
           <section data-page-break="item">
-            <PillBanner>
-              {references.length > 0
-                ? isKhmer
-                  ? "បុគ្គលយោង"
-                  : "REFERENCES"
-                : isKhmer
-                ? "វិញ្ញាបនបត្រ"
-                : "CERTIFICATIONS"}
-            </PillBanner>
+            <PillBanner>{isKhmer ? "វិញ្ញាបនបត្រ" : "CERTIFICATIONS"}</PillBanner>
+            <div className="flex flex-col gap-2 text-[11.5px] text-neutral-800">
+              {certifications.map((cert) => (
+                <div key={cert.id} data-page-break="item" className="flex items-start gap-2">
+                  <span className="font-bold text-[#1E2532] select-none mt-1 leading-none">
+                    •
+                  </span>
+                  <div>
+                    <span className="font-bold text-[#1E2532]">{cert.name.trim()}</span>
+                    {hasText(cert.issuer) && ` — ${cert.issuer.trim()}`}
+                    {hasText(cert.issueDate) && ` (${cert.issueDate.trim()})`}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
-            {references.length > 0 ? (
-              <div className="flex flex-col gap-3 text-[11.5px] text-neutral-800">
-                {references.map((ref) => (
-                  <div key={ref.id} data-page-break="item" className="flex flex-col gap-0.5">
-                    <p className="font-bold text-[#1E2532] text-[12px]">
-                      {ref.name.trim()}
+        {/* REFERENCES SECTION */}
+        {references.length > 0 && (
+          <section data-page-break="item">
+            <PillBanner>{isKhmer ? "បុគ្គលយោង" : "REFERENCES"}</PillBanner>
+            <div className="flex flex-col gap-3 text-[11.5px] text-neutral-800">
+              {references.map((ref) => (
+                <div key={ref.id} data-page-break="item" className="flex flex-col gap-0.5">
+                  <p className="font-bold text-[#1E2532] text-[12px]">
+                    {ref.name.trim()}
+                  </p>
+                  {hasText(ref.position) && (
+                    <p>
+                      <span className="font-semibold text-neutral-900">
+                        {isKhmer ? "តួនាទី" : "Position"} :{" "}
+                      </span>
+                      {ref.position.trim()}
                     </p>
-                    {hasText(ref.position) && (
-                      <p>
-                        <span className="font-semibold text-neutral-900">
-                          {isKhmer ? "តួនាទី" : "Position"} :{" "}
-                        </span>
-                        {ref.position.trim()}
-                      </p>
-                    )}
-                    {hasText(ref.workplace) && (
-                      <p>
-                        <span className="font-semibold text-neutral-900">
-                          {isKhmer ? "កន្លែងធ្វើការ" : "Workplace"} :{" "}
-                        </span>
-                        {ref.workplace.trim()}
-                      </p>
-                    )}
-                    {hasText(ref.email) && (
-                      <p>
-                        <span className="font-semibold text-neutral-900">Email : </span>
-                        <a
-                          href={`mailto:${ref.email.trim()}`}
-                          className="hover:underline text-neutral-800"
-                        >
-                          {ref.email.trim()}
-                        </a>
-                      </p>
-                    )}
-                    {hasText(ref.phone) && (
-                      <p>
-                        <span className="font-semibold text-neutral-900">Phone : </span>
-                        {ref.phone.trim()}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2 text-[11.5px] text-neutral-800">
-                {certifications.map((cert) => (
-                  <div key={cert.id} data-page-break="item" className="flex items-start gap-2">
-                    <span className="font-bold text-[#1E2532] select-none mt-1 leading-none">
-                      •
-                    </span>
-                    <div>
-                      <span className="font-bold text-[#1E2532]">{cert.name.trim()}</span>
-                      {hasText(cert.issuer) && ` — ${cert.issuer.trim()}`}
-                      {hasText(cert.issueDate) && ` (${cert.issueDate.trim()})`}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  )}
+                  {hasText(ref.workplace) && (
+                    <p>
+                      <span className="font-semibold text-neutral-900">
+                        {isKhmer ? "កន្លែងធ្វើការ" : "Workplace"} :{" "}
+                      </span>
+                      {ref.workplace.trim()}
+                    </p>
+                  )}
+                  {hasText(ref.email) && (
+                    <p>
+                      <span className="font-semibold text-neutral-900">Email : </span>
+                      <a
+                        href={`mailto:${ref.email.trim()}`}
+                        className="hover:underline text-neutral-800"
+                      >
+                        {ref.email.trim()}
+                      </a>
+                    </p>
+                  )}
+                  {hasText(ref.phone) && (
+                    <p>
+                      <span className="font-semibold text-neutral-900">Phone : </span>
+                      {ref.phone.trim()}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </section>
         )}
       </main>

@@ -104,6 +104,7 @@ export interface Translations {
     keyRemovedToast: string;
     keySavedToast: string;
     enterKeyError: string;
+    invalidKeyError: string;
     testPassed: string;
     testPassedToast: string;
     networkError: string;
